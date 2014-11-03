@@ -1,8 +1,8 @@
 main
+build
 obj
 tags
 lib/libCudaKernels.a
 types_c.taghl
 program.log
-.qglviewer.xml
 .exrc

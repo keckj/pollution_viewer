@@ -72,7 +72,7 @@ endif()
 include_directories(
     ${LOCAL_INCLUDE_DIRS}    #Local includes
     ${LOG4CPP_INCLUDE_DIRS}  #Log4cpp
-    $[EIGEN3_INCLUDE_DIR}    #Eigen3 (template lib)
+    ${EIGEN3_INCLUDE_DIR}    #Eigen3 (template lib)
     ${IL_INCLUDE_DIR}        #DevIL
 )
 
