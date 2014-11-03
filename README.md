@@ -1,0 +1,4 @@
+visualization
+=============
+
+Ensimag visualization project
