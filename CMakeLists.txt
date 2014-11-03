@@ -1,6 +1,6 @@
 
 project(Poulpy)
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}")
@@ -8,7 +8,8 @@ set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib/${CMAKE_BUILD_TYPE}")
 
 set(BUILD_SHARED_LIBS OFF)
 find_package(Log4cpp REQUIRED)
-find_package(CUDA REQUIRED 6.5)
+find_package(CUDA QUIET 6.5)
+if(CUDA)
 include(CUDA_compute_capability)
 
 #-Wshadow -Wstrict-aliasing -Weffc++ -Werror
@@ -30,6 +31,7 @@ file(GLOB_RECURSE header_files src/*.h)
 file(GLOB_RECURSE source_files src/*.cpp)
 file(GLOB_RECURSE template_files src/*.tpp)
 file(GLOB_RECURSE kernel_files src/*.cu)
+file(GLOB_RECURSE data_files data/*.kml)
 
 #Local includes
 foreach(header ${header_files})
