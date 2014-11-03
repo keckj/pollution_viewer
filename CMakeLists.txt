@@ -9,13 +9,12 @@ set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib/${CMAKE_BUILD_TYPE}")
 set(BUILD_SHARED_LIBS OFF)
 find_package(Log4cpp REQUIRED)
 find_package(CUDA QUIET 6.5)
-if(CUDA)
-include(CUDA_compute_capability)
+#include(CUDA_compute_capability)
 
 #-Wshadow -Wstrict-aliasing -Weffc++ -Werror
 set(CMAKE_CXX_FLAGS "-W -Wall -Wextra -Wno-unused-parameter -pedantic -std=c++11 -m64")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 set(CMAKE_EXE_LINKER_FLAGS "-O2")
@@ -38,7 +37,10 @@ foreach(header ${header_files})
     get_filename_component(dir ${header} DIRECTORY)
     list(APPEND LOCAL_INCLUDE_DIRS ${dir})
 endforeach()
-list(REMOVE_DUPLICATES LOCAL_INCLUDE_DIRS)
+if(${LOCAL_INCLUDE_DIRS})
+    list(REMOVE_DUPLICATES LOCAL_INCLUDE_DIRS)
+endif()
+
 
 #Header directories
 include_directories(
