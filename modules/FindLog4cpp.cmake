@@ -13,6 +13,9 @@
 
 include(FindPackageHandleStandardArgs)
 
+#Hardcoded version here
+set(LOG4CPP_VERSION 5.0.5)
+
 # See if LOG4CPP_ROOT is not already set in CMake
 IF (NOT LOG4CPP_ROOT)
     # See if LOG4CPP_ROOT is set in process environment
@@ -36,7 +39,6 @@ find_path(LOG4CPP_INCLUDE_DIR NAMES log4cpp/Category.hh ${LOG4CPP_INCLUDE_HINTS}
 find_library(LOG4CPP_LIBRARY NAMES log4cpp ${LOG4CPP_LIBRARY_HINTS})
 find_library(LOG4CPPD_LIBRARY NAMES log4cpp${CMAKE_DEBUG_POSTFIX} ${LOG4CPP_LIBRARY_HINTS})
 
-set(LOG4CPP_VERSION 5.0.5)
 message("-- Log4cpp version to look for: ${LOG4CPP_VERSION} (hard-coded in FindLog4cpp.cmake).")
 
 # Determine name of Orocos' version of the log4cpp library, and see if it exists

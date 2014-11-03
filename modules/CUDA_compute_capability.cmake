@@ -3,7 +3,6 @@
 #######################################################
 
 if(CUDA_FOUND)
-    
     message("-- Checking available GPUs and acrhitecture...")
     
     try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
