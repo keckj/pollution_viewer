@@ -1,6 +1,7 @@
 
-cmake_minimum_required(VERSION 2.8)
+#TODO Use cotire for eigen3
 
+cmake_minimum_required(VERSION 2.8)
 
 project(Visualization CXX)
 set(VISUALIZATION_MAJOR_VERSION 0)
@@ -40,11 +41,16 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 
 endif()
     
-set(CMAKE_CXX_FLAGS "${CXX_FLAGS} ${CXX_WERR} ${CXX_WNOERR} ${OpenMP_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_FLAGS} ${CXX_WERR} ${CXX_WNOERR} ${OpenMP_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} ")
 
+# Better Stronger Faster Harder
+# Work   it harder
+# Make   it better
+# Do     it faster
+# Makes  us stronger
 set(BUILD_SHARED_LIBS OFF)
 
 #Project files
