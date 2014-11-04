@@ -2,4 +2,3 @@ Industrielle
 Périurbain
 Trafic
 Urbain
-cat particules.data | grep -oe '- [A-Z][a-z]\+ $' | grep -o '[A-Z][a-z]\+' | sort | uniq
