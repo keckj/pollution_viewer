@@ -3,7 +3,7 @@
 for i in split(system("cat station_types | tr '\n' ' '"))
     echo "Substituing ".i."..."
     try
-        execute '%s/\ze'.i.'$/- /g'
+        execute '%s/'.i.'.*$/- '.i.'/g'
     endtry
 endfor
 

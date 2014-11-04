@@ -14,7 +14,7 @@ Grenoble Grands Boulevards - Trafic
 5.72005587713513 45.1806892548478 4.999999999999999
 Grenoble Rocade Sud - Trafic
 5.70376326282844 45.15836513041889 4.999999999999999
-Lyon - Tunnel Croix-Rousse - Sortie Rhône - Trafic
+Lyon Tunnel Croix-Rousse Sortie Rhône - Trafic
 4.83693894311449 45.77242369747901 4.999999999999999
 Lyon Periphérique Est - Trafic
 4.89615150786641 45.7282699629542 4.999999999999999
@@ -26,7 +26,7 @@ N88 Saint-Etienne - Trafic
 4.41197682165136 45.4211987170653 4.999999999999999
 Villeurbanne Place Grandclément - Trafic
 4.8862151705819 45.7583623512876 4.999999999999999
-Air Rhone Alpes - Sites 19
+Air Rhone Alpes Sites 19
 Les Roches de Condrieu ZI - Industrielle
 4.76652658489204 45.4545198995453 4.999999999999999
 Saint-Bauzile ZI - Industrielle
@@ -41,26 +41,26 @@ sud lyonnais / Saint-Fons - Industrielle
 4.86448268822899 45.7077472529647 4.999999999999999
 sud lyonnais / Vénissieux - Industrielle
 4.88363628979372 45.70387760355301 4.999999999999999
-Air Rhone Alpes - Sites 17;18
-Aiguille du midi Rurale régionale
+Air Rhone Alpes Sites 17;18
+Aiguille du midi - Rurale
 6.887325864940191 45.8785517934977 4.999999999999999
-Ardèche méridionale Rurale régionale
+Ardèche méridionale - Rurale
 4.28925775253339 44.3996845866694 4.999999999999999
-Coteaux du lyonnais Rurale régionale
+Coteaux du lyonnais - Rurale
 4.59885202662403 45.7234126806689 4.999999999999999
-Drôme provençale Rurale nationale
+Drôme provençale - Rurale
 5.08987093844395 44.5207447718155 4.999999999999999
-Ecrins Rurale nationale
+Ecrins - Rurale
 6.46949318802836 44.9980407148915 4.999999999999999
-Haut-Beaujolais Rurale régionale
+Haut-Beaujolais - Rurale
 4.4657108630111 45.9614121189385 4.999999999999999
-Pays voironnais Rurale régionale
+Pays voironnais - Rurale
 5.51795159107292 45.4275577237052 4.999999999999999
-Plaine de Bièvre Rurale régionale
+Plaine de Bièvre - Rurale
 5.17412289696536 45.39779900185239 4.999999999999999
-Saint Nazaire Le Desert Rurale nationale
+Saint Nazaire Le Desert - Rurale
 5.27928070135128 44.5692808051326 4.999999999999999
-Air Rhone Alpes - Sites 14
+Air Rhone Alpes Sites 14
 Annecy Novel - Périurbain
 6.13565018356012 45.91699878628519 4.999999999999999
 Chambery le Haut - Périurbain
@@ -73,7 +73,7 @@ Est lyonnais / Saint Exupéry - Périurbain
 5.07229613603694 45.7535264448126 4.999999999999999
 Est stéphanois / La Talaudière - Périurbain
 4.42990042558508 45.48154505740041 4.999999999999999
-Nord lyonnais / Côtière de l&apos;Ain - Périurbain
+Nord lyonnais / Côtière de l'Ain - Périurbain
 4.95395835530554 45.82322638305969 4.999999999999999
 Saint-Etienne Nord - Périurbain
 4.38978008713882 45.4667202804224 4.999999999999999
@@ -145,6 +145,6 @@ Vienne Centre - Urbain
 4.87540811064197 45.525972455909 4.999999999999999
 Villefranche Village - Urbain
 4.71928008509018 45.9863824295899 4.999999999999999
-Voiron Urbain - Urbain
+Voiron - Urbain
 5.58942375643129 45.3601764836249 4.999999999999999
 
