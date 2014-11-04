@@ -1,5 +1,4 @@
 
-#include "defines.hpp"
 
 #include <stdio.h>
 #include <assert.h>
@@ -13,21 +12,27 @@
 #include "log4cpp/Layout.hh"
 #include "log4cpp/BasicLayout.hh"
 #include "log4cpp/Priority.hh"
+#include "log4cpp/PatternLayout.hh"
 
+#include "defines.hpp"
 #include "log.hpp"
 
 namespace log4cpp {
 
-	Category *log_console = &Category::getRoot();
-	Category *log_file = &Category::getInstance(std::string("log_file"));
+    Category *log_console = &Category::getRoot();
+    Category *log_file = &Category::getInstance(std::string("log_file"));
 
-	void initLogs() {
+    void initLogs() {
 
 		log_console->setPriority(Priority::_CONSOLE_LOG_LEVEL);
 		log_file->setPriority(Priority::_FILE_LOG_LEVEL);
 
 		log4cpp::Appender *appender_console = new log4cpp::OstreamAppender("console", &std::cout);
-		appender_console->setLayout(new log4cpp::BasicLayout());
+
+        log4cpp::PatternLayout *layout = new log4cpp::PatternLayout();
+        layout->setConversionPattern("%d{%H:%M:%S} %p %c %x: %m%n");
+
+		appender_console->setLayout(layout);
 		appender_console->setThreshold(Priority::DEBUG);
 		log_console->addAppender(appender_console);
 
@@ -38,7 +43,6 @@ namespace log4cpp {
 
 		//console redirected to file
 		log_console->addAppender(appender_file);
-
 	}
 }
 

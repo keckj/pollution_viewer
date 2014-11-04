@@ -7,6 +7,9 @@
 #include "log.hpp"
 
 int main(int argc, char** argv) {
+
+    log4cpp::initLogs();
+
     std::cout << "Projet de visualisation, viens on est bien bien bien bien bien !!!" << std::endl;    
 
     log4cpp::log_console->critStream() << "Bien bien bien !";

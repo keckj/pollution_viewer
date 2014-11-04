@@ -1,6 +1,5 @@
 
 #TODO Use cotire for eigen3
-
 cmake_minimum_required(VERSION 2.8)
 
 project(Visualization CXX)
@@ -41,19 +40,21 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 
 endif()
 
-#Compiler defines
-set(COMPILER_DEFINES "-D_REENTRANT")
-if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug") 
-    set(COMPILER_DEFINES "${COMPILER_DEFINES} -D_DEBUG -D_CONSOLE_LOG_LEVEL=DEBUG -D_FILE_LOG_LEVEL=DEBUG")
-else()
-    set(COMPILER_DEFINES "${COMPILER_DEFINES} -D_CONSOLE_LOG_LEVEL=INFO -D_FILE_LOG_LEVEL=DEBUG")
-endif()
-add_definitions("${COMPILER_DEFINES}")
-    
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_FLAGS} ${CXX_WERR} ${CXX_WNOERR} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} ")
+
+#Compiler defines
+set(COMPILER_DEFINES "-D_REENTRANT")
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug") 
+    set(COMPILER_DEFINES "${COMPILER_DEFINES} -D_DEBUG -D_CONSOLE_LOG_LEVEL=DEBUG -D_FILE_LOG_LEVEL=DEBUG")
+elseif("${CMAKE_BUILD_TYPE}" STREQUAL "Release") 
+    set(COMPILER_DEFINES "${COMPILER_DEFINES} -D_CONSOLE_LOG_LEVEL=WARN -D_FILE_LOG_LEVEL=WARN")
+else()
+    set(COMPILER_DEFINES "${COMPILER_DEFINES} -D_CONSOLE_LOG_LEVEL=INFO -D_FILE_LOG_LEVEL=INFO")
+endif()
+add_definitions("${COMPILER_DEFINES}")
 
 # Better Stronger Faster Harder
 # Work  it harder
@@ -66,10 +67,9 @@ set(BUILD_SHARED_LIBS OFF)
 file(GLOB_RECURSE header_files src/*.hpp)
 file(GLOB_RECURSE source_files src/*.cpp)
 file(GLOB_RECURSE template_files src/*.tpp)
-file(GLOB_RECURSE data_files data/*.kml)
 
 #Local includes
-list(APPEND LOCAL_INCLUDE_DIRS "src/")
+list(APPEND LOCAL_INCLUDE_DIRS "src/") #to avoid empty list
 foreach(header ${header_files})
     get_filename_component(dir ${header} DIRECTORY)
     list(APPEND LOCAL_INCLUDE_DIRS ${dir})
@@ -100,6 +100,3 @@ target_link_libraries(
     #$[ILU_LIBRARIES}    #DevIL filters and effects
     #$[ILUT_LIBRARIES}   #DevIL interface with openGL
 )
-
-
-
