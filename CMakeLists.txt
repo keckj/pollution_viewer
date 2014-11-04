@@ -40,6 +40,15 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     message(WARNING "No custom compiler flags set for Visual Studio C++...")
 
 endif()
+
+#Compiler defines
+set(COMPILER_DEFINES "-D_REENTRANT")
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug") 
+    set(COMPILER_DEFINES "${COMPILER_DEFINES} -D_DEBUG -D_CONSOLE_LOG_LEVEL=DEBUG -D_FILE_LOG_LEVEL=DEBUG")
+else()
+    set(COMPILER_DEFINES "${COMPILER_DEFINES} -D_CONSOLE_LOG_LEVEL=INFO -D_FILE_LOG_LEVEL=DEBUG")
+endif()
+add_definitions("${COMPILER_DEFINES}")
     
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_FLAGS} ${CXX_WERR} ${CXX_WNOERR} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ")
@@ -54,19 +63,18 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} ")
 set(BUILD_SHARED_LIBS OFF)
 
 #Project files
-file(GLOB_RECURSE header_files src/*.h)
+file(GLOB_RECURSE header_files src/*.hpp)
 file(GLOB_RECURSE source_files src/*.cpp)
 file(GLOB_RECURSE template_files src/*.tpp)
 file(GLOB_RECURSE data_files data/*.kml)
 
 #Local includes
+list(APPEND LOCAL_INCLUDE_DIRS "src/")
 foreach(header ${header_files})
     get_filename_component(dir ${header} DIRECTORY)
     list(APPEND LOCAL_INCLUDE_DIRS ${dir})
 endforeach()
-if(${LOCAL_INCLUDE_DIRS})
-    list(REMOVE_DUPLICATES LOCAL_INCLUDE_DIRS)
-endif()
+list(REMOVE_DUPLICATES LOCAL_INCLUDE_DIRS)
 
 #Header directories
 include_directories(

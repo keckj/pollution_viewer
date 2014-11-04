@@ -6,3 +6,7 @@ lib/libCudaKernels.a
 types_c.taghl
 program.log
 .exrc
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
