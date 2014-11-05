@@ -12,7 +12,7 @@ StationParser::~StationParser() {}
 std::map<std::string, Station> StationParser::parse(std::string fileName) {
 
     using log4cpp::log_console;
-    
+
     log_console->infoStream() << "[StationParser] Parsing file " << fileName << "...";
 
     std::ifstream infile;
@@ -23,16 +23,19 @@ std::map<std::string, Station> StationParser::parse(std::string fileName) {
         exit(EXIT_FAILURE);
     }
 
-    std::regex stationRegexp("(.*) - (.*)");
     std::string line;
+    const std::regex stationRegexp("([A-Z])(.*)", std::regex::extended);
 
     while (infile.good()){
-        getline(infile, line);
+        getline(infile,line);
         log_console->infoStream() << "Parsing line: " << line;
         std::smatch match;
-        std::regex_match(line, match, stationRegexp);
-        if(!match.empty())
-            log_console->infoStream() << "\tMatched '" << match[1] << "' and '" << match[2] << "' !";
+        if(std::regex_match(std::string(line), match, stationRegexp)) { 
+            std::cout << "the matches were: ";
+            std::cout << "[" << match[1] << "]";
+            std::cout << "[" << match[2] << "]";
+            std::cout << std::endl;
+        }
     }
 
     return std::map<std::string,Station>();
