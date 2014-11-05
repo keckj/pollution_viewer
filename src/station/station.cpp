@@ -8,22 +8,26 @@ Station::Station(std::string name, StationType type, Vec<double> location) :
 {
 }
         
-void Station::addSensorData(SensorData<float> data) {
-    if(_data.find(data.sensorName) == _data.end()) {
-        _data.insert(std::pair<std::string,SensorData<float>>(data.sensorName, data));
-    }
-    else {
-        log4cpp::log_console->warnStream() << "Sensor data ignored because " << data.sensorName << " was already added !";
-    }
+bool Station::hasSensorData(std::string sensorName) const {
+    return _data.find(sensorName) != _data.end();
 }
 
-SensorData<float>& Station::getSensorData(std::string sensorName) {
-    if(_data.find(sensorName) == _data.end()) {
-        log4cpp::log_console->errorStream() << "Sensor data " << sensorName << " requested but it was not added !";
-        exit(EXIT_FAILURE);
+void Station::addSensorData(SensorData<int> data) {
+    if(hasSensorData(data.sensorName)) {
+        log4cpp::log_console->warnStream() << "Sensor data ignored because " << data.sensorName << " was already added !";
     }
     else {
+        _data.insert(std::pair<std::string,SensorData<int>>(data.sensorName, data));
+    }
+}
+        
+SensorData<int> Station::getSensorData(std::string sensorName) {
+    if(hasSensorData(sensorName)) {
         return _data.at(sensorName);
+    }
+    else {
+        log4cpp::log_console->errorStream() << "Sensor data " << sensorName << " requested but it was not added !";
+        exit(EXIT_FAILURE);
     }
 }
 

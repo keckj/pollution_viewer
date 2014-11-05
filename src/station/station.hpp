@@ -14,11 +14,13 @@ struct Station {
         
         Station(std::string name, StationType type, Vec<double> location);
         
-        void addSensorData(SensorData<float> data);
-        SensorData<float>& getSensorData(std::string sensorName);
+        void addSensorData(SensorData<int> data);
+        
+        bool hasSensorData(std::string sensorName) const;
+        SensorData<int> getSensorData(std::string sensorName);
 
     private:
-        std::map<std::string, SensorData<float>> _data;
+        std::map<std::string, SensorData<int>> _data;
 
 };
 

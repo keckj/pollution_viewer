@@ -11,7 +11,7 @@
 StationParser::StationParser() {}
 StationParser::~StationParser() {}
 
-std::map<std::string, Station> StationParser::parse(std::string fileName) {
+std::map<std::string, Station*> StationParser::parse(std::string fileName) {
 
     using log4cpp::log_console;
 
@@ -30,7 +30,7 @@ std::map<std::string, Station> StationParser::parse(std::string fileName) {
 
     std::string line;
     boost::smatch stationMatch, coordinateMatch;
-    std::map<std::string,Station> stations;
+    std::map<std::string,Station*> stations;
 
     while (infile.good()){
         getline(infile,line);
@@ -43,21 +43,20 @@ std::map<std::string, Station> StationParser::parse(std::string fileName) {
                 double y = std::stod(coordinateMatch[2]);
                 double z = std::stod(coordinateMatch[3]);
 
-                Station station(stationName, stationType, Vec<double>(x,y,z));
+                Station *station = new Station(stationName, stationType, Vec<double>(x,y,z));
                 
                 log_console->debugStream() << "[StationParser] "
                     << stationName << " (" << stationType << ")"
                     << " at (" << x << "," << y << "," << z << ")";
                 
                 if(stations.find(stationName+" - "+stationType) == stations.end()) {
-                    stations.insert(std::pair<std::string,Station>(stationName+" - "+stationType, station));
+                    stations.insert(std::pair<std::string,Station*>(stationName+" - "+stationType, station));
                 }
                 else {
                     log_console->warnStream()
                         << "Skipping station '" << stationName << "' with type '" << stationType 
                         << "' because it was already parsed before !";
                 }
-
             }
             else {
                 log_console->warnStream()

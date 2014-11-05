@@ -15,7 +15,7 @@ DataParser::DataParser() {
 DataParser::~DataParser() {
 }
 
-void DataParser::parseSensorData(std::string fileName, std::map<std::string, Station> targetStations) {
+void DataParser::parseSensorData(std::string fileName, std::map<std::string, Station*> targetStations) {
 
     using log4cpp::log_console;
     log_console->infoStream() << "[DataParser] Parsing file " << fileName << "...";
@@ -49,7 +49,7 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
     std::tm startDate = {0,0,0,1,0,0,0,0,0,0,0};
     std::tm endDate   = {0,0,0,1,0,0,0,0,0,0,0};
     std::tm interval  = {0,0,0,1,0,0,0,0,0,0,0};
-    unsigned int nData = 0;
+    unsigned int nExpectedValues = 0;
     unsigned int nMatchedStations = 0;
 
     while (infile.good()){
@@ -120,35 +120,40 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
 
             if(parsedParameters) {
                 if(targetStations.find(stationKey) == targetStations.end()) {
-                    log_console->warnStream() << "[DataParser] Sensor data skipped because " << stationName << " - " << stationType << " is not a known station !";
+                    log_console->warnStream() << "[DataParser] Sensor data skipped because " << stationKey << " is not a known station !";
                     continue;
                 }
 
                 getline(infile,line);
                 
                 const boost::regex matchVal("([0-9]+)|-");
-                unsigned int nValues = 0;
-                std::vector<int> sensorValues;
+                unsigned int nData = 0;
+                int *sensorValues = new int[nExpectedValues];
 
                 boost::sregex_token_iterator it(line.begin(), line.end(), matchVal);
                 boost::sregex_token_iterator end;
 
                 for(;it != end; ++it) {
+                    if(nData == nExpectedValues) {
+                        log_console->warnStream() << "[DataParser] At station " << stationName << " - " << stationType
+                            << "\n\t\t\t\tParsed more than " << nData << " sensor values but only " << nExpectedValues << " were expected !";
+                    }
+
                     if(*it == '-')
-                        sensorValues.push_back(-1);
+                        sensorValues[nData] = -1;
                     else
-                        sensorValues.push_back(std::stoi(*it));
-                    nValues++;
+                        sensorValues[nData] = std::stoi(*it);
+                    
+                    nData++;
                 }
               
-                if(nValues > nData) {
+                if(nData < nExpectedValues) {
                     log_console->warnStream() << "[DataParser] At station " << stationName << " - " << stationType
-                        << "\n\t\t\t\tParsed " << nValues << " sensor values but only " << nData << " were expected !";
+                        << "\n\t\t\t\tParsed " << nData << " sensor values but exactly " << nExpectedValues << " were expected !";
                 }
-                else if(nValues < nData) {
-                    log_console->warnStream() << "[DataParser] At station " << stationName << " - " << stationType
-                        << "\n\t\t\t\tParsed " << nValues << " sensor values but exactly " << nData << " were expected !";
-                }
+            
+                SensorData<int> sensorData(sensorName, sensorUnit, startDate, endDate, interval, sensorValues);
+                targetStations.at(stationKey)->addSensorData(sensorData);
 
                 nMatchedStations++;
             }
@@ -163,9 +168,9 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
             if(parsedParameters) {
                 log_console->infoStream() << "[DataParser] "
                     << "\tAll parameters have been parsed !";
-                nData = (mktime(&endDate) - mktime(&startDate))/(interval.tm_hour*3600+interval.tm_min*60+interval.tm_sec) + 1;
+                nExpectedValues = (mktime(&endDate) - mktime(&startDate))/(interval.tm_hour*3600+interval.tm_min*60+interval.tm_sec) + 1;
                 log_console->infoStream() << "[DataParser] "
-                    << "\tExpected sensor values : " << nData;
+                    << "\tExpected sensor values based on interval: " << nExpectedValues;
             }
         }
     }

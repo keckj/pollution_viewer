@@ -13,7 +13,7 @@ class StationParser {
         StationParser();
         ~StationParser();
 
-        std::map<std::string, Station> parse(std::string fileName);
+        std::map<std::string, Station*> parse(std::string fileName);
 };
 
 #endif /* end of include guard: STATIONPARSER_H */
