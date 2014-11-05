@@ -9,6 +9,8 @@ struct Station {
         std::string name;
         StationType type;
         Vec<double> location;
+
+        Station(std::string name, StationType type, Vec<double> location);
 };
 
 #endif /* end of include guard: STATION_H */

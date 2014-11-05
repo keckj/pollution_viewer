@@ -12,6 +12,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}")
 set(LIBRARY_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/lib/${CMAKE_BUILD_TYPE}")
 
+find_package(Boost COMPONENTS regex REQUIRED)
 find_package(Log4cpp REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(DevIL REQUIRED)
@@ -79,6 +80,7 @@ list(REMOVE_DUPLICATES LOCAL_INCLUDE_DIRS)
 #Header directories
 include_directories(
     ${LOCAL_INCLUDE_DIRS}    #Local includes
+    ${Boost_INCLUDEDIR}      #Boost
     ${LOG4CPP_INCLUDE_DIRS}  #Log4cpp
     ${EIGEN3_INCLUDE_DIR}    #Eigen3 (template lib)
     ${IL_INCLUDE_DIR}        #DevIL
@@ -86,6 +88,7 @@ include_directories(
 
 #Library directories
 link_directories(
+    ${BOOST_LIBRARYDIR}
     ${LOG4CPP_LIBRARY_DIRS}
 )
 
@@ -95,8 +98,9 @@ add_executable(main ${header_files} ${source_files} ${template_files})
 #Link executable
 target_link_libraries(
     main 
-    ${LOG4CPP_LIBRARIES} #Log4cpp
-    ${IL_LIBRARIES}      #DevIL core library
-    #$[ILU_LIBRARIES}    #DevIL filters and effects
-    #$[ILUT_LIBRARIES}   #DevIL interface with openGL
+    ${Boost_LIBRARIES}   #Boost Regex
+    ${LOG4CPP_LIBRARIES}     #Log4cpp
+    ${IL_LIBRARIES}          #DevIL core library
+    #$[ILU_LIBRARIES}        #DevIL filters and effects
+    #$[ILUT_LIBRARIES}       #DevIL interface with openGL
 )

@@ -1,9 +1,11 @@
 
 #include <iostream>
 #include <fstream>
-#include <regex>
+#include <boost/regex.hpp>
 
 #include "log.hpp"
+#include "vec.hpp"
+#include "stationType.hpp"
 #include "stationParser.hpp"
 
 StationParser::StationParser() {}
@@ -22,21 +24,51 @@ std::map<std::string, Station> StationParser::parse(std::string fileName) {
         log_console->errorStream() << "[StationParser] Error while loading file" << fileName << " !";
         exit(EXIT_FAILURE);
     }
+    
+    const boost::regex stationRegexp("^(.*) - ([^-]*)$", boost::regex::extended);
+    const boost::regex coordinatesRegexp("^([0-9]+\\.[0-9]+) ([0-9]+\\.[0-9]+) ([0-9]+\\.[0-9]+)$");
 
     std::string line;
-    const std::regex stationRegexp("([A-Z])(.*)", std::regex::extended);
+    boost::smatch stationMatch, coordinateMatch;
+    std::map<std::string,Station> stations;
 
     while (infile.good()){
         getline(infile,line);
-        log_console->infoStream() << "Parsing line: " << line;
-        std::smatch match;
-        if(std::regex_match(std::string(line), match, stationRegexp)) { 
-            std::cout << "the matches were: ";
-            std::cout << "[" << match[1] << "]";
-            std::cout << "[" << match[2] << "]";
-            std::cout << std::endl;
+        if(boost::regex_match(line, stationMatch, stationRegexp)) {
+            std::string stationName = stationMatch[1];
+            std::string stationType = stationMatch[2];
+            getline(infile,line);
+            if(boost::regex_match(line,coordinateMatch, coordinatesRegexp)) {
+                double x = std::stod(coordinateMatch[1]);
+                double y = std::stod(coordinateMatch[2]);
+                double z = std::stod(coordinateMatch[3]);
+
+                Station station(stationName, stationType, Vec<double>(x,y,z));
+                
+                log_console->debugStream() << "[StationParser] "
+                    << stationName << " (" << stationType << ")"
+                    << " at (" << x << "," << y << "," << z << ")";
+                
+                if(stations.find(stationName+" - "+stationType) == stations.end()) {
+                    stations.insert(std::pair<std::string,Station>(stationName+" - "+stationType, station));
+                }
+                else {
+                    log_console->warnStream()
+                        << "Skipping station '" << stationName << "' with type '" << stationType 
+                        << "' because it was already parsed before !";
+                }
+
+            }
+            else {
+                log_console->warnStream()
+                    << "Skipping station '" << stationName << "' with type '" << stationType 
+                    << "' because no coordinates were found !";
+            }
         }
     }
+                
+    log_console->infoStream() << "[StationParser] "
+        << "Successfully parsed " << stations.size() << " stations !";
 
-    return std::map<std::string,Station>();
+    return stations;
 }
