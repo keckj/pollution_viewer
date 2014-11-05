@@ -8,7 +8,7 @@ namespace log4cpp {
 	extern Category *log_console;
 	extern Category *log_file;
 
-	void initLogs();
+    void initLogs();
 }
 
 #endif /* end of include guard: LOG_H */
