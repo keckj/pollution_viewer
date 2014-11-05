@@ -25,7 +25,7 @@ std::map<std::string, Station> StationParser::parse(std::string fileName) {
         exit(EXIT_FAILURE);
     }
     
-    const boost::regex stationRegexp("^(.*) - ([^-]*)$", boost::regex::extended);
+    const boost::regex stationRegexp("^([^0-9-].*) - ([^-]*)$", boost::regex::extended);
     const boost::regex coordinatesRegexp("^([0-9]+\\.[0-9]+) ([0-9]+\\.[0-9]+) ([0-9]+\\.[0-9]+)$");
 
     std::string line;

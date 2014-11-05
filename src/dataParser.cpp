@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <sstream>
 #include <ctime>
 #include <boost/regex.hpp>
 
@@ -49,6 +50,7 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
     std::tm endDate   = {0,0,0,1,0,0,0,0,0,0,0};
     std::tm interval  = {0,0,0,1,0,0,0,0,0,0,0};
     unsigned int nData = 0;
+    unsigned int nMatchedStations = 0;
 
     while (infile.good()){
         getline(infile,line);
@@ -103,15 +105,52 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
 
             char* date = new char[100];
             strftime(date, 100, "%H:%M:%S", &interval);
-            strftime(date, 100, "%d/%m/%Y %H:%M:%S", &interval);
             log_console->infoStream() << "[DataParser] "
                 << "\tInterval   : " << date;
             delete [] date;
             parsedInterval = true;
         }
         else if(boost::regex_match(line, match, stationRegexp)) {
-            log_console->debugStream() << "[DataParser] " << "\t\t" << match[0];
+            log_console->debugStream() << "[DataParser] " << "\t\tStation " << match[0];
+            std::string stationKey, stationName, stationType;
+    
+            stationKey = match[0];
+            stationName = match[1];
+            stationType = match[2];
+
             if(parsedParameters) {
+                if(targetStations.find(stationKey) == targetStations.end()) {
+                    log_console->warnStream() << "[DataParser] Sensor data skipped because " << stationName << " - " << stationType << " is not a known station !";
+                    continue;
+                }
+
+                getline(infile,line);
+                
+                const boost::regex matchVal("([0-9]+)|-");
+                unsigned int nValues = 0;
+                std::vector<int> sensorValues;
+
+                boost::sregex_token_iterator it(line.begin(), line.end(), matchVal);
+                boost::sregex_token_iterator end;
+
+                for(;it != end; ++it) {
+                    if(*it == '-')
+                        sensorValues.push_back(-1);
+                    else
+                        sensorValues.push_back(std::stoi(*it));
+                    nValues++;
+                }
+              
+                if(nValues > nData) {
+                    log_console->warnStream() << "[DataParser] At station " << stationName << " - " << stationType
+                        << "\n\t\t\t\tParsed " << nValues << " sensor values but only " << nData << " were expected !";
+                }
+                else if(nValues < nData) {
+                    log_console->warnStream() << "[DataParser] At station " << stationName << " - " << stationType
+                        << "\n\t\t\t\tParsed " << nValues << " sensor values but exactly " << nData << " were expected !";
+                }
+
+                nMatchedStations++;
             }
             else {
                 log_console->warnStream() << "[DataParser] "
@@ -124,10 +163,14 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
             if(parsedParameters) {
                 log_console->infoStream() << "[DataParser] "
                     << "\tAll parameters have been parsed !";
-                nData = (mktime(&endDate) - mktime(&startDate))/(interval.tm_hour*3600+interval.tm_min*60+interval.tm_sec);
+                nData = (mktime(&endDate) - mktime(&startDate))/(interval.tm_hour*3600+interval.tm_min*60+interval.tm_sec) + 1;
                 log_console->infoStream() << "[DataParser] "
-                    << "\tExpected data count : " << nData;
+                    << "\tExpected sensor values : " << nData;
             }
         }
     }
+
+    log_console->infoStream() << "[DataParser] "
+        << "Successfully parsed " << nMatchedStations << " station sensor data !";
+    
 }
