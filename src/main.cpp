@@ -5,6 +5,7 @@
 #include <cstdlib>
 
 #include "log.hpp"
+#include "stationParser.hpp"
 
 int main(int argc, char** argv) {
 
@@ -18,6 +19,10 @@ int main(int argc, char** argv) {
     log_console->warnStream() << "Bien bien bien !";
     log_console->infoStream() << "Bien bien bien !";
     log_console->debugStream() << "Bien bien bien !";
+    
+    StationParser sp;
+    sp.parse("data/stations.data");
+
 
     return EXIT_SUCCESS;
 }
