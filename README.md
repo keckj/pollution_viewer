@@ -14,3 +14,6 @@ Change build type:
 
 Change cmake default compiler:
     CXX=clang++ cmake ..
+
+Running Project
+===============
