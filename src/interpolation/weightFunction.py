@@ -37,7 +37,26 @@ def shepardSimpleWeights(i,x,knownPos):
 
 	return w
 
+# singedIdentiy(s) = 0 if s<0
+# 			   = s if s>0
+def singedIdentiy(s):
+	return np.sign(s) * s
 
+# compute shepard quadratic's weights in x
+# x : np array (typically [x,y,z])
+# knownPos : list of known points [x_known,y_known] and x_know : np array of size n
+# i : index
+def shepardQuadraticWeights(i,x,knownPos):
+	Rw = 1
+
+	x_i = knownPos[i]
+
+	w_top = singedIdentiy(Rw - dist(x,x_i))
+	w_bottom = Rw*dist(x,x_i)
+
+	w = (w_top/w_bottom)**2
+
+	return w
 
 
 

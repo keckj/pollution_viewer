@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from PySide import QtGui
 
 #=================================#
-# Shepard Simple interpolation:
+# Shepard Quadratic interpolation:
 #=================================#
 
 # weigth computation module
@@ -41,13 +41,13 @@ def interpolate(mesh,f,knownPos,density):
 
 
 	# interpolating
-	# none optimized loop
 	for i in range(NX):
 		for j in range(NY):
 			x_vec = np.array([mesh_x[i],mesh_y[j]]) 
 			F_x = 0
 			for k in range(n):
-				w = weightFunction.shepardSimpleWeights(k,x_vec,knownPos)
+				w = weightFunction.shepardQuadraticWeights(k,x_vec,knownPos)
 				F_x += w * f[k]
 
 			density[i,j] = F_x
+
