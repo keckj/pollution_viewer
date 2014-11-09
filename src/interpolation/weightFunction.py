@@ -47,7 +47,7 @@ def singedIdentiy(s):
 # knownPos : list of known points [x_known,y_known] and x_know : np array of size n
 # i : index
 def shepardQuadraticWeights(i,x,knownPos):
-	Rw = 1
+	Rw = 0.1
 
 	x_i = knownPos[i]
 
@@ -57,6 +57,21 @@ def shepardQuadraticWeights(i,x,knownPos):
 	w = (w_top/w_bottom)**2
 
 	return w
+
+# i index
+# pos : numpy array [x,y]
+# knownPos list of two arrays (x_known and y_known)
+def phi(i,pos,knownPos):
+	Rq = 0.1
+
+	x_i = knownPos[i] 
+
+	phi_top = singedIdentiy(Rq-dist(pos,x_i))
+	phi_bottom = Rq*dist(pos,x_i)
+
+	phi_value = (phi_top/phi_bottom)**2
+
+	return phi_value
 
 
 

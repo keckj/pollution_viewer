@@ -23,7 +23,7 @@ ax = fig.add_subplot(111)
 # pysical parameters
 Lx = 1.0   #Domain size x
 Ly = 1.0   #Domain size y
-n = 7 # data length
+n = 4 # data length
 
 
 # generating mesh
@@ -60,6 +60,23 @@ for i in range(n):
 # interpolating
 # shepardSimple.interpolate(mesh,f,knownPos,density)	
 shepardQuadratic.interpolate(mesh,f,knownPos,density)	
+
+# customasing and ploting options
+plt.pcolormesh(mesh_x,mesh_y,density, shading='flat')
+
+plt.title("Shepard simple interpolation")
+plt.axis('image')
+plt.draw()
+plt.colorbar()
+if 'qt' in plt.get_backend().lower():
+  QtGui.qApp.processEvents()
+
+
+plt.show()
+
+
+shepardSimple.interpolate(mesh,f,knownPos,density)	
+# shepardQuadratic.interpolate(mesh,f,knownPos,density)	
 
 # customasing and ploting options
 plt.pcolormesh(mesh_x,mesh_y,density, shading='flat')
