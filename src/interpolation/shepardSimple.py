@@ -22,6 +22,8 @@ ax = fig.add_subplot(111)
 # pysical parameters
 Lx = 1.0   #Domain size x
 Ly = 1.0   #Domain size y
+n = 7 # data length
+
 
 # generating mesh
 NX = 50        #Number of grid points in x
@@ -40,17 +42,21 @@ density = np.zeros((NX,NY))
 # F(x) = sum(i=1,n) w_i(x) f_i , where w_i(x) : Shepard's weights f_i data
 
 # data generation
-n = 3 # data length
 f = np.random.random_sample((n,)) # generating random data between 0 and 1
+# f.fill(0)
+# f[1] = 1
+
 # postion of where the density is known
 x_known = np.random.random_sample((n,))
 y_known = np.random.random_sample((n,))
+
 knownPos = []
 for i in range(n):
 	knownPos.append(np.array([x_known[i],y_known[i]]))
 
 
 # interpolating
+# none optimized loop
 for i in range(NX):
 	for j in range(NY):
 		x_vec = np.array([mesh_x[i],mesh_y[j]]) 
@@ -60,8 +66,7 @@ for i in range(NX):
 			F_x += w * f[k]
 
 		density[i,j] = F_x
-
-
+		
 
 # customasing and ploting options
 plt.pcolormesh(mesh_x,mesh_y,density, shading='flat')
