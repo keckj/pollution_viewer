@@ -87,8 +87,8 @@ def interpolate(mesh,f,knownPos,density):
 
 
 	# we now need to compute the density value in point [mesh_x[i],mesh_y[i]]
-	# this will be done via Shepard's methode
-	# F(x) = sum(i=1,n) w_i(x) f_i , where w_i(x) : Shepard's weights f_i data
+	# this will be done via Shepard's quadratic methode
+	# F(x) = sum(i=1,n) w_i(x) Q_i(x), where w_i(x) : Shepard's weights Q_i(x) : quadratic function dependant of input data
 
 
 

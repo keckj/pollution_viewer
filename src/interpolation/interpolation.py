@@ -15,6 +15,10 @@ from PySide import QtGui
 import shepardSimple
 # quadratically modified shepard
 import shepardQuadratic
+# least squared
+import leastSquared
+# multi quadrics
+import multiQuadrics
 
 # generating qt window
 fig = plt.figure()
@@ -27,8 +31,8 @@ n = 4 # data length
 
 
 # generating mesh
-NX = 50        #Number of grid points in x
-NY = 50        #Number of grid points in y
+NX = 200        #Number of grid points in x
+NY = 200        #Number of grid points in y
 dx = Lx/(NX-1) #Grid step in x (space)
 dy = Ly/(NY-1) #Grid step in y (space)
 
@@ -57,14 +61,17 @@ for i in range(n):
 	knownPos.append(np.array([x_known[i],y_known[i]]))
 
 
+
 # interpolating
 # shepardSimple.interpolate(mesh,f,knownPos,density)	
-shepardQuadratic.interpolate(mesh,f,knownPos,density)	
+# shepardQuadratic.interpolate(mesh,f,knownPos,density)	
+# leastSquared.interpolate(mesh,f,knownPos,density)
+multiQuadrics.interpolate(mesh,f,knownPos,density)
 
 # customasing and ploting options
 plt.pcolormesh(mesh_x,mesh_y,density, shading='flat')
 
-plt.title("Shepard simple interpolation")
+plt.title("Hardy's multi quadrics")
 plt.axis('image')
 plt.draw()
 plt.colorbar()
@@ -75,8 +82,8 @@ if 'qt' in plt.get_backend().lower():
 plt.show()
 
 
+# interpolating
 shepardSimple.interpolate(mesh,f,knownPos,density)	
-# shepardQuadratic.interpolate(mesh,f,knownPos,density)	
 
 # customasing and ploting options
 plt.pcolormesh(mesh_x,mesh_y,density, shading='flat')

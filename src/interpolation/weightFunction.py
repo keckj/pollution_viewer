@@ -21,7 +21,7 @@ def shepardSimpleWeights(i,x,knownPos):
 	# w_i(x) = 1/(d(x,x_i)**mu_i) * 1 / sum(j=0,n)[1/(d(x,x_j)**mu_j)]
 	n = len(knownPos)
 	mu = np.zeros(n)
-	mu.fill(1.0)
+	mu.fill(2.0)
 
 	# sum compuation
 	s = 0
