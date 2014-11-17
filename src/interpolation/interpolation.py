@@ -60,8 +60,6 @@ knownPos = []
 for i in range(n):
 	knownPos.append(np.array([x_known[i],y_known[i]]))
 
-
-
 # interpolating
 # shepardSimple.interpolate(mesh,f,knownPos,density)	
 # shepardQuadratic.interpolate(mesh,f,knownPos,density)	

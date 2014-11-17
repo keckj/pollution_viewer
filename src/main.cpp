@@ -24,17 +24,10 @@ int main(int argc, char** argv) {
     DataParser dp;
     dp.parseSensorData("data/particules.data", stations);
 
-    //Get first hour data
+    //change data layout of a given sensor (AoS to SaO)
     const std::string sensorName("Particules PM10");
-    
-    std::cout << sensorName << ":" << std::endl;
-    for(auto &station : stations) {
-        if (station.second->hasSensorData(sensorName)) {
-            SensorData<int> values = station.second->getSensorData(sensorName);
-            std::cout << values.data[0] << " ";
-        }
-    }
-    std::cout << std::endl;
+    SensorDataArray<int> sensorData = buildSensorDataArray(stations, sensorName);
+
 
     return EXIT_SUCCESS;
 }
