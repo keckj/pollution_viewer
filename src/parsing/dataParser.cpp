@@ -225,7 +225,7 @@ SensorDataArray<int> buildSensorDataArray(std::map<std::string, Station*> statio
     z = new double[nStations];
     
     data = new int*[nMeasures];
-    for (unsigned int i = 0; i < nStations; i++) {
+    for (unsigned int i = 0; i < nMeasures; i++) {
         data[i] = new int[nStations];
     }
 
