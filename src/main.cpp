@@ -63,6 +63,7 @@ int main(int argc, char** argv) {
             "img/","test","png");
 
     // Clean up
+    log_console->infoStream() << "Done ! Cleaning Up...";
     delete [] interpolatedGrid;
 
     return EXIT_SUCCESS;
