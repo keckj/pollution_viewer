@@ -9,12 +9,25 @@
 
 #include "colors.hpp"
 
+enum AltitudeMode {
+    CLAMP_TO_GROUND=0,
+    CLAMP_TO_SEA_FLOOR,
+    RELATIVE_TO_GROUND,
+    RELATIVE_TO_SEA_FLOOR,
+    ABSOLUTE // <=> RELATIVE_TO_SEA_LEVEL
+}
+
+enum ColorMode {
+    NORMAL=0,
+    RANDOM
+}
+
 class KmlFile {
 
     using cstring = const std::string &;
 
     public:
-        KmlFile(std::string filePath);
+        KmlFile(cstring filePath);
         ~KmlFile();
         
         void startKml();
@@ -27,20 +40,29 @@ class KmlFile {
         
         void startPoint();
         void startLineString();
+        void startLinearRing();
+        void startPolygon();
         
         void putName(cstring name);
         void putDescription(cstring description);
-        void putStyleId(cstring styleId);
-        void putAltitudeMode(cstring altitudeMode);
-        void putIcon(cstring webLink);
+        void putStyleUrl(cstring styleId);
+        void putIcon(cstring href);
         void putVisibility(bool visible);
+        void putExtrude(bool extrude);
         void putTesselate(bool tesselate);
+        void putWidth(unsigned int width);
         void putCoordinate(float longitude, float latitude, float height);
+        void putCoordinates(unsigned int count, float *longitude, float *latitude);
         void putCoordinates(unsigned int count, float *longitude, float *latitude, float *height);
         void putColor(ColorRGBA color);
+        void putColorMode(ColorMode colorMode);
+        void putAltitudeMode(AltitudeMode altitudeMode);
+        void putLatLonBox(BoundingBox<float> bbox, float rotation = 0.0f);
 
-        void endPoint();
+        void endPolygon();
+        void endLinearRing();
         void endLineString();
+        void endPoint();
 
         void endPolyStyle();
         void endLineStyle();

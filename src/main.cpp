@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     kml.endDocument();
     kml.endKml();
     
-    return EXIT_SUCCESS;
+    //return EXIT_SUCCESS;
     ////////////////////////////////////////////
     
     // Initialize Logs
@@ -54,16 +54,9 @@ int main(int argc, char** argv) {
     const std::string sensorName("Particules PM10");
     SensorDataArray<int> sensorData = buildSensorDataArray(stations, sensorName);
 
-    // Print first hour data
-    log_console->infoStream() << "First hour data :";
-    for (unsigned int i = 0; i < sensorData.nStations; i++) {
-        std::cout << "\t" << sensorData.data[0][i];
-    }
-    std::cout << std::endl;
-
     // Simple Shepard interpolator
-    const unsigned int gridWidth = 250u;
-    const unsigned int gridHeight = 250u;
+    const unsigned int gridWidth = 512u;
+    const unsigned int gridHeight = 512u;
     const unsigned int pixels = gridHeight*gridWidth;
     const float shepardMu = 2.0f;
 

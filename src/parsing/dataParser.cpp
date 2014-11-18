@@ -183,10 +183,12 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
 SensorDataArray<int> buildSensorDataArray(std::map<std::string, Station*> stations, const std::string &targetSensorName) {
     
     std::string unitName;
-    std::tm startTime;
-    std::tm endTime;
-    std::tm deltaT;
-    unsigned int nMeasures;
+    std::tm startTime, endTime,deltaT;
+    unsigned int nMeasures = 0u;
+
+    memset(&startTime, 0, sizeof(std::tm));
+    memset(&endTime, 0, sizeof(std::tm));
+    memset(&deltaT, 0, sizeof(std::tm));
 
     const std::string **stationNames;
     StationType *stationTypes;
