@@ -72,9 +72,9 @@ class ImageGenerator {
         ilEnable(IL_FILE_OVERWRITE);
         ilSave(imageType, filePath.c_str());
         
-        ilBindImage(0);
-
         // Clean up
+        ilBindImage(0);
+        ilDeleteImages(1, &imageId);
         delete [] imageData;
     }
 };

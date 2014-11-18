@@ -12,9 +12,28 @@
 #include "simpleShepardInterpolator.hpp"
 #include "linearColorizer.hpp"
 #include "imageGenerator.hpp"
+#include "kmlFile.hpp"
 
 int main(int argc, char** argv) {
 
+    /////////////// KML TEST ////////////////
+    KmlFile kml("test.kml");
+    kml.startKml();
+    kml.startDocument();
+    kml.startPlacemark();
+    kml.putName("TEST FILE");
+    kml.putVisibility(true);
+    kml.putDescription("Just a simple test file !");
+    kml.startStyle();
+    kml.putColor(ColorRGBA(0xf0,0x08,0x04,0x02));
+    kml.endStyle();
+    kml.endPlacemark();
+    kml.endDocument();
+    kml.endKml();
+    
+    return EXIT_SUCCESS;
+    ////////////////////////////////////////////
+    
     // Initialize Logs
     using log4cpp::log_console;
     log4cpp::initLogs();
@@ -35,7 +54,7 @@ int main(int argc, char** argv) {
     const std::string sensorName("Particules PM10");
     SensorDataArray<int> sensorData = buildSensorDataArray(stations, sensorName);
 
-    // Print data of the first hour
+    // Print first hour data
     log_console->infoStream() << "First hour data :";
     for (unsigned int i = 0; i < sensorData.nStations; i++) {
         std::cout << "\t" << sensorData.data[0][i];
@@ -56,6 +75,10 @@ int main(int argc, char** argv) {
     const ColorRGB red(255u,0u,0u);
     const ColorRGB blue(0u,0u,255u);
     LinearColorizer<float,ColorRGB> colorizer(pixels,interpolatedGrid,red,blue);
+    
+    //const ColorMonochrome black(0u);
+    //const ColorMonochrome white(255u);
+    //LinearColorizer<float,ColorMonochrome> colorizer(pixels,interpolatedGrid,black,white);
     
     // Generate image
     log_console->infoStream() << "Generating image...";
