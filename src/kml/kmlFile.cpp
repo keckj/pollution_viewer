@@ -69,6 +69,17 @@ void  KmlFile::endGroundOverlay() {
     kml << "</GroundOverlay>" << newLineAndDedent();
 }
 
+void  KmlFile::startLookAt(cstring lookAtId) {
+    if(stringIsEmpty(lookAtId))
+        kml << "<LookAt>" << newLineAndIndent();
+    else
+        kml << "<LookAt id=\"" + lookAtId + "\">" << newLineAndIndent();
+}
+void  KmlFile::endLookAt() {
+    removeTab();
+    kml << "</LookAt>" << newLineAndDedent();
+}
+
 void  KmlFile::startStyle(cstring styleId) {
     if(stringIsEmpty(styleId))
         kml << "<Style>" << newLineAndIndent();
@@ -190,8 +201,25 @@ void KmlFile::putWidth(unsigned int width) {
     kml << "<width>" << width << "</width>"<<newLine();
 }
 
-void KmlFile::putAltitude(unsigned int altitude) {
+void KmlFile::putLongitude(double longitude) {
+    kml << "<longitude>" << longitude << "</longitude>"<<newLine();
+}
+void KmlFile::putLatitude(double latitude) {
+    kml << "<latitude>" << latitude << "</latitude>"<<newLine();
+}
+void KmlFile::putAltitude(double altitude) {
     kml << "<altitude>" << altitude << "</altitude>"<<newLine();
+}
+void KmlFile::putRange(double range) {
+    kml << "<range>" << range << "</range>"<<newLine();
+}
+void putRange(double range);
+
+void KmlFile::putTilt(float tilt) {
+    kml << "<tilt>" << tilt << "</tilt>"<<newLine();
+}
+void KmlFile::putHeading(float heading) {
+    kml << "<heading>" << heading << "</heading>"<<newLine();
 }
 
 void KmlFile::putColor(ColorRGBA color) {
@@ -241,11 +269,11 @@ void KmlFile::putTimeStamp(const std::tm &date, DateFormat dateFormat, cstring t
 void KmlFile::putTimeSpan(const std::tm &beginDate, const std::tm &endDate, DateFormat dateFormat, cstring timeSpanId) {
 }
         
-void KmlFile::putCoordinate(float longitude, float latitude, float altitude) {
+void KmlFile::putCoordinate(double longitude, double latitude, double altitude) {
     kml<< "<coordinates>" << longitude << "," << latitude << "," << altitude << "</coordinates>" << newLine();
 }
 
-void KmlFile::putCoordinates(unsigned int count, float *longitude, float *latitude) {
+void KmlFile::putCoordinates(unsigned int count, double *longitude, double *latitude) {
     kml << "<coordinates>"<<newLineAndIndent();
     for (unsigned int i = 0; i < count; i++) {
         kml<< longitude << "," << latitude << "," << 0.0f << newLine();
@@ -254,7 +282,7 @@ void KmlFile::putCoordinates(unsigned int count, float *longitude, float *latitu
     kml << "<coordinates>"<<newLineAndDedent();
 }
 
-void KmlFile::putCoordinates(unsigned int count, float *longitude, float *latitude, float *altitude) {
+void KmlFile::putCoordinates(unsigned int count, double *longitude, double *latitude, double *altitude) {
     kml << "<coordinates>"<<newLineAndIndent();
     for (unsigned int i = 0; i < count; i++) {
         kml<< longitude << "," << latitude << "," << altitude << newLine();
@@ -359,7 +387,8 @@ void KmlFile::putKmlFooter() {
     endKml();
 }
         
-void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, BoundingBox<double> bbox, double rotation, cstring iconPath) {
+void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
+        BoundingBox<double> bbox, double rotation, cstring iconPath) {
     startGroundOverlay();
     putName(name);
     putAltitude(altitude);
@@ -367,4 +396,17 @@ void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode
     putLatLonBox(bbox);
     putIcon(iconPath);
     endGroundOverlay();
+}
+        
+void KmlFile::putLookAt(double longitude, double latitude, double altitude, AltitudeMode altitudeMode,
+                double range, float tilt, float heading) {
+        startLookAt();
+        putLongitude(longitude);
+        putLatitude(latitude);
+        putAltitude(altitude);
+        putAltitudeMode(altitudeMode);
+        putRange(range);
+        putTilt(tilt);
+        putHeading(heading);
+        endLookAt();
 }

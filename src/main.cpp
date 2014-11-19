@@ -73,6 +73,8 @@ int main(int argc, char** argv) {
     /////////////// KML TEST ////////////////
     KmlFile kml("test.kml");
     kml.putKmlHeader();
+    kml.putLookAt((bbox.xmin+bbox.xmax)/2.0, (0.75*bbox.ymin+0.25*bbox.ymax), 0.0, CLAMP_TO_GROUND, 250000.0, 30.0f, -20.0f);
+    kml.skipLine();
     kml.putGroundOverlay("Ground Overlay Test", 0u, CLAMP_TO_GROUND, bbox, 0.0, "img/test.png");
     kml.putKmlFooter();
     ////////////////////////////////////////////

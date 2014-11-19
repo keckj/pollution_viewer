@@ -41,7 +41,10 @@ class KmlFile {
 
         //High level primitives
         void putKmlHeader();
-        void putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, BoundingBox<double> bbox, double rotation, cstring iconPath);
+        void putLookAt(double longitude, double latitude, double altitude, AltitudeMode altitudeMode,
+                double range, float tilt, float heading);
+        void putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
+                BoundingBox<double> bbox, double rotation, cstring iconPath);
         void putKmlFooter();
       
         //Low level primitives
@@ -50,6 +53,8 @@ class KmlFile {
         void startDocument(cstring documentId = std::string(""));
         void startPlacemark(cstring placemarkId = std::string(""));
         void startGroundOverlay(cstring placemarkId = std::string(""));
+        void startLookAt(cstring lookAtId = std::string(""));
+
         void startStyle(cstring styleId = std::string(""));
         void startIconStyle(cstring styleId = std::string(""));
         void startLineStyle(cstring styleId = std::string(""));
@@ -70,10 +75,15 @@ class KmlFile {
         void putTesselate(bool tesselate);
         void putOpen(bool open);
         void putWidth(unsigned int width);
-        void putAltitude(unsigned int altitude);
-        void putCoordinate(float longitude, float latitude, float height);
-        void putCoordinates(unsigned int count, float *longitude, float *latitude);
-        void putCoordinates(unsigned int count, float *longitude, float *latitude, float *height);
+        void putLongitude(double longitude);
+        void putLatitude(double latitude);
+        void putAltitude(double altitude);
+        void putRange(double range);
+        void putTilt(float tilt);
+        void putHeading(float heading);
+        void putCoordinate(double longitude, double latitude, double height);
+        void putCoordinates(unsigned int count, double *longitude, double *latitude);
+        void putCoordinates(unsigned int count, double *longitude, double *latitude, double *height);
         void putColor(ColorRGBA color);
         void putColorMode(ColorMode colorMode);
         void putAltitudeMode(AltitudeMode altitudeMode);
@@ -91,6 +101,8 @@ class KmlFile {
         void endLineStyle();
         void endIconStyle();
         void endStyle();
+
+        void endLookAt();
         void endPlacemark();
         void endGroundOverlay();
         void endDocument();
