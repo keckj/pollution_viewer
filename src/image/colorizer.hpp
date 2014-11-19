@@ -2,7 +2,12 @@
 #ifndef COLORIZER_H
 #define COLORIZER_H
 
+#include <ft2build.h> 
+#include FT_FREETYPE_H 
 #include <type_traits>
+#include <cassert>
+
+#include "freetypeUtils.hpp"
 #include "colors.hpp"
 
 template <typename F, typename C>
@@ -13,6 +18,9 @@ class Colorizer {
     public:
         virtual ~Colorizer() {}
         virtual C operator()(const F) const = 0;
+    
+        void generateColorRange();
+
     protected:
         explicit Colorizer(F min, F max) : min(min), max(max) {};
         explicit Colorizer(unsigned int nData, F* data) : 
@@ -28,5 +36,16 @@ class Colorizer {
         F min;
         F max;
 };
+
+template <typename F, typename C>
+void Colorizer<F,C>::generateColorRange() {
+
+    FT_Library library; 
+    FT_Face face; 
+    
+    assert(!FT_Init_FreeType(&library));
+    assert(!FT_New_Face( library, "/usr/share/fonts/truetype/freefont/FreeMono.ttf", 0, &face ));
+
+}
 
 #endif /* end of include guard: COLORIZER_H */

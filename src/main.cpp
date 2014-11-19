@@ -66,6 +66,9 @@ int main(int argc, char** argv) {
     ImageGenerator::generateImage<float,ColorRGBA>(gridWidth, gridHeight, interpolatedGrid, colorizer,
             "img/","test","png");
 
+    // Generate Color Overlay
+    colorizer.generateColorRange();
+
     // Clean up
     log_console->infoStream() << "Done ! Cleaning Up...";
     delete [] interpolatedGrid;
@@ -74,23 +77,31 @@ int main(int argc, char** argv) {
     KmlFile kml("test.kml");
     kml.putKmlHeader();
 
+    // Style definition
     kml.startStyle("stationStyle");
+    kml.putLabelStyle(ColorRGBA(0x00,0x00,0x00,0x00), NORMAL, 0.0f); //invisible labels
     kml.putIconStyle("http://ukmobilereview.com/wp-content/uploads/2013/07/antenna-strength.png",
-            HotSpot(), 0.5f, 0.0f);
+            HotSpot(), 0.25f, 0.0f); //custom icon
     kml.endStyle();
     kml.skipLine();
-    
+   
+    // Initial camera position
     kml.putLookAt((bbox.xmin+bbox.xmax)/2.0, (0.75*bbox.ymin+0.25*bbox.ymax), 0.0, CLAMP_TO_GROUND, 250000.0, 30.0f, -20.0f);
     kml.skipLine();
-    
+  
+    // Station placemarks folder
+    kml.putFolder("Stations", "Station locations", false, true);
     for (unsigned int i = 0; i < sensorData.nStations; i++) {
         kml.putPlaceMark(*sensorData.stationNames[i], sensorData.stationDescription(i,kml.getCurrentIndentLevel()+2), "stationStyle", 
                 sensorData.x[i], sensorData.y[i], 0.0, CLAMP_TO_GROUND);
     }
-
+    kml.endFolder();
     kml.skipLine();
 
-    kml.putGroundOverlay("Ground Overlay Test", 0u, CLAMP_TO_GROUND, bbox, 0.0, "img/test.png");
+    // Ground overlays folder
+    kml.putFolder("Sensor data overlays", "Interpolation results", false, true);
+    kml.putGroundOverlay("First hour data", 0u, CLAMP_TO_GROUND, bbox, 0.0, "img/test.png");
+    kml.endFolder();
     kml.skipLine();
 
     kml.putKmlFooter();

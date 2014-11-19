@@ -27,6 +27,10 @@ class KmlFile {
         // HIGH LEVEL PRIMITIVES //
         void putKmlHeader();
         void putKmlFooter();
+
+        void putComment(cstring comment);
+
+        void putFolder(cstring name, cstring description, bool open, bool visibility);
         
         void putLookAt(double longitude, double latitude, double altitude, AltitudeMode altitudeMode,
                 double range, float tilt, float heading);
@@ -55,6 +59,7 @@ class KmlFile {
         void startKml();
         
         void startDocument(cstring documentId = std::string(""));
+        void startFolder(cstring folderId = std::string(""));
         void startPlacemark(cstring placemarkId = std::string(""));
         void startGroundOverlay(cstring placemarkId = std::string(""));
         void startLookAt(cstring lookAtId = std::string(""));
@@ -113,6 +118,7 @@ class KmlFile {
         void endLookAt();
         void endPlacemark();
         void endGroundOverlay();
+        void endFolder();
         void endDocument();
 
         void endKml();

@@ -62,6 +62,17 @@ void KmlFile::endDocument() {
     kml << "</Document>" << newLineAndDedent();
 }
 
+void KmlFile::startFolder(cstring folderId) {
+    if(stringIsEmpty(folderId))
+        kml << "<Folder>" << newLineAndIndent();
+    else
+        kml << "<Folder id=\"" + folderId + "\">" << newLineAndIndent();
+}
+void KmlFile::endFolder() {
+    removeTab();
+    kml << "</Folder>" << newLineAndDedent();
+}
+
 void  KmlFile::startPlacemark(cstring placemarkId) {
     if(stringIsEmpty(placemarkId))
         kml << "<Placemark>" << newLineAndIndent();
@@ -426,15 +437,20 @@ void KmlFile::putKmlHeader() {
     std::tm *now = localtime(&t);
 
     startKml();
+    skipLine();
+    putComment("=====================================================================================================================");
+    putComment("This file was generated automatically with real meteorological data and is part of the Ensimag visualization project.");
+    putComment("=====================================================================================================================");
+    skipLine();
     startDocument("Root");
     putName("Environemental contaminant viewer");
-    putDescription("This file was generated automatically with real meteorological data and is part of the Ensimag visualization project.");
+    putDescription("PM10 particles");
     putDate(*now, YYYY_MM_DD_hh_mm_ss);
     putAuthor("Jean-Baptiste Keck");
     putAuthor("Alexandre Ribard");
     skipLine();
     putVisibility(true);
-    putOpen(false);
+    putOpen(true);
     skipLine();
 }
 
@@ -533,4 +549,15 @@ void KmlFile::putPolyStyle(ColorRGBA color, ColorMode colorMode, bool fill, bool
     putOutline(outline);
     endPolyStyle();
 }
+        
+void KmlFile::putFolder(cstring name, cstring description, bool open, bool visibility) {
+    startFolder();
+    putName(name); 
+    putDescription(description);
+    putOpen(open);
+    putVisibility(visibility);
+}
 
+void KmlFile::putComment(cstring comment) {
+    kml << "<!--" << comment << "-->" << newLine();
+}

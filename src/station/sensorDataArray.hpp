@@ -44,7 +44,7 @@ struct SensorDataArray {
         std::stringstream ss;
         std::string tabsMinusOne, tabs;
         for (unsigned int i = 0; i < indentLevel; i++) {
-            if(i==indentLevel-2)
+            if(i==indentLevel-1)
                tabsMinusOne = ss.str();
 
             ss << "\t";

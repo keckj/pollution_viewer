@@ -1,5 +1,4 @@
 
-#TODO Use cotire for eigen3
 cmake_minimum_required(VERSION 2.8)
 
 project(Visualization CXX)
@@ -16,6 +15,7 @@ find_package(Boost COMPONENTS regex REQUIRED)
 find_package(Log4cpp REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(DevIL REQUIRED)
+find_package(Freetype REQUIRED)
 find_package(OpenMP)
 
 #Compiler options
@@ -84,6 +84,7 @@ include_directories(
     ${LOG4CPP_INCLUDE_DIRS}  #Log4cpp
     ${EIGEN3_INCLUDE_DIR}    #Eigen3 (template lib)
     ${IL_INCLUDE_DIR}        #DevIL
+    ${FREETYPE_INCLUDE_DIRS} #FreeType
 )
 
 #Library directories
@@ -98,9 +99,10 @@ add_executable(main ${header_files} ${source_files} ${template_files})
 #Link executable
 target_link_libraries(
     main 
-    ${Boost_LIBRARIES}   #Boost Regex
+    ${Boost_LIBRARIES}       #Boost Regex
     ${LOG4CPP_LIBRARIES}     #Log4cpp
     ${IL_LIBRARIES}          #DevIL core library
     #$[ILU_LIBRARIES}        #DevIL filters and effects
     #$[ILUT_LIBRARIES}       #DevIL interface with openGL
+    ${FREETYPE_LIBRARIES}    #FreeType
 )

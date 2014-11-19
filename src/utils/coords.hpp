@@ -25,7 +25,7 @@ struct BoundingBox {
 };
 
 template <typename T>
-BoundingBox<T> computeBoundingBox(Coords<T> coords) {
+BoundingBox<T> computeBoundingBox(const Coords<T> &coords) {
     BoundingBox<T> bbox;
     for (unsigned int i = 0; i < coords.nCoords; i++) {
         bbox.xmin = (coords.x[i] < bbox.xmin ? coords.x[i] : bbox.xmin);
@@ -38,7 +38,7 @@ BoundingBox<T> computeBoundingBox(Coords<T> coords) {
 }
 
 template <typename T>
-Coords<T> toUnitSquare(Coords<T> coords) {
+Coords<T> toUnitSquare(const Coords<T> &coords) {
     BoundingBox<T> bbox = computeBoundingBox(coords);
     T* x = new T[coords.nCoords];
     T* y = new T[coords.nCoords];
