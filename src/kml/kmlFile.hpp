@@ -19,6 +19,11 @@ class KmlFile {
         KmlFile(cstring filePath);
         ~KmlFile();
 
+        // USEFULL FUNCTIONS //
+        void skipLine();
+        void jumpLines(unsigned int lineCount);
+        unsigned int getCurrentIndentLevel();
+
         // HIGH LEVEL PRIMITIVES //
         void putKmlHeader();
         void putKmlFooter();
@@ -111,9 +116,6 @@ class KmlFile {
         void endDocument();
 
         void endKml();
-
-        void skipLine();
-        void jumpLines(unsigned int lineCount);
         
     private:
         unsigned int indentLevel;

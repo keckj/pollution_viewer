@@ -39,17 +39,29 @@ struct SensorDataArray {
             double *x, double *y, double *z,
             T** data);
 
-    std::string stationDescription(unsigned int i) {
+    std::string stationDescription(unsigned int i, unsigned int indentLevel) {
+   
+        std::stringstream ss;
+        std::string tabsMinusOne, tabs;
+        for (unsigned int i = 0; i < indentLevel; i++) {
+            if(i==indentLevel-2)
+               tabsMinusOne = ss.str();
+
+            ss << "\t";
+        }
+        tabs = ss.str();
+
         std::stringstream description;
         assert(i < nStations);
         description << std::endl;
-        description << "<![CDATA[" << std::endl;
-        description << "<h3>Station " << *stationNames[i] << "</h3>" << std::endl;
-        description << "<b>Type de la station:</b> " << stationTypes[i] << std::endl;
-        description << "<br/><b>Longitude:</b> " << x[i] << std::endl;
-        description << "<br/><b>Latitude:</b>  " << y[i] << std::endl;
-        description << "]]>";
+        description << tabs << "<![CDATA[" << std::endl;
+        description << tabs << "<h3>Station " << *stationNames[i] << "</h3>" << std::endl;
+        description << tabs << "<b>Type de la station:</b> " << stationTypes[i] << std::endl;
+        description << tabs << "<br/><b>Longitude:</b> <i>" << x[i] << "</i>" << std::endl;
+        description << tabs << "<br/><b>Latitude:</b>  <i>" << y[i] << "</i>" << std::endl;
+        description << tabs << "]]>";
         description << std::endl;
+        description << tabsMinusOne;
         
         return description.str();
     }

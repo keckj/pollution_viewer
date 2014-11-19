@@ -25,6 +25,21 @@ KmlFile::~KmlFile() {
    file.close(); 
 }
 
+        
+unsigned int KmlFile::getCurrentIndentLevel() {
+    return indentLevel;
+}
+
+void KmlFile::skipLine() {
+    kml << newLine();
+}
+
+void KmlFile::jumpLines(unsigned int lineCount) {
+    for (unsigned int i = 0; i < lineCount; i++) {
+        kml << newLine();
+    }
+}
+        
 
 void  KmlFile::startKml() {
     kml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << newLine();
@@ -406,16 +421,6 @@ std::string KmlFile::dateToString(const std::tm &date, DateFormat format) {
     return std::string(buffer);
 }
         
-void KmlFile::skipLine() {
-    kml << newLine();
-}
-
-void KmlFile::jumpLines(unsigned int lineCount) {
-    for (unsigned int i = 0; i < lineCount; i++) {
-        kml << newLine();
-    }
-}
-        
 void KmlFile::putKmlHeader() {
     time_t t = time(0);
     std::tm *now = localtime(&t);
@@ -485,8 +490,6 @@ void KmlFile::putLookAt(double longitude, double latitude, double altitude, Alti
         putHeading(heading);
         endLookAt();
 }
-        
-
 
 void KmlFile::putIconStyle(ColorRGBA color, ColorMode colorMode, float scale, float heading) {
     startIconStyle();

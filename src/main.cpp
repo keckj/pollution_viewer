@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
     kml.skipLine();
     
     for (unsigned int i = 0; i < sensorData.nStations; i++) {
-        kml.putPlaceMark(*sensorData.stationNames[i], sensorData.stationDescription(i), "stationStyle", 
+        kml.putPlaceMark(*sensorData.stationNames[i], sensorData.stationDescription(i,kml.getCurrentIndentLevel()+2), "stationStyle", 
                 sensorData.x[i], sensorData.y[i], 0.0, CLAMP_TO_GROUND);
     }
 
