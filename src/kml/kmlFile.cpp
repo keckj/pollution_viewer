@@ -102,6 +102,17 @@ void  KmlFile::endIconStyle() {
     kml << "</IconStyle>" << newLineAndDedent();
 }
 
+void  KmlFile::startLabelStyle(cstring labelStyleId) {
+    if(stringIsEmpty(labelStyleId))
+        kml << "<LabelStyle>" << newLineAndIndent();
+    else
+        kml << "<LabelStyle id=\"" + labelStyleId + "\">" << newLineAndIndent();
+}
+void  KmlFile::endLabelStyle() {
+    removeTab();
+    kml << "</LabelStyle>" << newLineAndDedent();
+}
+
 void  KmlFile::startLineStyle(cstring lineStyleId) {
     if(stringIsEmpty(lineStyleId))
         kml << "<LineStyle>" << newLineAndIndent();
@@ -159,26 +170,32 @@ void  KmlFile::endPolygon() {
 
 
 void  KmlFile::putName(cstring name) {
-    kml << "<name>"+name+"</name>"<<newLine();
+    if(!stringIsEmpty(name))
+        kml << "<name>"+name+"</name>"<<newLine();
 }
 
 void  KmlFile::putAuthor(cstring author) {
-    kml << "<author>"+author+"</author>"<<newLine();
+    if(!stringIsEmpty(author))
+        kml << "<author>"+author+"</author>"<<newLine();
 }
 
 void  KmlFile::putDescription(cstring description) {
-    kml << "<description>"+description+"</description>"<<newLine();
+    if(!stringIsEmpty(description))
+        kml << "<description>"+description+"</description>"<<newLine();
 }
         
 void KmlFile::putStyleUrl(cstring styleId) {
-    kml << "<styleUrl>#" + styleId + "</styleUrl>"<<newLine();
+    if(!stringIsEmpty(styleId))
+        kml << "<styleUrl>#" + styleId + "</styleUrl>"<<newLine();
 }
 
 void KmlFile::putIcon(cstring href) {
+    if(!stringIsEmpty(href)) {
          kml << "<Icon>" << newLineAndIndent();
          kml << "<href>"+href+"</href>"<<newLine();
          removeTab();
          kml << "</Icon>" << newLineAndDedent();
+    }
 }
 
 void  KmlFile::putVisibility(bool visible) {
@@ -196,8 +213,16 @@ void KmlFile::putTesselate(bool tesselate) {
 void KmlFile::putOpen(bool open) {
     kml << "<open>"+(open ? std::string("1") : std::string("0"))+"</open>"<<newLine();
 }
-        
-void KmlFile::putWidth(unsigned int width) {
+
+void KmlFile::putFill(bool fill) {
+    kml << "<fill>"+(fill ? std::string("1") : std::string("0"))+"</fill>"<<newLine();
+}
+
+void KmlFile::putOutline(bool outline) {
+    kml << "<outline>"+(outline ? std::string("1") : std::string("0"))+"</outline>"<<newLine();
+}
+
+void KmlFile::putWidth(float width) {
     kml << "<width>" << width << "</width>"<<newLine();
 }
 
@@ -222,6 +247,10 @@ void KmlFile::putHeading(float heading) {
     kml << "<heading>" << heading << "</heading>"<<newLine();
 }
 
+void KmlFile::putScale(float scale) {
+    kml << "<scale>" << scale << "</scale>"<<newLine();
+}
+
 void KmlFile::putColor(ColorRGBA color) {
     kml << "<color>" 
         << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(color.a)
@@ -230,6 +259,17 @@ void KmlFile::putColor(ColorRGBA color) {
         << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(color.r)
         << "</color>" 
         << newLine();
+}
+
+void KmlFile::putColorMode(ColorMode colorMode) {
+    switch(colorMode) {
+        case NORMAL:
+            kml << "<colorMode>normal</colorMode>"<<newLine();
+            break;
+        case RANDOM:
+            kml << "<colorMode>random</colorMode>"<<newLine();
+            break;
+    }
 }
 
 void KmlFile::putAltitudeMode(AltitudeMode altitudeMode) {
@@ -251,6 +291,17 @@ void KmlFile::putAltitudeMode(AltitudeMode altitudeMode) {
             break;
     }
     kml << newLine();
+}
+
+void KmlFile::putHotspot(const HotSpot &hotSpot) {
+    if(hotSpot.ux != NONE) {
+        kml << "<hotSpot "
+            <<    "x=\"" << hotSpot.strX() 
+            << "\" y=\"" << hotSpot.strY() 
+            << "\" xunits=\"" << hotSpot.strUX() 
+            << "\" yunits=\"" << hotSpot.strUY()
+            << "\"/>" << newLine();
+    }
 }
         
 void KmlFile::putDate(const std::tm &date, DateFormat dateFormat) {
@@ -388,6 +439,17 @@ void KmlFile::putKmlFooter() {
 }
         
 void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
+                BoundingBox<double> bbox, double rotation, const ColorRGBA &color) {
+    startGroundOverlay();
+    putName(name);
+    putAltitude(altitude);
+    putAltitudeMode(altitudeMode);
+    putLatLonBox(bbox);
+    putColor(color);
+    endGroundOverlay();
+}
+        
+void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
         BoundingBox<double> bbox, double rotation, cstring iconPath) {
     startGroundOverlay();
     putName(name);
@@ -398,6 +460,19 @@ void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode
     endGroundOverlay();
 }
         
+void KmlFile::putPlaceMark(cstring name, cstring description, cstring styleUrl, 
+        double longitude, double latitude, double altitude, AltitudeMode altitudeMode) {
+    startPlacemark();
+    putName(name);
+    putDescription(description);
+    putStyleUrl(styleUrl);
+    putAltitudeMode(altitudeMode);
+    startPoint();
+    putCoordinate(longitude, latitude, altitude);
+    endPoint();
+    endPlacemark();
+}
+
 void KmlFile::putLookAt(double longitude, double latitude, double altitude, AltitudeMode altitudeMode,
                 double range, float tilt, float heading) {
         startLookAt();
@@ -410,3 +485,40 @@ void KmlFile::putLookAt(double longitude, double latitude, double altitude, Alti
         putHeading(heading);
         endLookAt();
 }
+        
+void KmlFile::putIconStyle(ColorRGBA color, ColorMode colorMode, float scale, float heading, cstring iconHref, const HotSpot &hotSpot) {
+    startIconStyle();
+    putColor(color);
+    putColorMode(colorMode);
+    putScale(scale);
+    putHeading(heading);
+    putIcon(iconHref);
+    putHotspot(hotSpot);
+    endIconStyle();
+}
+
+void KmlFile::putLabelStyle(ColorRGBA color, ColorMode colorMode, float scale) {
+    startLabelStyle();
+    putColor(color);
+    putColorMode(colorMode);
+    putScale(scale);
+    endLabelStyle();
+}
+
+void KmlFile::putLineStyle(ColorRGBA color, ColorMode colorMode, float width) {
+    startLineStyle();
+    putColor(color);
+    putColorMode(colorMode);
+    putWidth(width);
+    endLineStyle();
+}
+
+void KmlFile::putPolyStyle(ColorRGBA color, ColorMode colorMode, bool fill, bool outline) {
+    startPolyStyle();
+    putColor(color);
+    putColorMode(colorMode);
+    putFill(fill);
+    putOutline(outline);
+    endPolyStyle();
+}
+
