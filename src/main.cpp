@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cassert>
 #include <cstdlib>
+#include <ctime>
 
 #include "il.h"
 #include "ilu.h"
@@ -16,23 +17,7 @@
 
 int main(int argc, char** argv) {
 
-    /////////////// KML TEST ////////////////
-    KmlFile kml("test.kml");
-    kml.startKml();
-    kml.startDocument();
-    kml.startPlacemark();
-    kml.putName("TEST FILE");
-    kml.putVisibility(true);
-    kml.putDescription("Just a simple test file !");
-    kml.startStyle();
-    kml.putColor(ColorRGBA(0xf0,0x08,0x04,0x02));
-    kml.endStyle();
-    kml.endPlacemark();
-    kml.endDocument();
-    kml.endKml();
-    
-    //return EXIT_SUCCESS;
-    ////////////////////////////////////////////
+
     
     // Initialize Logs
     using log4cpp::log_console;
@@ -49,14 +34,17 @@ int main(int argc, char** argv) {
     // Parse sensor data
     DataParser dp;
     dp.parseSensorData("data/particules.data", stations);
-
+   
     // Change data layout of a given sensor (AoS to SaO)
     const std::string sensorName("Particules PM10");
     SensorDataArray<int> sensorData = buildSensorDataArray(stations, sensorName);
+    
+    //Compute bounding box
+    BoundingBox<double> bbox = computeBoundingBox(Coords<double>(sensorData.nStations, sensorData.x, sensorData.y));
 
     // Simple Shepard interpolator
-    const unsigned int gridWidth = 512u;
-    const unsigned int gridHeight = 512u;
+    const unsigned int gridWidth = 128u;
+    const unsigned int gridHeight = 128u;
     const unsigned int pixels = gridHeight*gridWidth;
     const float shepardMu = 2.0f;
 
@@ -65,9 +53,9 @@ int main(int argc, char** argv) {
     float *interpolatedGrid = ssInterpolator(gridWidth,gridHeight,sensorData.nStations, sensorData.x, sensorData.y, sensorData.data[0]);
 
     // Create Colorizer
-    const ColorRGB red(255u,0u,0u);
-    const ColorRGB blue(0u,0u,255u);
-    LinearColorizer<float,ColorRGB> colorizer(pixels,interpolatedGrid,red,blue);
+    const ColorRGBA red(255u,0u,0u,255u);
+    const ColorRGBA blue(0u,0u,255u,50u);
+    LinearColorizer<float,ColorRGBA> colorizer(pixels,interpolatedGrid,red,blue);
     
     //const ColorMonochrome black(0u);
     //const ColorMonochrome white(255u);
@@ -75,12 +63,19 @@ int main(int argc, char** argv) {
     
     // Generate image
     log_console->infoStream() << "Generating image...";
-    ImageGenerator::generateImage<float,ColorRGB>(gridWidth, gridHeight, interpolatedGrid, colorizer,
+    ImageGenerator::generateImage<float,ColorRGBA>(gridWidth, gridHeight, interpolatedGrid, colorizer,
             "img/","test","png");
 
     // Clean up
     log_console->infoStream() << "Done ! Cleaning Up...";
     delete [] interpolatedGrid;
 
+    /////////////// KML TEST ////////////////
+    KmlFile kml("test.kml");
+    kml.putKmlHeader();
+    kml.putGroundOverlay("Ground Overlay Test", 0u, CLAMP_TO_GROUND, bbox, 0.0, "img/test.png");
+    kml.putKmlFooter();
+    ////////////////////////////////////////////
+    
     return EXIT_SUCCESS;
 }

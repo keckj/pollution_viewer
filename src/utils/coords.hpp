@@ -1,6 +1,8 @@
 #ifndef COORDS_H
 #define COORDS_H
 
+#include <limits>
+
 template <typename T>
 struct Coords {
     unsigned int nCoords;  
