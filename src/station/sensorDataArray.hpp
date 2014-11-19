@@ -38,6 +38,21 @@ struct SensorDataArray {
             const std::string **stationNames, StationType *stationTypes,
             double *x, double *y, double *z,
             T** data);
+
+    std::string stationDescription(unsigned int i) {
+        std::stringstream description;
+        assert(i < nStations);
+        description << std::endl;
+        description << "<![CDATA[" << std::endl;
+        description << "<h3>Station " << *stationNames[i] << "</h3>" << std::endl;
+        description << "<b>Type de la station:</b> " << stationTypes[i] << std::endl;
+        description << "<br/><b>Longitude:</b> " << x[i] << std::endl;
+        description << "<br/><b>Latitude:</b>  " << y[i] << std::endl;
+        description << "]]>";
+        description << std::endl;
+        
+        return description.str();
+    }
 };
 
 

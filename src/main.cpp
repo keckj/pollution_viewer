@@ -74,18 +74,25 @@ int main(int argc, char** argv) {
     KmlFile kml("test.kml");
     kml.putKmlHeader();
 
-    kml.startStyle("testStyle");
-    kml.putIconStyle(ColorRGBA(255,0,0,255), NORMAL, 1.5f, 0.0f, 
-            "http://ukmobilereview.com/wp-content/uploads/2013/07/antenna-strength.png",
-            HotSpot(0.2554f,0,PIXELS));
-    kml.putLabelStyle(ColorRGBA(0,255,0,255), RANDOM, 0.5f);
-    kml.putLineStyle(ColorRGBA(0,0,255,255), NORMAL, 5.5f);
-    kml.putPolyStyle(ColorRGBA(128,128,0,128), RANDOM, true, true);
+    kml.startStyle("stationStyle");
+    kml.putIconStyle("http://ukmobilereview.com/wp-content/uploads/2013/07/antenna-strength.png",
+            HotSpot(), 0.5f, 0.0f);
     kml.endStyle();
-
+    kml.skipLine();
+    
     kml.putLookAt((bbox.xmin+bbox.xmax)/2.0, (0.75*bbox.ymin+0.25*bbox.ymax), 0.0, CLAMP_TO_GROUND, 250000.0, 30.0f, -20.0f);
     kml.skipLine();
+    
+    for (unsigned int i = 0; i < sensorData.nStations; i++) {
+        kml.putPlaceMark(*sensorData.stationNames[i], sensorData.stationDescription(i), "stationStyle", 
+                sensorData.x[i], sensorData.y[i], 0.0, CLAMP_TO_GROUND);
+    }
+
+    kml.skipLine();
+
     kml.putGroundOverlay("Ground Overlay Test", 0u, CLAMP_TO_GROUND, bbox, 0.0, "img/test.png");
+    kml.skipLine();
+
     kml.putKmlFooter();
     ////////////////////////////////////////////
     

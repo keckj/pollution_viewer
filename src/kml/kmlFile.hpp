@@ -9,92 +9,7 @@
 
 #include "colors.hpp"
 #include "coords.hpp"
-
-enum AltitudeMode {
-    CLAMP_TO_GROUND=0,
-    CLAMP_TO_SEA_FLOOR,
-    RELATIVE_TO_GROUND,
-    RELATIVE_TO_SEA_FLOOR,
-    ABSOLUTE // <=> RELATIVE_TO_SEA_LEVEL
-};
-
-enum ColorMode {
-    NORMAL=0,
-    RANDOM
-};
-
-enum DateFormat {
-    YYYY=0,
-    YYYY_MM,
-    YYYY_MM_DD,
-    YYYY_MM_DD_hh_mm_ss,
-    YYYY_MM_DD_hh_mm_ss_zzzzzz
-};
-
-
-enum HotSpotUnit {
-    NONE,
-    PIXELS,
-    INSET_PIXELS,
-    FRACTION
-};
-
-union HotSpotValue {
-    int i;
-    float f;
-    HotSpotValue(float f) : f(f) {}
-    HotSpotValue(int i) : i(i) {}
-};
-
-struct HotSpot {
-    HotSpotValue x, y;
-    HotSpotUnit ux, uy;
-
-    HotSpot() : x(0), y(0), ux(NONE), uy(NONE) {}
-    explicit HotSpot(float x, float y) : x(x), y(y), ux(FRACTION), uy(FRACTION) {}
-    explicit HotSpot(int x, HotSpotUnit ux, float y) : x(x), y(y), ux(ux), uy(FRACTION) {}
-    explicit HotSpot(float x, int y, HotSpotUnit uy) : x(x), y(y), ux(FRACTION), uy(uy) {}
-    explicit HotSpot(int x, HotSpotUnit ux, int y, HotSpotUnit uy) : x(x), y(y), ux(ux), uy(uy) {}
-    
-    static const std::string strUnit(HotSpotUnit unit) {
-        switch(unit) {
-            case PIXELS:
-                return "pixels";
-            case INSET_PIXELS:
-                return "insetPixels";
-            case FRACTION:
-                return "fraction";
-            default:
-                return "";
-        }
-    }
-
-    const std::string strX() const {
-        std::stringstream ss;
-        if(ux == FRACTION)
-            ss << x.f;
-        else 
-            ss << x.i;
-        return ss.str();
-    }
-
-    const std::string strY() const {
-        std::stringstream ss;
-        if(uy == FRACTION)
-            ss << y.f;
-        else 
-            ss << y.i;
-        return ss.str();
-    }
-   
-    const std::string strUX() const {
-        return strUnit(ux);
-    }
-    
-    const std::string strUY() const {
-        return strUnit(uy);
-    }
-};
+#include "kmlUtils.hpp"
 
 class KmlFile {
 
@@ -104,7 +19,7 @@ class KmlFile {
         KmlFile(cstring filePath);
         ~KmlFile();
 
-        //High level primitives
+        // HIGH LEVEL PRIMITIVES //
         void putKmlHeader();
         void putKmlFooter();
         
@@ -119,17 +34,19 @@ class KmlFile {
         void putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
                 BoundingBox<double> bbox, double rotation, cstring iconPath);
 
-        //Hight Level style primitives
+        // HIGH LEVEL STYLE PRIMITIVES //
         void startStyle(cstring styleId = std::string(""));
 
-        void putIconStyle(ColorRGBA color, ColorMode colorMode, float scale, float heading, cstring iconHref, const HotSpot &hotSpot);
+        void putIconStyle(ColorRGBA color, ColorMode colorMode, float scale, float heading);
+        void putIconStyle(cstring iconHref, const HotSpot &hotSpot, float scale, float heading);
         void putLabelStyle(ColorRGBA color, ColorMode colorMode, float scale);
         void putLineStyle(ColorRGBA color, ColorMode colorMode, float width);
         void putPolyStyle(ColorRGBA color, ColorMode colorMode, bool fill, bool outline);
 
         void endStyle();
-      
-        //Low level primitives
+     
+
+        // LOW LEVEL PRIMITIVES //
         void startKml();
         
         void startDocument(cstring documentId = std::string(""));
@@ -205,7 +122,7 @@ class KmlFile {
         std::ofstream file;
         std::stringstream kml;
        
-        //helper funcs
+        // HELPER FUNTIONS //
         bool stringIsEmpty(cstring string);
         void removeTab();
         const std::string newLineAndIndent();

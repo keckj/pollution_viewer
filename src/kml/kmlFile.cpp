@@ -486,14 +486,23 @@ void KmlFile::putLookAt(double longitude, double latitude, double altitude, Alti
         endLookAt();
 }
         
-void KmlFile::putIconStyle(ColorRGBA color, ColorMode colorMode, float scale, float heading, cstring iconHref, const HotSpot &hotSpot) {
+
+
+void KmlFile::putIconStyle(ColorRGBA color, ColorMode colorMode, float scale, float heading) {
     startIconStyle();
     putColor(color);
     putColorMode(colorMode);
     putScale(scale);
     putHeading(heading);
+    endIconStyle();
+}
+
+void KmlFile::putIconStyle(cstring iconHref, const HotSpot &hotSpot, float scale, float heading) {
+    startIconStyle();
     putIcon(iconHref);
     putHotspot(hotSpot);
+    putScale(scale);
+    putHeading(heading);
     endIconStyle();
 }
 
