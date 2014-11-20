@@ -32,7 +32,9 @@ class OverlayGenerator {
             }
         }
 
+        //save overlay, flipped because it is a texture
         img.save(dstFolder, fileName, fileExt, true);
+        
         img.freeData();
     }
 };

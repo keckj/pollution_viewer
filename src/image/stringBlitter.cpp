@@ -66,7 +66,7 @@ StringImageInfo StringBlitter::evaluateTextImageSize(const std::string &str) {
         CHECK_FREETYPE_ERROR(FT_Render_Glyph(slot, FT_RENDER_MODE_NORMAL));
 
         imgWidth += slot->advance.x >> 6;
-        imgHeight = std::max(imgHeight, bitmap.rows);
+        imgHeight = std::max(imgHeight, slot->bitmap_top + bitmap.rows);
         maxBearingY = std::max(maxBearingY, slot->bitmap_top);
     }
     

@@ -49,8 +49,6 @@ void Colorizer<F,C>::generateColorRange() {
     blitter.setPixelSize(16u);
     
     Image img = blitter.generateTextImageRGBA("lololo", ColorRGBA(255,0,0,255));
-    
-    img.save("img/","text","png");
 }
 
 #endif /* end of include guard: COLORIZER_H */

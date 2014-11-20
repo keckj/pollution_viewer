@@ -24,6 +24,8 @@ struct Image {
     Image(int width, int height, int channels, unsigned char initialValue = 0);
     ~Image();
 
+    //blit image img to current image from origin (x,y) (ORIGIN = TOP-LEFT-CORNER)
+    void blit(const Image &img, int x, int y);
     void save(const std::string &imgFolder, const std::string &imgName, const std::string &imgExt, bool flip=false);
     void freeData();
 };

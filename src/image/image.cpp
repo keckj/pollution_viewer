@@ -1,6 +1,7 @@
 
-#include "il.h"
 #include <cstring>
+#include <cmath>
+#include "il.h"
 #include "ilu.h"
 
 #include "image.hpp"
@@ -67,4 +68,47 @@ void Image::save(const std::string &imgFolder, const std::string &imgName, const
     ilSave(imageType, filePath.c_str());
     ilBindImage(0);
     ilDeleteImages(1, &imageId);
+}
+    
+void Image::blit(const Image &img, int x, int y) {
+    assert(x>=0);
+    assert(y>=0);
+    assert(x+img.width < this->width);
+    assert(y+img.height < this->height);
+    assert(img.channels == this->channels);
+
+    if(img.channels > 0 && img.channels <= 3) {
+        for (int j = 0; j < img.height; j++) {
+            for (int i = 0; i < img.width; i++) {
+                int imgOffset = (j*img.width + i)*img.channels;
+                int dstOffset = ((y+j)*img.width + (x+i))*img.channels;
+                for (int k = 0; k < img.channels; k++) {
+                    this->data[dstOffset+k] = img.data[imgOffset+k];
+                }
+            }
+        }
+    }
+    else if(img.channels == 4) {
+        for (int j = 0; j < img.height; j++) {
+            for (int i = 0; i < img.width; i++) {
+                int imgOffset = (j*img.width + i)*img.channels;
+                int dstOffset = ((y+j)*this->width + (x+i))*this->channels;
+                float srcAlpha = static_cast<float>(img.data[imgOffset+3])/255.0f;
+                float dstAlpha = static_cast<float>(this->data[dstOffset+3])/255.0f;
+                float resAlpha = srcAlpha + dstAlpha*(1.0f-srcAlpha);
+                for (int k = 0; k < 3; k++) {
+                    float alphaSrcColor = srcAlpha*static_cast<float>(img.data[imgOffset + k]);
+                    float alphaDstColor = dstAlpha*static_cast<float>(this->data[dstOffset + k]);
+                    this->data[dstOffset+k] = static_cast<unsigned char>((alphaSrcColor + alphaDstColor*(1.0f-srcAlpha))/resAlpha);
+                    //this->data[dstOffset+k] = img.data[imgOffset+k];
+                }
+                unsigned int alpha = floor(resAlpha*256.0f);
+                this->data[dstOffset+3] = (alpha >= 0x100 ? 0xff : alpha);
+            }
+        }
+    }
+    else {
+        log4cpp::log_console->errorStream() << "[Image ]Wrong number of channels !";
+        exit(EXIT_FAILURE);
+    }
 }
