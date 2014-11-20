@@ -2,12 +2,11 @@
 #ifndef COLORIZER_H
 #define COLORIZER_H
 
-#include <ft2build.h> 
-#include FT_FREETYPE_H 
 #include <type_traits>
 #include <cassert>
+#include <algorithm>
 
-#include "freetypeUtils.hpp"
+#include "stringBlitter.hpp"
 #include "colors.hpp"
 
 template <typename F, typename C>
@@ -39,13 +38,19 @@ class Colorizer {
 
 template <typename F, typename C>
 void Colorizer<F,C>::generateColorRange() {
-
-    FT_Library library; 
-    FT_Face face; 
     
-    assert(!FT_Init_FreeType(&library));
-    assert(!FT_New_Face( library, "/usr/share/fonts/truetype/freefont/FreeMono.ttf", 0, &face ));
+    using log4cpp::log_console;
+    log_console->infoStream() << "[Colorizer] Generating color overlay...";
+       
+    const std::string fontPath = "/usr/share/fonts/truetype/freefont/FreeMono.ttf";
 
+    StringBlitter blitter;
+    blitter.loadFontFromFile(fontPath);
+    blitter.setPixelSize(16u);
+    
+    Image img = blitter.generateTextImageRGBA("lololo", ColorRGBA(255,0,0,255));
+    
+    img.save("img/","text","png");
 }
 
 #endif /* end of include guard: COLORIZER_H */

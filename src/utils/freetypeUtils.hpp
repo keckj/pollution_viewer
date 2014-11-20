@@ -10,20 +10,10 @@
 
 namespace freetypeUtils {
 
-// Error String array generation
-// This is well explained in the error header of the library 
-// Need to see more libs like this
-#undef __FTERRORS_H__                                           
-#define FT_ERRORDEF( e, v, s )  s,                       
-#define FT_ERROR_START_LIST     {                               
-#define FT_ERROR_END_LIST       0};                     
-
-    static const char* errorStrings[] = 
-#include FT_ERRORS_H                                            
-//////////////////////////////////////////////////////////////
 
     std::string toStringError(FT_Error error);
     void freeTypeAssert(FT_Error error, const std::string &file, unsigned int line);
+    void logFaceInfo(log4cpp::Category *log, const FT_Face &face);
 }
 
 //Error checking macro

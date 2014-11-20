@@ -102,7 +102,7 @@ target_link_libraries(
     ${Boost_LIBRARIES}       #Boost Regex
     ${LOG4CPP_LIBRARIES}     #Log4cpp
     ${IL_LIBRARIES}          #DevIL core library
-    #$[ILU_LIBRARIES}        #DevIL filters and effects
-    #$[ILUT_LIBRARIES}       #DevIL interface with openGL
+    ${ILU_LIBRARIES}         #DevIL filters and effects
+    #${ILUT_LIBRARIES}       #DevIL interface with openGL
     ${FREETYPE_LIBRARIES}    #FreeType
 )

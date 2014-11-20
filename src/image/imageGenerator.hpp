@@ -2,6 +2,9 @@
 #ifndef IMAGEGENERATOR_H
 #define IMAGEGENERATOR_H
 
+#include "il.h"
+#include "ilu.h"
+
 #include "log.hpp"
 
 class ImageGenerator {
