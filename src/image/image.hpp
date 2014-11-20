@@ -13,6 +13,7 @@ struct StringImageInfo {
         imgWidth(imgWidth), imgHeight(imgHeight), maxBearingY(maxBearingY) {};
 };
 
+//Image convention: 1st pixel = TOP-LEFT CORNER
 struct Image {
     int width;
     int height;

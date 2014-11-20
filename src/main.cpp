@@ -10,7 +10,7 @@
 #include "dataParser.hpp"
 #include "simpleShepardInterpolator.hpp"
 #include "linearColorizer.hpp"
-#include "imageGenerator.hpp"
+#include "overlayGenerator.hpp"
 #include "kmlFile.hpp"
 
 int main(int argc, char** argv) {
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
     
     // Generate image
     log_console->infoStream() << "Generating image...";
-    ImageGenerator::generateImage<float,ColorRGBA>(gridWidth, gridHeight, interpolatedGrid, colorizer,
+    OverlayGenerator::generateImage<float,ColorRGBA>(gridWidth, gridHeight, interpolatedGrid, colorizer,
             "img/","test","png");
 
     // Generate Color Overlay
