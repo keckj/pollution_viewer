@@ -42,7 +42,7 @@ void Colorizer<F,C>::generateColorRange() {
     using log4cpp::log_console;
     log_console->infoStream() << "[Colorizer] Generating color overlay...";
        
-    const std::string fontPath = "/usr/share/fonts/truetype/freefont/FreeMono.ttf";
+    const std::string fontPath = "fonts/FreeMono.ttf";
 
     StringBlitter blitter;
     blitter.loadFontFromFile(fontPath);
