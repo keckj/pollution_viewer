@@ -22,32 +22,39 @@ enum DateFormat {
     YYYY_MM_DD_hh_mm_ss_zzzzzz
 };
 
+enum OffsetType {
+    HOTSPOT,
+    SIZE,
+    OVERLAY_XY,
+    SCREEN_XY,
+    ROTATION_XY
+};
 
-enum HotSpotUnit {
+enum OffsetUnit {
     NONE,
     PIXELS,
     INSET_PIXELS,
     FRACTION
 };
 
-union HotSpotValue {
+union OffsetValue {
     int i;
     float f;
-    HotSpotValue(float f) : f(f) {}
-    HotSpotValue(int i) : i(i) {}
+    OffsetValue(float f) : f(f) {}
+    OffsetValue(int i) : i(i) {}
 };
 
-struct HotSpot {
-    HotSpotValue x, y;
-    HotSpotUnit ux, uy;
+struct Offset {
+    OffsetValue x, y;
+    OffsetUnit ux, uy;
 
-    HotSpot() : x(0), y(0), ux(NONE), uy(NONE) {}
-    explicit HotSpot(float x, float y) : x(x), y(y), ux(FRACTION), uy(FRACTION) {}
-    explicit HotSpot(int x, HotSpotUnit ux, float y) : x(x), y(y), ux(ux), uy(FRACTION) {}
-    explicit HotSpot(float x, int y, HotSpotUnit uy) : x(x), y(y), ux(FRACTION), uy(uy) {}
-    explicit HotSpot(int x, HotSpotUnit ux, int y, HotSpotUnit uy) : x(x), y(y), ux(ux), uy(uy) {}
+    Offset() : x(0), y(0), ux(NONE), uy(NONE) {}
+    explicit Offset(float x, float y) : x(x), y(y), ux(FRACTION), uy(FRACTION) {}
+    explicit Offset(int x, OffsetUnit ux, float y) : x(x), y(y), ux(ux), uy(FRACTION) {}
+    explicit Offset(float x, int y, OffsetUnit uy) : x(x), y(y), ux(FRACTION), uy(uy) {}
+    explicit Offset(int x, OffsetUnit ux, int y, OffsetUnit uy) : x(x), y(y), ux(ux), uy(uy) {}
     
-    static const std::string strUnit(HotSpotUnit unit) {
+    static const std::string strUnit(OffsetUnit unit) {
         switch(unit) {
             case PIXELS:
                 return "pixels";

@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <cassert>
 #include <algorithm>
+#include <iomanip>   
 
 #include "stringBlitter.hpp"
 #include "colors.hpp"
@@ -41,27 +42,55 @@ void Colorizer<F,N>::generateColorRange() {
     
     using log4cpp::log_console;
     log_console->infoStream() << "[Colorizer] Generating color overlay...";
+    
+    const std::string fontPath = "fonts/FreeMonoBold.ttf";
+    StringBlitter blitter;
+    blitter.loadFontFromFile(fontPath);
+    blitter.setPixelSize(50u);
+
        
-    //const std::string fontPath = "fonts/FreeMono.ttf";
-    //StringBlitter blitter;
-    //blitter.loadFontFromFile(fontPath);
-    //blitter.setPixelSize(16u);
-    //Image img = blitter.generateTextImageRGBA("lololo", ColorRGBA(255,0,0,255));
-        
-    const unsigned int borderPixels = 5u;
-
     RGBAImageInitializer overlayInit = [&] (unsigned int i, unsigned int j, unsigned int width, unsigned int height) -> Color<N> {
-        float fx = static_cast<float>(j)/width; 
-        float fy = static_cast<float>(i)/height; 
+        const unsigned int borderSize = 6u;
 
-        if(i < borderPixels || j < borderPixels || i+borderPixels >= height || j+borderPixels >= width)
+        if(i < borderSize || j < borderSize || i+borderSize >= height || j+borderSize >= width)
             return ColorRGBA::blue;
         else 
             return ColorRGBA::white;
     };
 
-    Image<4u> overlay(800u,600u, overlayInit);
-    overlay.save("img", "gen", "png");
+    RGBAImageInitializer colorRangeInit = [&] (unsigned int i, unsigned int j, unsigned int width, unsigned int height) -> Color<N> {
+        F fy = static_cast<F>(i)/height; 
+
+        const unsigned int borderSize = 3u;
+        if(i < borderSize || j < borderSize || i+borderSize >= height || j+borderSize >= width)
+            return ColorRGBA::black;
+
+        const F val = min + (F(1)-fy)*(max - min);
+        return this->operator()(val);
+    };
+
+    Image<4u> overlay(600u,1200u, overlayInit);
+    Image<4u> colorRange(400u,1000u, colorRangeInit);
+    Image<4u> text;
+    
+    overlay.blit(colorRange, 40u, 100u);
+  
+    unsigned int nLevels = 5;
+    for (unsigned int i = 0; i < nLevels; i++) {
+        std::stringstream ss;
+        F alpha = static_cast<F>(i)/(nLevels-1);
+        F val = min + (F(1) - alpha)*(max - min);
+        ss << std::setprecision(3) << val;
+            
+        const StringImageInfo &info = blitter.evaluateTextImageSize(ss.str());
+        text = blitter.generateTextImageRGBA(ss.str(), ColorRGBA::blue);
+        
+        overlay.blit(text, 450u, 100+i*1000/(nLevels-1)- info.imgHeight/3);         
+
+        text.freeData();
+    }
+
+    overlay.save("img/", "overlay", "png");
 }
 
 #endif /* end of include guard: COLORIZER_H */

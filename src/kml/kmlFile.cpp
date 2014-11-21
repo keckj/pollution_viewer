@@ -95,6 +95,17 @@ void  KmlFile::endGroundOverlay() {
     kml << "</GroundOverlay>" << newLineAndDedent();
 }
 
+void  KmlFile::startScreenOverlay(cstring groundOverlayId) {
+    if(stringIsEmpty(groundOverlayId))
+        kml << "<ScreenOverlay>" << newLineAndIndent();
+    else
+        kml << "<ScreenOverlay id=\"" + groundOverlayId + "\">" << newLineAndIndent();
+}
+void  KmlFile::endScreenOverlay() {
+    removeTab();
+    kml << "</ScreenOverlay>" << newLineAndDedent();
+}
+
 void  KmlFile::startLookAt(cstring lookAtId) {
     if(stringIsEmpty(lookAtId))
         kml << "<LookAt>" << newLineAndIndent();
@@ -248,8 +259,24 @@ void KmlFile::putOutline(bool outline) {
     kml << "<outline>"+(outline ? std::string("1") : std::string("0"))+"</outline>"<<newLine();
 }
 
+void KmlFile::putDrawOrder(unsigned int drawOrder) {
+    kml << "<drawOrder>" << drawOrder << "</drawOrder>"<<newLine();
+}
+
 void KmlFile::putWidth(float width) {
     kml << "<width>" << width << "</width>"<<newLine();
+}
+void KmlFile::putRotation(float rotation) {
+    kml << "<rotation>" << rotation << "</rotation>"<<newLine();
+}
+void KmlFile::putTilt(float tilt) {
+    kml << "<tilt>" << tilt << "</tilt>"<<newLine();
+}
+void KmlFile::putHeading(float heading) {
+    kml << "<heading>" << heading << "</heading>"<<newLine();
+}
+void KmlFile::putScale(float scale) {
+    kml << "<scale>" << scale << "</scale>"<<newLine();
 }
 
 void KmlFile::putLongitude(double longitude) {
@@ -263,18 +290,6 @@ void KmlFile::putAltitude(double altitude) {
 }
 void KmlFile::putRange(double range) {
     kml << "<range>" << range << "</range>"<<newLine();
-}
-void putRange(double range);
-
-void KmlFile::putTilt(float tilt) {
-    kml << "<tilt>" << tilt << "</tilt>"<<newLine();
-}
-void KmlFile::putHeading(float heading) {
-    kml << "<heading>" << heading << "</heading>"<<newLine();
-}
-
-void KmlFile::putScale(float scale) {
-    kml << "<scale>" << scale << "</scale>"<<newLine();
 }
 
 void KmlFile::putColor(ColorRGBA color) {
@@ -319,17 +334,58 @@ void KmlFile::putAltitudeMode(AltitudeMode altitudeMode) {
     kml << newLine();
 }
 
-void KmlFile::putHotspot(const HotSpot &hotSpot) {
-    if(hotSpot.ux != NONE) {
-        kml << "<hotSpot "
-            <<    "x=\"" << hotSpot.strX() 
-            << "\" y=\"" << hotSpot.strY() 
-            << "\" xunits=\"" << hotSpot.strUX() 
-            << "\" yunits=\"" << hotSpot.strUY()
-            << "\"/>" << newLine();
+void KmlFile::putOffset(const Offset &offset, OffsetType offsetType) {
+
+    if(offset.ux == NONE)
+        return;
+
+    kml << "<";
+
+    switch(offsetType) {
+        case HOTSPOT:
+            kml << "offset";
+            break;
+        case SIZE:
+            kml << "size";
+            break;
+        case OVERLAY_XY:
+            kml << "overlayXY";
+            break;
+        case SCREEN_XY:
+            kml << "screenXY";
+            break;
+        case ROTATION_XY:
+            kml << "rotationXY";
+            break;
     }
+
+    kml << " x=\"" << offset.strX() 
+        << "\" y=\"" << offset.strY() 
+        << "\" xunits=\"" << offset.strUX() 
+        << "\" yunits=\"" << offset.strUY()
+        << "\"/>" << newLine();
 }
-        
+
+void KmlFile::putHotspot(const Offset &hotSpot) {
+    putOffset(hotSpot, HOTSPOT);
+}
+
+void KmlFile::putSize(const Offset &size) {
+    putOffset(size, SIZE);
+}
+
+void KmlFile::putScreenXY(const Offset &screen) {
+    putOffset(screen, SCREEN_XY);
+}
+
+void KmlFile::putOverlayXY(const Offset &overlay) {
+    putOffset(overlay, OVERLAY_XY);
+}
+
+void KmlFile::putRotationXY(const Offset &rotation) {
+    putOffset(rotation, ROTATION_XY);
+}
+
 void KmlFile::putDate(const std::tm &date, DateFormat dateFormat) {
     kml << "<date>" << dateToString(date, dateFormat) << "</date>" << newLine();
 }
@@ -481,6 +537,24 @@ void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode
     endGroundOverlay();
 }
         
+void KmlFile::putScreenOverlay(cstring name, cstring description,
+        const Offset &overlayXY, const Offset &screenXY, 
+        const Offset &size, const Offset &rotationXY, 
+        float rotation, unsigned int drawOrder,
+        cstring iconPath) {
+    startScreenOverlay();
+    putName(name);
+    putDescription(description);
+    putDrawOrder(drawOrder);
+    putOverlayXY(overlayXY);
+    putScreenXY(screenXY);
+    putRotationXY(rotationXY);
+    putSize(size);
+    putRotation(rotation);
+    putIcon(iconPath);
+    endScreenOverlay();
+}
+        
 void KmlFile::putPlaceMark(cstring name, cstring description, cstring styleUrl, 
         double longitude, double latitude, double altitude, AltitudeMode altitudeMode) {
     startPlacemark();
@@ -516,7 +590,7 @@ void KmlFile::putIconStyle(ColorRGBA color, ColorMode colorMode, float scale, fl
     endIconStyle();
 }
 
-void KmlFile::putIconStyle(cstring iconHref, const HotSpot &hotSpot, float scale, float heading) {
+void KmlFile::putIconStyle(cstring iconHref, const Offset &hotSpot, float scale, float heading) {
     startIconStyle();
     putIcon(iconHref);
     putHotspot(hotSpot);

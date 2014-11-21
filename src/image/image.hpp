@@ -16,6 +16,7 @@ struct StringImageInfo {
         imgWidth(imgWidth), imgHeight(imgHeight), maxBearingY(maxBearingY) {};
 };
 
+
 //Image initializers///////////////////////////////////////////////////
 //Matrix like images (i,j) -> (0,0) = top left corner
 template <unsigned int N>
@@ -27,15 +28,16 @@ using RGBImageInitializer = ImageInitializer<3u>;
 using RGBAImageInitializer = ImageInitializer<4u>;
 //////////////////////////////////////////////////////////////////////
 
-//Image convention: 1st pixel = TOP-LEFT CORNER
 
+//Image convention: 1st pixel = TOP-LEFT CORNER
 template <unsigned int N>
 struct Image {
     unsigned int width;
     unsigned int height;
     unsigned char *data;
-
-    explicit Image(unsigned int width, unsigned int height, unsigned int channels, unsigned char initialValue = 0); 
+    
+    Image();
+    explicit Image(unsigned int width, unsigned int height, unsigned char initialValue = 0); 
     explicit Image(unsigned int width, unsigned int height, const ImageInitializer<N> &I); 
    
     ~Image();

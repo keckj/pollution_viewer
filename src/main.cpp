@@ -79,12 +79,21 @@ int main(int argc, char** argv) {
     kml.startStyle("stationStyle");
     kml.putLabelStyle(ColorRGBA(0x00,0x00,0x00,0x00), NORMAL, 0.0f); //invisible labels
     kml.putIconStyle("http://ukmobilereview.com/wp-content/uploads/2013/07/antenna-strength.png",
-            HotSpot(), 0.25f, 0.0f); //custom icon
+            Offset(), 0.25f, 0.0f); //custom icon
     kml.endStyle();
     kml.skipLine();
    
     // Initial camera position
     kml.putLookAt((bbox.xmin+bbox.xmax)/2.0, (0.75*bbox.ymin+0.25*bbox.ymax), 0.0, CLAMP_TO_GROUND, 250000.0, 30.0f, -20.0f);
+    kml.skipLine();
+
+    // Screen overlay
+    kml.putScreenOverlay("ScreenOverlay", "Screen overlay used to display informations.",
+            Offset(0.0f, 0.0f),
+            Offset(0.1f, 0.15f),
+            Offset(0.0f, 400, PIXELS),
+            Offset(),
+            0.0f, 3, "img/overlay.png");
     kml.skipLine();
   
     // Station placemarks folder

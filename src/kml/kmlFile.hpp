@@ -1,5 +1,4 @@
 
-
 #ifndef KMLFILE_H
 #define KMLFILE_H
 
@@ -42,12 +41,18 @@ class KmlFile {
                 BoundingBox<double> bbox, double rotation, const ColorRGBA &color);
         void putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
                 BoundingBox<double> bbox, double rotation, cstring iconPath);
+        
+        void putScreenOverlay(cstring name, cstring description,
+                const Offset &overlayXY, const Offset &screenXY, 
+                const Offset &size, const Offset &rotationXY,
+                float rotation, unsigned int drawOrder,
+                cstring iconPath);
 
         // HIGH LEVEL STYLE PRIMITIVES //
         void startStyle(cstring styleId = std::string(""));
 
         void putIconStyle(ColorRGBA color, ColorMode colorMode, float scale, float heading);
-        void putIconStyle(cstring iconHref, const HotSpot &hotSpot, float scale, float heading);
+        void putIconStyle(cstring iconHref, const Offset &hotSpot, float scale, float heading);
         void putLabelStyle(ColorRGBA color, ColorMode colorMode, float scale);
         void putLineStyle(ColorRGBA color, ColorMode colorMode, float width);
         void putPolyStyle(ColorRGBA color, ColorMode colorMode, bool fill, bool outline);
@@ -62,6 +67,7 @@ class KmlFile {
         void startFolder(cstring folderId = std::string(""));
         void startPlacemark(cstring placemarkId = std::string(""));
         void startGroundOverlay(cstring placemarkId = std::string(""));
+        void startScreenOverlay(cstring placemarkId = std::string(""));
         void startLookAt(cstring lookAtId = std::string(""));
 
         void startIconStyle(cstring styleId = std::string(""));
@@ -85,10 +91,12 @@ class KmlFile {
         void putOpen(bool open);
         void putFill(bool fill);
         void putOutline(bool outline);
+        void putDrawOrder(unsigned int drawOrder);
         void putLongitude(double longitude);
         void putLatitude(double latitude);
         void putAltitude(double altitude);
         void putRange(double range);
+        void putRotation(float rotation);
         void putTilt(float tilt);
         void putHeading(float heading);
         void putScale(float scale);
@@ -99,7 +107,12 @@ class KmlFile {
         void putColor(ColorRGBA color);
         void putColorMode(ColorMode colorMode);
         void putAltitudeMode(AltitudeMode altitudeMode);
-        void putHotspot(const HotSpot &hotspot);
+        void putOffset(const Offset &offset, OffsetType offsetType);
+        void putHotspot(const Offset &hotspot);
+        void putOverlayXY(const Offset &overlayXY);
+        void putScreenXY(const Offset &screenXY);
+        void putRotationXY(const Offset &rotationXY);
+        void putSize(const Offset &size);
         void putDate(const std::tm &date, DateFormat dateFormat);
         void putTimeStamp(const std::tm &date, DateFormat dateFormat, cstring timeStampId = std::string(""));
         void putTimeSpan(const std::tm &beginDate, const std::tm &endDate, DateFormat dateFormat, cstring timeSpanId = std::string(""));
@@ -118,6 +131,7 @@ class KmlFile {
         void endLookAt();
         void endPlacemark();
         void endGroundOverlay();
+        void endScreenOverlay();
         void endFolder();
         void endDocument();
 
