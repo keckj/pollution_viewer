@@ -59,6 +59,10 @@ struct SensorDataArray {
         description << tabs << "<b>Type de la station:</b> " << stationTypes[i] << std::endl;
         description << tabs << "<br/><b>Longitude:</b> <i>" << x[i] << "</i>" << std::endl;
         description << tabs << "<br/><b>Latitude:</b>  <i>" << y[i] << "</i>" << std::endl;
+        if(data[0][i] >= T(0))
+            description << tabs << "<br/><b>" << sensorName << ":</b>  <i>" << data[0][i] << " " << unitName <<"</i>" << std::endl;
+        else
+            description << tabs << "<br/><b>" << sensorName << ":</b>  <i>no data</i>" << std::endl;
         description << tabs << "]]>";
         description << std::endl;
         description << tabsMinusOne;
