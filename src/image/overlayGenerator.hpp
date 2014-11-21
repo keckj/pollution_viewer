@@ -20,7 +20,7 @@ class OverlayGenerator {
 
         // Convert interpolated data to colors with the given colorizer
         const unsigned int channels = C::getChannelCount();
-        Image img(static_cast<int>(imgWidth), static_cast<int>(imgHeight), static_cast<int>(channels));
+        Image img(imgWidth, imgHeight, channels);
 
         for (unsigned int j = 0; j < imgHeight; j++) {
             for (unsigned int i = 0; i < imgWidth; i++) {

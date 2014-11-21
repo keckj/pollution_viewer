@@ -8,11 +8,11 @@
 #include "log.hpp"
 
 Image::Image(): width(0), height(0), channels(0), data(0) {};
-Image::Image(int width, int height, int channels, unsigned char initialValue): 
+Image::Image(unsigned int width, unsigned int height, unsigned int channels, unsigned char initialValue): 
     width(width), height(height), channels(channels), data(0) 
 {
     data = new unsigned char[width*height*channels];
-    memset(data, initialValue, static_cast<unsigned int>(width*height*channels)*sizeof(unsigned char));
+    memset(data, initialValue, width*height*channels*sizeof(unsigned char));
 };
 
 Image::~Image() {
@@ -60,8 +60,7 @@ void Image::save(const std::string &imgFolder, const std::string &imgName, const
 
     ILuint imageId = ilGenImage();
     ilBindImage(imageId);
-    ilTexImage(static_cast<unsigned int>(width), static_cast<unsigned int>(height),
-            0u, static_cast<unsigned int>(channels)*sizeof(unsigned char), imageFormat, IL_UNSIGNED_BYTE, data);
+    ilTexImage(width, height, 0u, channels*sizeof(unsigned char), imageFormat, IL_UNSIGNED_BYTE, data);
     if(!flip)
         iluFlipImage();
     ilEnable(IL_FILE_OVERWRITE);
@@ -70,33 +69,31 @@ void Image::save(const std::string &imgFolder, const std::string &imgName, const
     ilDeleteImages(1, &imageId);
 }
     
-void Image::blit(const Image &img, int x, int y) {
-    assert(x>=0);
-    assert(y>=0);
+void Image::blit(const Image &img, unsigned int x, unsigned int y) {
     assert(x+img.width < this->width);
     assert(y+img.height < this->height);
     assert(img.channels == this->channels);
 
     if(img.channels > 0 && img.channels <= 3) {
-        for (int j = 0; j < img.height; j++) {
-            for (int i = 0; i < img.width; i++) {
-                int imgOffset = (j*img.width + i)*img.channels;
-                int dstOffset = ((y+j)*img.width + (x+i))*img.channels;
-                for (int k = 0; k < img.channels; k++) {
+        for (unsigned int j = 0; j < img.height; j++) {
+            for (unsigned int i = 0; i < img.width; i++) {
+                unsigned int imgOffset = (j*img.width + i)*img.channels;
+                unsigned int dstOffset = ((y+j)*img.width + (x+i))*img.channels;
+                for (unsigned int k = 0; k < img.channels; k++) {
                     this->data[dstOffset+k] = img.data[imgOffset+k];
                 }
             }
         }
     }
     else if(img.channels == 4) {
-        for (int j = 0; j < img.height; j++) {
-            for (int i = 0; i < img.width; i++) {
-                int imgOffset = (j*img.width + i)*img.channels;
-                int dstOffset = ((y+j)*this->width + (x+i))*this->channels;
+        for (unsigned int j = 0; j < img.height; j++) {
+            for (unsigned int i = 0; i < img.width; i++) {
+                unsigned int imgOffset = (j*img.width + i)*img.channels;
+                unsigned int dstOffset = ((y+j)*this->width + (x+i))*this->channels;
                 float srcAlpha = static_cast<float>(img.data[imgOffset+3])/255.0f;
                 float dstAlpha = static_cast<float>(this->data[dstOffset+3])/255.0f;
                 float resAlpha = srcAlpha + dstAlpha*(1.0f-srcAlpha);
-                for (int k = 0; k < 3; k++) {
+                for (unsigned int k = 0; k < 3; k++) {
                     float alphaSrcColor = srcAlpha*static_cast<float>(img.data[imgOffset + k]);
                     float alphaDstColor = dstAlpha*static_cast<float>(this->data[dstOffset + k]);
                     this->data[dstOffset+k] = static_cast<unsigned char>((alphaSrcColor + alphaDstColor*(1.0f-srcAlpha))/resAlpha);

@@ -27,7 +27,7 @@ class StringBlitter {
         FT_Library library; 
         FT_Face face; 
         
-        void blitCharacter(const Image &image, int x, int y, const FT_Bitmap &bitmap);
+        void blitCharacter(const Image &image, unsigned int x, unsigned int y, const FT_Bitmap &bitmap);
 };
 
 #endif /* end of include guard: STRINGBLITTER_H */
