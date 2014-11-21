@@ -20,14 +20,14 @@ class StringBlitter {
     
         //Image convention: 1st pixel = TOP-LEFT CORNER
         StringImageInfo evaluateTextImageSize(const std::string &str);
-        Image generateTextImageGraylevel(const std::string &str);
-        Image generateTextImageRGBA(const std::string &str, const ColorRGBA &color);
+        Image<1u> generateTextImageGraylevel(const std::string &str);
+        Image<4u> generateTextImageRGBA(const std::string &str, const ColorRGBA &color);
 
     private:
         FT_Library library; 
         FT_Face face; 
         
-        void blitCharacter(const Image &image, unsigned int x, unsigned int y, const FT_Bitmap &bitmap);
+        void blitCharacter(const Image<1u> &image, unsigned int x, unsigned int y, const FT_Bitmap &bitmap);
 };
 
 #endif /* end of include guard: STRINGBLITTER_H */

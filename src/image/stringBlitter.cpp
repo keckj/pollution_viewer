@@ -76,14 +76,14 @@ StringImageInfo StringBlitter::evaluateTextImageSize(const std::string &str) {
     return StringImageInfo(imgWidth, imgHeight, maxBearingY);
 }
 
-Image StringBlitter::generateTextImageGraylevel(const std::string &str) {
+Image<1u> StringBlitter::generateTextImageGraylevel(const std::string &str) {
     FT_UInt index;
     FT_GlyphSlot slot = face->glyph;
     const FT_Bitmap &bitmap = face->glyph->bitmap;
 
     const StringImageInfo imgInfo = evaluateTextImageSize(str);
 
-    Image image(imgInfo.imgWidth, imgInfo.imgHeight, 1u);
+    Image<1u> image(imgInfo.imgWidth, imgInfo.imgHeight, 1u);
     unsigned int x = 0;
     
     for (unsigned int i = 0; i < str.size(); i++) {
@@ -100,19 +100,17 @@ Image StringBlitter::generateTextImageGraylevel(const std::string &str) {
     return image;
 }
 
-Image StringBlitter::generateTextImageRGBA(const std::string &str, const ColorRGBA &color) {
+Image<4u> StringBlitter::generateTextImageRGBA(const std::string &str, const ColorRGBA &color) {
     
     const int channels = 4;
-    Image grayscaleImg = generateTextImageGraylevel(str);
-    Image rgbaImg(grayscaleImg.width, grayscaleImg.height, channels);
+    Image<1u> grayscaleImg = generateTextImageGraylevel(str);
+    Image<4u> rgbaImg(grayscaleImg.width, grayscaleImg.height, channels);
     
-    const unsigned char *colorData = reinterpret_cast<const unsigned char *>(&color);
-
     for (unsigned int j = 0; j < rgbaImg.height; j++) {
         for (unsigned int i = 0; i < rgbaImg.width; i++) {
             for (unsigned int k = 0; k < channels; k++) {
-                float color = static_cast<float>(colorData[k])*grayscaleImg.data[j*grayscaleImg.width+i]/255.0f;
-                rgbaImg.data[(j*rgbaImg.width+i)*channels+k] = static_cast<unsigned char>(color);
+                float colorValue = static_cast<float>(color[k])*grayscaleImg.data[j*grayscaleImg.width+i]/255.0f;
+                rgbaImg.data[(j*rgbaImg.width+i)*channels+k] = static_cast<unsigned char>(colorValue);
             }
         }
     }
@@ -121,7 +119,7 @@ Image StringBlitter::generateTextImageRGBA(const std::string &str, const ColorRG
     return rgbaImg;
 }
         
-void StringBlitter::blitCharacter(const Image &image, unsigned int x, unsigned int y, const FT_Bitmap &bitmap) {
+void StringBlitter::blitCharacter(const Image<1u> &image, unsigned int x, unsigned int y, const FT_Bitmap &bitmap) {
     // check if bitmap has 256 gray levels
     assert(bitmap.pixel_mode == FT_PIXEL_MODE_GRAY);
     assert(bitmap.num_grays  == 0x100);

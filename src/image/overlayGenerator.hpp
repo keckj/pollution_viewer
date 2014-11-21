@@ -20,14 +20,13 @@ class OverlayGenerator {
 
         // Convert interpolated data to colors with the given colorizer
         const unsigned int channels = Color<N>::channels;
-        Image img(imgWidth, imgHeight, channels);
+        Image<4u> img(imgWidth, imgHeight, channels);
 
         for (unsigned int j = 0; j < imgHeight; j++) {
             for (unsigned int i = 0; i < imgWidth; i++) {
                 Color<N> interpolatedColor = colorizer(data[j*imgWidth+i]);
-                unsigned char *colorData = reinterpret_cast<unsigned char*>(&interpolatedColor); //little pointer hack
                 for(unsigned int k = 0; k < channels; k++) {
-                        img.data[(j*imgWidth+i)*channels+k] = colorData[k];
+                        img.data[(j*imgWidth+i)*channels+k] = interpolatedColor[k];
                 }
             }
         }

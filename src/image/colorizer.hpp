@@ -60,7 +60,7 @@ void Colorizer<F,N>::generateColorRange() {
             return ColorRGBA::white;
     };
 
-    Image overlay(800u,600u, overlayInit);
+    Image<4u> overlay(800u,600u, overlayInit);
     overlay.save("img", "gen", "png");
 }
 
