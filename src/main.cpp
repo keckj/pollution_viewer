@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     // Create Colorizer
     const ColorRGBA red(255u,0u,0u,255u);
     const ColorRGBA blue(0u,0u,255u,50u);
-    LinearColorizer<float,ColorRGBA> colorizer(pixels,interpolatedGrid,red,blue);
+    LinearColorizer<float,4u> colorizer(pixels,interpolatedGrid,red,blue);
     
     //const ColorMonochrome black(0u);
     //const ColorMonochrome white(255u);
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
     
     // Generate image
     log_console->infoStream() << "Generating image...";
-    OverlayGenerator::generateImage<float,ColorRGBA>(gridWidth, gridHeight, interpolatedGrid, colorizer,
+    OverlayGenerator::generateImage<float,4>(gridWidth, gridHeight, interpolatedGrid, colorizer,
             "img/","test","png");
 
     // Generate Color Overlay

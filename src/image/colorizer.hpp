@@ -8,15 +8,15 @@
 
 #include "stringBlitter.hpp"
 #include "colors.hpp"
+#include "image.hpp"
 
-template <typename F, typename C>
+template <typename F, unsigned int N>
 class Colorizer {
     static_assert(std::is_floating_point<F>(), "");
-    static_assert(std::is_base_of<Color, C>::value, "");
 
     public:
         virtual ~Colorizer() {}
-        virtual C operator()(const F) const = 0;
+        virtual Color<N> operator()(const F) const = 0;
     
         void generateColorRange();
 
@@ -36,19 +36,32 @@ class Colorizer {
         F max;
 };
 
-template <typename F, typename C>
-void Colorizer<F,C>::generateColorRange() {
+template <typename F, unsigned int N>
+void Colorizer<F,N>::generateColorRange() {
     
     using log4cpp::log_console;
     log_console->infoStream() << "[Colorizer] Generating color overlay...";
        
-    const std::string fontPath = "fonts/FreeMono.ttf";
+    //const std::string fontPath = "fonts/FreeMono.ttf";
+    //StringBlitter blitter;
+    //blitter.loadFontFromFile(fontPath);
+    //blitter.setPixelSize(16u);
+    //Image img = blitter.generateTextImageRGBA("lololo", ColorRGBA(255,0,0,255));
+        
+    const unsigned int borderPixels = 5u;
 
-    StringBlitter blitter;
-    blitter.loadFontFromFile(fontPath);
-    blitter.setPixelSize(16u);
-    
-    Image img = blitter.generateTextImageRGBA("lololo", ColorRGBA(255,0,0,255));
+    RGBAImageInitializer overlayInit = [&] (unsigned int i, unsigned int j, unsigned int width, unsigned int height) -> Color<N> {
+        float fx = static_cast<float>(j)/width; 
+        float fy = static_cast<float>(i)/height; 
+
+        if(i < borderPixels || j < borderPixels || i+borderPixels >= height || j+borderPixels >= width)
+            return ColorRGBA::blue;
+        else 
+            return ColorRGBA::white;
+    };
+
+    Image overlay(800u,600u, overlayInit);
+    overlay.save("img", "gen", "png");
 }
 
 #endif /* end of include guard: COLORIZER_H */
