@@ -2,6 +2,8 @@
 #include "freetypeUtils.hpp"
 #include "stringBlitter.hpp"
 
+#include <bitset>
+
 StringBlitter::StringBlitter() :
     library(0), face(0)
 {
@@ -85,9 +87,55 @@ Image<1u> StringBlitter::generateTextImageGraylevel(const std::string &str) {
 
     Image<1u> image(imgInfo.imgWidth, imgInfo.imgHeight, 1u);
     unsigned int x = 0;
+
+    unsigned long buffer = 0L;
+    unsigned char value = 0; 
+    unsigned int remainingBytes = 0;
     
     for (unsigned int i = 0; i < str.size(); i++) {
-        index = FT_Get_Char_Index(face, static_cast<unsigned char>(str[i])); 
+       
+        //string to utf32 conversion (1 to 4 byte data)
+        value = static_cast<unsigned char>(str[i]);
+
+        if(remainingBytes == 0u) {
+            if (value >> 7 == 0) {
+                buffer = value;
+                remainingBytes = 0u;
+            } 
+            else if (value >> 5 == 0b110) {
+                buffer = value & ((1u<<5) - 1u);
+                remainingBytes = 1u;
+            }
+            else if(value >> 4 == 0b1110) {
+                buffer = value & ((1u<<4) - 1u);
+                remainingBytes = 2u;
+            }
+            else if(value >> 3 == 0b11110) {
+                buffer = value & ((1u<<3) - 1u);
+                remainingBytes = 3u;
+            }
+            else {
+                buffer = 0L;
+                std::cout << "Error while reading character !" << std::endl;
+                continue;
+            }
+        }
+        else if (value >> 6 == 0b10){
+            buffer = (buffer << 6) + (value & ((1u<<6) - 1u));
+            remainingBytes--;
+        }
+        else {
+            buffer = 0L;
+            remainingBytes = 0u;
+            std::cout << "Error while reading character !" << std::endl;
+            continue;
+        }
+
+        if(remainingBytes > 0)
+            continue;
+
+        index = FT_Get_Char_Index(face, buffer); 
+
         CHECK_FREETYPE_ERROR(FT_Load_Glyph(face, index, FT_LOAD_DEFAULT));
         CHECK_FREETYPE_ERROR(FT_Render_Glyph(slot, FT_RENDER_MODE_NORMAL));
         blitCharacter(image, 
@@ -95,6 +143,8 @@ Image<1u> StringBlitter::generateTextImageGraylevel(const std::string &str) {
                 static_cast<unsigned int>(static_cast<int>(imgInfo.maxBearingY) - slot->bitmap_top),
                 bitmap);
         x += slot->advance.x >> 6;
+
+        buffer = 0L;
     }
 
     return image;

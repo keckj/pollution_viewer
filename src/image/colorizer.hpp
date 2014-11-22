@@ -46,7 +46,6 @@ void Colorizer<F,N>::generateColorRange() {
     const std::string fontPath = "fonts/FreeMonoBold.ttf";
     StringBlitter blitter;
     blitter.loadFontFromFile(fontPath);
-    blitter.setPixelSize(50u);
 
        
     RGBAImageInitializer overlayInit = [&] (unsigned int i, unsigned int j, unsigned int width, unsigned int height) -> Color<N> {
@@ -73,19 +72,27 @@ void Colorizer<F,N>::generateColorRange() {
     Image<4u> colorRange(400u,1000u, colorRangeInit);
     Image<4u> text;
     
-    overlay.blit(colorRange, 40u, 100u);
+    overlay.blit(colorRange, 40u, 150u);
+
+    blitter.setPixelSize(40u);
+    std::stringstream ss;
+    StringImageInfo info = blitter.evaluateTextImageSize(ss.str());
+    text = blitter.generateTextImageRGBA("Particules PM10 (µg/m³)", ColorRGBA::blue);
+    overlay.blit(text, 30, 30 - info.imgHeight/3);         
+    text.freeData();
   
+    blitter.setPixelSize(50u);
     unsigned int nLevels = 5;
     for (unsigned int i = 0; i < nLevels; i++) {
-        std::stringstream ss;
+        ss.seekp(std::ios_base::beg);
         F alpha = static_cast<F>(i)/(nLevels-1);
         F val = min + (F(1) - alpha)*(max - min);
         ss << std::setprecision(3) << val;
             
-        const StringImageInfo &info = blitter.evaluateTextImageSize(ss.str());
+        info = blitter.evaluateTextImageSize(ss.str());
         text = blitter.generateTextImageRGBA(ss.str(), ColorRGBA::blue);
         
-        overlay.blit(text, 450u, 100+i*1000/(nLevels-1)- info.imgHeight/3);         
+        overlay.blit(text, 450u, 150+i*1000/(nLevels-1)- info.imgHeight/3);         
 
         text.freeData();
     }
