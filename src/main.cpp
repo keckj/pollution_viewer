@@ -11,7 +11,9 @@
 #include "simpleShepardInterpolator.hpp"
 #include "linearColorizer.hpp"
 #include "overlayGenerator.hpp"
+#include "isolineGenerator.hpp"
 #include "kmlGenerator.hpp"
+
 
 int main(int argc, char** argv) {
 
@@ -35,8 +37,6 @@ int main(int argc, char** argv) {
     const std::string sensorName("Particules PM10");
     SensorDataArray<int> sensorData = buildSensorDataArray(stations, sensorName);
     
-    //Compute bounding box
-
     // Simple Shepard interpolator
     const unsigned int gridWidth = 128u;
     const unsigned int gridHeight = 128u;
@@ -46,6 +46,10 @@ int main(int argc, char** argv) {
     SimpleShepardInterpolator<int,float> ssInterpolator(shepardMu);
     log_console->infoStream() << "Interpolating with the Simple Shepard Method...";
     float *interpolatedGrid = ssInterpolator(gridWidth,gridHeight,sensorData.nStations, sensorData.x, sensorData.y, sensorData.data[0]);
+
+    // Generate isolines
+    IsoLineGenerator<float,4u> isolineGenerator(gridWidth, gridHeight, sensorData.bbox);
+    ColorLineList<double,4u> isoline = isolineGenerator.generateIsoline(interpolatedGrid, 20.0f, ColorRGBA::red);
 
     // Create Colorizer
     const ColorRGBA red(255u,0u,0u,255u);

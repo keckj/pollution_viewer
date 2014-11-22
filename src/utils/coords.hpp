@@ -51,4 +51,10 @@ Coords<T> toUnitSquare(const Coords<T> &coords) {
     return Coords<T>(coords.nCoords,x,y);
 }
 
+template <typename T>
+std::ostream &operator<< (std::ostream &os, const BoundingBox<T> &bbox) {
+    os << "BBOX(xmin="<<bbox.xmin<<", ymin="<<bbox.ymin<<", xmax="<<bbox.xmax<<", ymax="<<bbox.ymax<<")";
+    return os;
+}
+
 #endif /* end of include guard: COORDS_H */
