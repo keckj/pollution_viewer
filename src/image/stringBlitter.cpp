@@ -56,10 +56,60 @@ StringImageInfo StringBlitter::evaluateTextImageSize(const std::string &str) {
 
     unsigned int imgWidth = 0, imgHeight = 0;
     unsigned int maxBearingY = 0;
+    
+    unsigned long buffer = 0L;
+    unsigned char value = 0; 
+    unsigned int remainingBytes = 0;
 
     for (unsigned int i = 0; i < str.size(); i++) {
+        //string to utf32 conversion (1 to 4 byte data)
+        value = static_cast<unsigned char>(str[i]);
+
+        //try ro read the begining of a character
+        if(remainingBytes == 0u) {
+            if (value >> 7 == 0) {
+                buffer = value;
+                remainingBytes = 0u;
+            } 
+            else if (value >> 5 == 0b110) {
+                buffer = value & ((1u<<5) - 1u);
+                remainingBytes = 1u;
+            }
+            else if(value >> 4 == 0b1110) {
+                buffer = value & ((1u<<4) - 1u);
+                remainingBytes = 2u;
+            }
+            else if(value >> 3 == 0b11110) {
+                buffer = value & ((1u<<3) - 1u);
+                remainingBytes = 3u;
+            }
+            //else it's not an utf32 character start
+            else {
+                buffer = 0L;
+                std::cout << "Error while reading a character start !" << std::endl;
+                continue;
+            }
+        }
+        //try to read a character byte
+        else if (value >> 6 == 0b10){
+            buffer = (buffer << 6) + (value & ((1u<<6) - 1u));
+            remainingBytes--;
+        }
+        //skip character if byte read not successfull
+        else {
+            buffer = 0L;
+            remainingBytes = 0u;
+            std::cout << "Error while reading a character byte !" << std::endl;
+            continue;
+        }
+
+        //skip character bitmap generation while the utf32 character is not fully read
+        if(remainingBytes > 0)
+            continue;
+
+
         // retrieve glyph index
-        index = FT_Get_Char_Index(face, static_cast<unsigned char>(str[i])); 
+        index = FT_Get_Char_Index(face, buffer); 
         
         // load glyph image into the slot (erase previous one)
         CHECK_FREETYPE_ERROR(FT_Load_Glyph(face, index, FT_LOAD_DEFAULT));
@@ -70,6 +120,8 @@ StringImageInfo StringBlitter::evaluateTextImageSize(const std::string &str) {
         imgWidth += slot->advance.x >> 6;
         imgHeight = std::max(imgHeight, static_cast<unsigned int>(slot->bitmap_top + bitmap.rows));
         maxBearingY = std::max(maxBearingY, static_cast<unsigned int>(slot->bitmap_top));
+        
+        buffer = 0L;
     }
     
     log4cpp::log_console->debugStream() << "[FreeType] Image Size (in pixels): " << imgWidth << "x" << imgHeight;
@@ -93,10 +145,10 @@ Image<1u> StringBlitter::generateTextImageGraylevel(const std::string &str) {
     unsigned int remainingBytes = 0;
     
     for (unsigned int i = 0; i < str.size(); i++) {
-       
         //string to utf32 conversion (1 to 4 byte data)
         value = static_cast<unsigned char>(str[i]);
 
+        //try ro read the begining of a character
         if(remainingBytes == 0u) {
             if (value >> 7 == 0) {
                 buffer = value;
@@ -114,23 +166,27 @@ Image<1u> StringBlitter::generateTextImageGraylevel(const std::string &str) {
                 buffer = value & ((1u<<3) - 1u);
                 remainingBytes = 3u;
             }
+            //else it's not an utf32 character start
             else {
                 buffer = 0L;
-                std::cout << "Error while reading character !" << std::endl;
+                std::cout << "Error while reading a character start !" << std::endl;
                 continue;
             }
         }
+        //try to read a character byte
         else if (value >> 6 == 0b10){
             buffer = (buffer << 6) + (value & ((1u<<6) - 1u));
             remainingBytes--;
         }
+        //skip character if byte read not successfull
         else {
             buffer = 0L;
             remainingBytes = 0u;
-            std::cout << "Error while reading character !" << std::endl;
+            std::cout << "Error while reading a character byte !" << std::endl;
             continue;
         }
 
+        //skip character bitmap generation while the utf32 character is not fully read
         if(remainingBytes > 0)
             continue;
 
