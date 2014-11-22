@@ -488,33 +488,7 @@ std::string KmlFile::dateToString(const std::tm &date, DateFormat format) {
     return std::string(buffer);
 }
         
-void KmlFile::putKmlHeader() {
-    time_t t = time(0);
-    std::tm *now = localtime(&t);
 
-    startKml();
-    skipLine();
-    putComment("=====================================================================================================================");
-    putComment("This file was generated automatically with real meteorological data and is part of the Ensimag visualization project.");
-    putComment("=====================================================================================================================");
-    skipLine();
-    startDocument("Root");
-    putName("Environemental contaminant viewer");
-    putDescription("PM10 particles");
-    putDate(*now, YYYY_MM_DD_hh_mm_ss);
-    putAuthor("Jean-Baptiste Keck");
-    putAuthor("Alexandre Ribard");
-    skipLine();
-    putVisibility(true);
-    putOpen(true);
-    skipLine();
-}
-
-void KmlFile::putKmlFooter() {
-    endDocument();
-    endKml();
-}
-        
 void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
                 BoundingBox<double> bbox, double rotation, const ColorRGBA &color) {
     startGroundOverlay();

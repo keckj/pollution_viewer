@@ -11,12 +11,10 @@
 #include "simpleShepardInterpolator.hpp"
 #include "linearColorizer.hpp"
 #include "overlayGenerator.hpp"
-#include "kmlFile.hpp"
+#include "kmlGenerator.hpp"
 
 int main(int argc, char** argv) {
 
-
-    
     // Initialize Logs
     using log4cpp::log_console;
     log4cpp::initLogs();
@@ -38,7 +36,6 @@ int main(int argc, char** argv) {
     SensorDataArray<int> sensorData = buildSensorDataArray(stations, sensorName);
     
     //Compute bounding box
-    BoundingBox<double> bbox = computeBoundingBox(Coords<double>(sensorData.nStations, sensorData.x, sensorData.y));
 
     // Simple Shepard interpolator
     const unsigned int gridWidth = 128u;
@@ -71,48 +68,12 @@ int main(int argc, char** argv) {
     log_console->infoStream() << "Done ! Cleaning Up...";
     delete [] interpolatedGrid;
 
-    /////////////// KML TEST ////////////////
-    KmlFile kml("test.kml");
-    kml.putKmlHeader();
-
-    // Style definition
-    kml.startStyle("stationStyle");
-    kml.putLabelStyle(ColorRGBA(0x00,0x00,0x00,0x00), NORMAL, 0.0f); //invisible labels
-    kml.putIconStyle("http://ukmobilereview.com/wp-content/uploads/2013/07/antenna-strength.png",
-            Offset(), 0.25f, 0.0f); //custom icon
-    kml.endStyle();
-    kml.skipLine();
-   
-    // Initial camera position
-    kml.putLookAt((bbox.xmin+bbox.xmax)/2.0, (0.75*bbox.ymin+0.25*bbox.ymax), 0.0, CLAMP_TO_GROUND, 250000.0, 30.0f, -20.0f);
-    kml.skipLine();
-
-    // Screen overlay
-    kml.putScreenOverlay("ScreenOverlay", "Screen overlay used to display informations.",
-            Offset(0.0f, 0.0f),
-            Offset(0.1f, 0.15f),
-            Offset(0.0f, 400, PIXELS),
-            Offset(),
-            0.0f, 3, "img/overlay.png");
-    kml.skipLine();
-  
-    // Station placemarks folder
-    kml.putFolder("Stations", "Station locations", false, true);
-    for (unsigned int i = 0; i < sensorData.nStations; i++) {
-        kml.putPlaceMark(*sensorData.stationNames[i], sensorData.stationDescription(i,kml.getCurrentIndentLevel()+2), "stationStyle", 
-                sensorData.x[i], sensorData.y[i], 0.0, CLAMP_TO_GROUND);
-    }
-    kml.endFolder();
-    kml.skipLine();
-
-    // Ground overlays folder
-    kml.putFolder("Sensor data overlays", "Interpolation results", false, true);
-    kml.putGroundOverlay("First hour data", 0u, CLAMP_TO_GROUND, bbox, 0.0, "img/test.png");
-    kml.endFolder();
-    kml.skipLine();
-
-    kml.putKmlFooter();
-    ////////////////////////////////////////////
+    // generate KML file
+    KmlGenerator kml("test.kml",
+                     "kml/screenOverlays/", "screen_", ".png",
+                     "kml/groundOverlays/", "ground_", ".png",
+                     "kml/icons/station.png",
+                     sensorData);
     
     return EXIT_SUCCESS;
 }

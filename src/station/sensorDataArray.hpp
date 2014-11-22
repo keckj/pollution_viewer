@@ -4,7 +4,11 @@
 #define SENSORDATAARRAY_H
 
 #include <ctime>
+#include <cassert>
 #include <string>
+
+#include "coords.hpp"
+#include "station.hpp"
 
 template <typename T>
 struct SensorDataArray {
@@ -14,6 +18,7 @@ struct SensorDataArray {
     std::tm startTime;
     std::tm endTime;
     std::tm deltaT;
+    
 
     unsigned int nMeasures;
     unsigned int nStations;
@@ -24,6 +29,8 @@ struct SensorDataArray {
     double *y;
     double *z;
     T **data;
+    
+    BoundingBox<double> bbox;
 
     //DATA LAYOUT
     //00:00:00 s1 s2 s3 s4 ... s_nStations <= first measure
@@ -39,7 +46,7 @@ struct SensorDataArray {
             double *x, double *y, double *z,
             T** data);
 
-    std::string stationDescription(unsigned int i, unsigned int indentLevel) {
+    std::string stationDescription(unsigned int i, unsigned int indentLevel) const {
    
         std::stringstream ss;
         std::string tabsMinusOne, tabs;
@@ -86,6 +93,7 @@ SensorDataArray<T>::SensorDataArray(std::string sensorName, std::string unitName
     x(x), y(y), z(z),
     data(data) 
 {
+    bbox = computeBoundingBox(Coords<double>(nStations, x, y));
 }
 
 

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <ctime>
 
 #include "colors.hpp"
 #include "coords.hpp"
@@ -16,7 +17,7 @@ class KmlFile {
 
     public:
         KmlFile(cstring filePath);
-        ~KmlFile();
+        virtual ~KmlFile();
 
         // USEFULL FUNCTIONS //
         void skipLine();
@@ -24,8 +25,6 @@ class KmlFile {
         unsigned int getCurrentIndentLevel();
 
         // HIGH LEVEL PRIMITIVES //
-        void putKmlHeader();
-        void putKmlFooter();
 
         void putComment(cstring comment);
 
