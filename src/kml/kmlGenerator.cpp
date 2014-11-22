@@ -9,7 +9,8 @@ KmlGenerator::KmlGenerator(const std::string &filePath,
         const std::string &groundOverlayPrefix,
         const std::string &groundOverlaySuffix,
         const std::string &stationIconPath,
-        const SensorDataArray<int> &sensorData) :
+        const SensorDataArray<int> &sensorData,
+        const ColorLineList<double,4u> &isolines) :
     KmlFile(filePath)
 {
     
@@ -20,7 +21,8 @@ KmlGenerator::KmlGenerator(const std::string &filePath,
         groundOverlayPrefix,
         groundOverlaySuffix,
         stationIconPath,
-        sensorData);
+        sensorData,
+        isolines);
 }
 
 KmlGenerator::~KmlGenerator() {
@@ -33,7 +35,8 @@ void KmlGenerator::generateKmlFile(const std::string &screenOverlayFolder,
         const std::string &groundOverlayPrefix,
         const std::string &groundOverlaySuffix,
         const std::string &stationIconPath,
-        const SensorDataArray<int> &sensorData) {
+        const SensorDataArray<int> &sensorData,
+        const ColorLineList<double,4u> &isolines) {
 
     putKmlHeader();
 
@@ -64,6 +67,12 @@ void KmlGenerator::generateKmlFile(const std::string &screenOverlayFolder,
         putPlaceMark(*sensorData.stationNames[i], sensorData.stationDescription(i,getCurrentIndentLevel()+2), "stationStyle", 
                 sensorData.x[i], sensorData.y[i], 0.0, CLAMP_TO_GROUND);
     }
+    endFolder();
+    skipLine();
+    
+    // Isolines
+    putFolder("Isolines", "Data isolines.", false, true);
+    putLineStrings("Isolines", "", isolines);
     endFolder();
     skipLine();
 

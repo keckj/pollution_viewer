@@ -7,7 +7,7 @@ IsoLineGenerator<F,N>::IsoLineGenerator(unsigned int dataWidth, unsigned int dat
 template <typename F, unsigned int N>
 ColorLineList<double,N> IsoLineGenerator<F,N>::generateIsoline(F* density, F isovalue, Color<N> color) 
 {
-    PointList<double> points;
+    ColorLineList<double,N> colorLines;
     
     double width = bbox.xmax - bbox.xmin;
     double height = bbox.ymax - bbox.ymin;
@@ -15,7 +15,7 @@ ColorLineList<double,N> IsoLineGenerator<F,N>::generateIsoline(F* density, F iso
     
     double squareWidth = width/(dataWidth - 1);
     double squareHeight = height/(dataHeight - 1);
-    Vec<double> squareSize(squareWidth, squareHeight, 0.0);
+    Vec<double> squareSize(squareWidth, -squareHeight, 0.0); //minus sign because of coordinate change
 
     F d[4];
     F mean;
@@ -42,10 +42,12 @@ ColorLineList<double,N> IsoLineGenerator<F,N>::generateIsoline(F* density, F iso
             currentPos.z = 0.0;
 
             memcpy(lineTable, MarchingSquare::lineTable + 4*msCase, 4*sizeof(char));
-                    
-            //std::cout << d[3] << " " << d[2] << " " << d[1] << " " << d[0] << std::endl;
-            //std::cout << (d[3]>=isovalue) << " " << (d[2]>=isovalue) << " " << (d[1]>=isovalue) << " " << (d[0]>=isovalue) << std::endl;
-            //std::cout << static_cast<unsigned int>(msCase) << "  " << static_cast<unsigned int>(nLines) << std::endl;
+            
+#ifdef _DEBUG
+            std::cout << d[3] << " " << d[2] << " " << d[1] << " " << d[0] << std::endl;
+            std::cout << (d[3]>=isovalue) << " " << (d[2]>=isovalue) << " " << (d[1]>=isovalue) << " " << (d[0]>=isovalue) << std::endl;
+            std::cout << static_cast<unsigned int>(msCase) << "  " << static_cast<unsigned int>(nLines) << std::endl;
+#endif
 
             if(nLines == 2) {
                 mean = (d[0] + d[1] + d[2] + d[3])/F(4);
@@ -54,6 +56,7 @@ ColorLineList<double,N> IsoLineGenerator<F,N>::generateIsoline(F* density, F iso
             }
 
             for (unsigned int n = 0; n < nLines; n++) {
+                Line<double> segment; 
                 for (unsigned int e = 0; e < 2u; e++) {
                     unsigned char edge = static_cast<unsigned char>(lineTable[2*n+e]);
                     Vec<double> edgeStart(MarchingSquare::edgeStart[2*edge+0], MarchingSquare::edgeStart[2*edge+1], 0.0);
@@ -61,40 +64,26 @@ ColorLineList<double,N> IsoLineGenerator<F,N>::generateIsoline(F* density, F iso
 
                     double alpha = (isovalue - d[edge])/(d[(edge+1)%4] - d[edge]);
                     
-                    //std::cout << "Edge: " << static_cast<int>(edge) << std::endl;
-                    //std::cout << "EdgeStart: " << edgeStart << std::endl;
-                    //std::cout << "EdgeDir: " << edgeDir << std::endl;
-                    //std::cout << "Isovalue:" << isovalue << std::endl;
-                    //std::cout << "D0: " << d[edge] << std::endl;
-                    //std::cout << "D1: " << d[(edge+1)%4] << std::endl;
-                    //std::cout << "Alpha: " << alpha << " " << std::endl;
-                    assert(alpha >= 0.0);
-                    assert(alpha <= 1.0);
                     Vec<double> P = currentPos + (edgeStart + alpha*edgeDir)*squareSize;
 
-                    points.push_back(P);
+                    segment.push_back(P);
+            
+#ifdef _DEBUG
+                    std::cout << "Edge: " << static_cast<int>(edge) << std::endl;
+                    std::cout << "EdgeStart: " << edgeStart << std::endl;
+                    std::cout << "EdgeDir: " << edgeDir << std::endl;
+                    std::cout << "Isovalue:" << isovalue << std::endl;
+                    std::cout << "D0: " << d[edge] << std::endl;
+                    std::cout << "D1: " << d[(edge+1)%4] << std::endl;
+                    std::cout << "Alpha: " << alpha << " " << std::endl;
+                    assert(alpha >= 0.0);
+                    assert(alpha <= 1.0);
+#endif
                 }
+                colorLines.push_back(ColorLine<double,N>(segment,color)); 
             }
         }
     }
-
-    ColorLineList<double,N> colorLines;
-
-
-    while(!points.empty()) {
-        ColorLine<double,N>(color);
-        for(auto& p : points) {
-            assert(p.x <= bbox.xmax);
-            assert(p.x >= bbox.xmin);
-            assert(p.y <= bbox.ymax);
-            assert(p.y >= bbox.ymin);
-
-
-
-
-        }
-    }
-
 
     return colorLines;
 }

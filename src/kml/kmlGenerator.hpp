@@ -4,6 +4,7 @@
 
 #include "kmlFile.hpp"
 #include "sensorDataArray.hpp"
+#include "isolineUtils.hpp"
 
 class KmlGenerator final : public KmlFile {
     public:
@@ -15,7 +16,8 @@ class KmlGenerator final : public KmlFile {
                      const std::string &groundOverlayPrefix,
                      const std::string &groundOverlaySuffix,
                      const std::string &stationIconPath,
-                     const SensorDataArray<int> &sensorData);
+                     const SensorDataArray<int> &sensorData,
+                     const ColorLineList<double,4u> &isolines);
 
         ~KmlGenerator();
 
@@ -27,7 +29,8 @@ class KmlGenerator final : public KmlFile {
                      const std::string &groundOverlayPrefix,
                      const std::string &groundOverlaySuffix,
                      const std::string &stationIconPath,
-                     const SensorDataArray<int> &sensorData);
+                     const SensorDataArray<int> &sensorData,
+                     const ColorLineList<double,4u> &isolines);
 
         void putKmlHeader();
         void putKmlFooter();

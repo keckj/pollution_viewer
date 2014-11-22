@@ -38,8 +38,8 @@ int main(int argc, char** argv) {
     SensorDataArray<int> sensorData = buildSensorDataArray(stations, sensorName);
     
     // Simple Shepard interpolator
-    const unsigned int gridWidth = 128u;
-    const unsigned int gridHeight = 128u;
+    const unsigned int gridWidth = 256u;
+    const unsigned int gridHeight = 256u;
     const unsigned int pixels = gridHeight*gridWidth;
     const float shepardMu = 2.0f;
 
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 
     // Generate isolines
     IsoLineGenerator<float,4u> isolineGenerator(gridWidth, gridHeight, sensorData.bbox);
-    ColorLineList<double,4u> isoline = isolineGenerator.generateIsoline(interpolatedGrid, 20.0f, ColorRGBA::red);
+    const ColorLineList<double,4u> &isolines = isolineGenerator.generateIsoline(interpolatedGrid, 20.0f, ColorRGBA::red);
 
     // Create Colorizer
     const ColorRGBA red(255u,0u,0u,255u);
@@ -77,7 +77,8 @@ int main(int argc, char** argv) {
                      "kml/screenOverlays/", "screen_", ".png",
                      "kml/groundOverlays/", "ground_", ".png",
                      "kml/icons/station.png",
-                     sensorData);
+                     sensorData,
+                     isolines);
     
     return EXIT_SUCCESS;
 }

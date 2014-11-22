@@ -10,6 +10,7 @@
 #include "colors.hpp"
 #include "coords.hpp"
 #include "kmlUtils.hpp"
+#include "isolineUtils.hpp"
 
 class KmlFile {
 
@@ -36,8 +37,18 @@ class KmlFile {
         void putPlaceMark(cstring name, cstring description, cstring styleUrl, 
                 double longitude, double latitude, double altitude, AltitudeMode altitudeMode);
 
+        void putLineString(cstring name, cstring description,
+                const ColorLine<double,4u> &colorLine,
+                AltitudeMode AltitudeMode = CLAMP_TO_GROUND,
+                unsigned int drawOrder=0u, bool extrude=false, bool tesselate=false);
+        
+        void putLineStrings(cstring name, cstring description,
+                const ColorLineList<double,4u> &colorLines,
+                AltitudeMode AltitudeMode = CLAMP_TO_GROUND,
+                unsigned int drawOrder=0u, bool extrude=false, bool tesselate=false);
+
         void putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
-                BoundingBox<double> bbox, double rotation, const ColorRGBA &color);
+                BoundingBox<double> bbox, double rotation, const Color<4u> &color);
         void putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
                 BoundingBox<double> bbox, double rotation, cstring iconPath);
         
@@ -50,11 +61,11 @@ class KmlFile {
         // HIGH LEVEL STYLE PRIMITIVES //
         void startStyle(cstring styleId = std::string(""));
 
-        void putIconStyle(ColorRGBA color, ColorMode colorMode, float scale, float heading);
+        void putIconStyle(const Color<4u> &color, ColorMode colorMode, float scale, float heading);
         void putIconStyle(cstring iconHref, const Offset &hotSpot, float scale, float heading);
-        void putLabelStyle(ColorRGBA color, ColorMode colorMode, float scale);
-        void putLineStyle(ColorRGBA color, ColorMode colorMode, float width);
-        void putPolyStyle(ColorRGBA color, ColorMode colorMode, bool fill, bool outline);
+        void putLabelStyle(const Color<4u> &color, ColorMode colorMode, float scale);
+        void putLineStyle(const Color<4u> &color, ColorMode colorMode, float width);
+        void putPolyStyle(const Color<4u> &color, ColorMode colorMode, bool fill, bool outline);
 
         void endStyle();
      
@@ -65,6 +76,7 @@ class KmlFile {
         void startDocument(cstring documentId = std::string(""));
         void startFolder(cstring folderId = std::string(""));
         void startPlacemark(cstring placemarkId = std::string(""));
+        void startMultiGeometry(cstring placemarkId = std::string(""));
         void startGroundOverlay(cstring placemarkId = std::string(""));
         void startScreenOverlay(cstring placemarkId = std::string(""));
         void startLookAt(cstring lookAtId = std::string(""));
@@ -103,7 +115,8 @@ class KmlFile {
         void putCoordinate(double longitude, double latitude, double height);
         void putCoordinates(unsigned int count, double *longitude, double *latitude);
         void putCoordinates(unsigned int count, double *longitude, double *latitude, double *height);
-        void putColor(ColorRGBA color);
+        void putCoordinates(Line<double> line);
+        void putColor(const Color<4u> &color);
         void putColorMode(ColorMode colorMode);
         void putAltitudeMode(AltitudeMode altitudeMode);
         void putOffset(const Offset &offset, OffsetType offsetType);
@@ -129,6 +142,7 @@ class KmlFile {
 
         void endLookAt();
         void endPlacemark();
+        void endMultiGeometry();
         void endGroundOverlay();
         void endScreenOverlay();
         void endFolder();

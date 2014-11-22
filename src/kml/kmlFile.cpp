@@ -84,6 +84,17 @@ void  KmlFile::endPlacemark() {
     kml << "</Placemark>" << newLineAndDedent();
 }
 
+void  KmlFile::startMultiGeometry(cstring multigeometryId) {
+    if(stringIsEmpty(multigeometryId))
+        kml << "<MultiGeometry>" << newLineAndIndent();
+    else
+        kml << "<MultiGeometry id=\"" + multigeometryId + "\">" << newLineAndIndent();
+}
+void  KmlFile::endMultiGeometry() {
+    removeTab();
+    kml << "</MultiGeometry>" << newLineAndDedent();
+}
+
 void  KmlFile::startGroundOverlay(cstring groundOverlayId) {
     if(stringIsEmpty(groundOverlayId))
         kml << "<GroundOverlay>" << newLineAndIndent();
@@ -292,12 +303,12 @@ void KmlFile::putRange(double range) {
     kml << "<range>" << range << "</range>"<<newLine();
 }
 
-void KmlFile::putColor(ColorRGBA color) {
+void KmlFile::putColor(const Color<4u> &color) {
     kml << "<color>" 
-        << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(color.a)
-        << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(color.b)
-        << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(color.g)
-        << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(color.r)
+        << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(color[3])
+        << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(color[2])
+        << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(color[1])
+        << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(color[0])
         << "</color>" 
         << newLine();
 }
@@ -412,7 +423,20 @@ void KmlFile::putCoordinates(unsigned int count, double *longitude, double *lati
         kml<< longitude << "," << latitude << "," << 0.0f << newLine();
     }
     removeTab();
-    kml << "<coordinates>"<<newLineAndDedent();
+    kml << "</coordinates>"<<newLineAndDedent();
+}
+        
+void KmlFile::putCoordinates(Line<double> line) {
+    if(line.empty())
+        return;
+
+    kml << "<coordinates>"<<newLineAndIndent();
+    for (auto &pts : line) {
+        kml<< pts.x << "," << pts.y << "," << pts.z << " ";
+    }
+    kml << newLine();
+    removeTab();
+    kml << "</coordinates>"<<newLineAndDedent();
 }
 
 void KmlFile::putCoordinates(unsigned int count, double *longitude, double *latitude, double *altitude) {
@@ -490,7 +514,7 @@ std::string KmlFile::dateToString(const std::tm &date, DateFormat format) {
         
 
 void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
-                BoundingBox<double> bbox, double rotation, const ColorRGBA &color) {
+                BoundingBox<double> bbox, double rotation, const Color<4u> &color) {
     startGroundOverlay();
     putName(name);
     putAltitude(altitude);
@@ -555,7 +579,7 @@ void KmlFile::putLookAt(double longitude, double latitude, double altitude, Alti
         endLookAt();
 }
 
-void KmlFile::putIconStyle(ColorRGBA color, ColorMode colorMode, float scale, float heading) {
+void KmlFile::putIconStyle(const Color<4u> &color, ColorMode colorMode, float scale, float heading) {
     startIconStyle();
     putColor(color);
     putColorMode(colorMode);
@@ -573,7 +597,7 @@ void KmlFile::putIconStyle(cstring iconHref, const Offset &hotSpot, float scale,
     endIconStyle();
 }
 
-void KmlFile::putLabelStyle(ColorRGBA color, ColorMode colorMode, float scale) {
+void KmlFile::putLabelStyle(const Color<4u> &color, ColorMode colorMode, float scale) {
     startLabelStyle();
     putColor(color);
     putColorMode(colorMode);
@@ -581,7 +605,7 @@ void KmlFile::putLabelStyle(ColorRGBA color, ColorMode colorMode, float scale) {
     endLabelStyle();
 }
 
-void KmlFile::putLineStyle(ColorRGBA color, ColorMode colorMode, float width) {
+void KmlFile::putLineStyle(const Color<4u> &color, ColorMode colorMode, float width) {
     startLineStyle();
     putColor(color);
     putColorMode(colorMode);
@@ -589,7 +613,7 @@ void KmlFile::putLineStyle(ColorRGBA color, ColorMode colorMode, float width) {
     endLineStyle();
 }
 
-void KmlFile::putPolyStyle(ColorRGBA color, ColorMode colorMode, bool fill, bool outline) {
+void KmlFile::putPolyStyle(const Color<4u> &color, ColorMode colorMode, bool fill, bool outline) {
     startPolyStyle();
     putColor(color);
     putColorMode(colorMode);
@@ -608,4 +632,43 @@ void KmlFile::putFolder(cstring name, cstring description, bool open, bool visib
 
 void KmlFile::putComment(cstring comment) {
     kml << "<!--" << comment << "-->" << newLine();
+}
+        
+void KmlFile::putLineString(cstring name, cstring description,
+        const ColorLine<double,4u> &colorLine,
+        AltitudeMode altitudeMode,
+        unsigned int drawOrder, bool extrude, bool tesselate) {
+    startPlacemark();
+    putName(name);
+    putDescription(description);
+    startLineString();
+    putExtrude(extrude);
+    putTesselate(tesselate);
+    putDrawOrder(drawOrder);
+    putAltitudeMode(altitudeMode);
+    putCoordinates(colorLine.line);
+    endLineString();
+    endPlacemark();
+}
+        
+void KmlFile::putLineStrings(cstring name, cstring description,
+                const ColorLineList<double,4u> &colorLines,
+                AltitudeMode altitudeMode,
+                unsigned int drawOrder, bool extrude, bool tesselate) {
+    
+    startPlacemark();
+    putName(name);
+    putDescription(description);
+    startMultiGeometry();
+    for(auto &line : colorLines) {
+        startLineString();
+        putExtrude(extrude);
+        putTesselate(tesselate);
+        putDrawOrder(drawOrder);
+        putAltitudeMode(altitudeMode);
+        putCoordinates(line.line);
+        endLineString();
+    }
+    endMultiGeometry();
+    endPlacemark();
 }

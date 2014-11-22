@@ -9,7 +9,7 @@ template <typename T>
 using Point = std::list<Vec<T>>;
 
 template <typename T>
-using PointList = std::vector<Vec<T>>;
+using PointList = std::list<Vec<T>>;
 
 template <typename T>
 using Line = std::list<Vec<T>>;
