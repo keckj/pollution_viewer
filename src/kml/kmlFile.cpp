@@ -12,8 +12,9 @@ indentLevel(0), filePath(filePath) {
         log4cpp::log_console->errorStream() << "Error while opening file" << filePath << " !";
 		exit(EXIT_FAILURE);
 	}
-    
-    kml << std::setprecision(std::numeric_limits<double>::digits10 + 1) << std::fixed;
+   
+    //Set precision format for the whole KML file
+    kml << std::setprecision(std::numeric_limits<double>::digits10 + 1);
 }
         
 KmlFile::~KmlFile() {
