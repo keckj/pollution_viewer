@@ -48,21 +48,24 @@ int main(int argc, char** argv) {
     log_console->infoStream() << "Interpolating with the Simple Shepard Method...";
     const InterpolatedData<float> &interpolatedGrid = ssInterpolator(gridWidth,gridHeight,sensorData.nStations, sensorData.x, sensorData.y, sensorData.data[0]);
 
-    // Create Colorizer
+    // Create Data Colorizer
     const ColorRGBA red(255u,0u,0u,255u);
     const ColorRGBA blue(0u,0u,255u,50u);
-    LinearColorizer<float,4u> colorizer(interpolatedGrid,red,blue);
-    
-    // Generate isolines
-    IsoLineGenerator<float,4u> isolineGenerator(sensorData.bbox);
-    const ColorLineList<double,4u> &isolines = isolineGenerator.generateIsoline(interpolatedGrid, 20.0f, ColorRGBA::red);
+    LinearColorizer<float,4u> dataColorizer(interpolatedGrid,red,blue);
     
     // Generate ground overlay
     log_console->infoStream() << "Generating image...";
-    OverlayGenerator::generateImage<float,4u>(interpolatedGrid, colorizer, "img/","test","png");
+    OverlayGenerator::generateImage<float,4u>(interpolatedGrid, dataColorizer, "img/","test","png");
+
+    // Create Isoline Colorizer
+    LinearColorizer<float,4u> isolineColorizer(interpolatedGrid,ColorRGBA::blue,ColorRGBA::red);
+    
+    // Generate isolines
+    IsoLineGenerator<float,4u> isolineGenerator(sensorData.bbox);
+    const IsoLineList<double,4u,float> &isolines = isolineGenerator.generateIsolines(interpolatedGrid, 10, isolineColorizer);
 
     // Generate Color Overlay
-    colorizer.generateColorRange();
+    dataColorizer.generateColorRange();
 
     // Clean up
     log_console->infoStream() << "Done ! Cleaning Up...";

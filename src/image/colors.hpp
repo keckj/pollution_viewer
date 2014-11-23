@@ -4,12 +4,16 @@
 #include <ostream>
 #include <sstream>
 #include <cstring>
+#include <string>
+#include <iomanip>
 
 template <unsigned int N>
 struct Color {
     
     unsigned char operator[](unsigned int k) const;
     unsigned char & operator[](unsigned int k);
+
+    std::string toHexString() const;
     
     static unsigned int channels; //duplicate of N but more clear for Muggles
     
@@ -85,9 +89,22 @@ template <unsigned int N>
 unsigned char & Color<N>::operator[](unsigned int k) {
     return intensities[k];
 }
-
+    
 template <unsigned int N>
 unsigned int Color<N>::channels = N;
+
+template <unsigned int N>
+std::string Color<N>::toHexString() const {
+    std::stringstream ss;
+
+    ss << std::internal << std::setfill('0') << std::hex;
+
+    for (unsigned int k = 0; k < N; k++) {
+        ss << static_cast<unsigned int>(intensities[k]);
+    }
+
+    return ss.str();
+}
     
 template <unsigned int N>
 template <typename F>

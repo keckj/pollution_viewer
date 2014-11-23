@@ -5,12 +5,11 @@ IsoLineGenerator<F,N>::IsoLineGenerator(const BoundingBox<double> &bbox) :
 }
 
 template <typename F, unsigned int N>
-ColorLineList<double,N> IsoLineGenerator<F,N>::generateIsoline(const InterpolatedData<F> &data, double isovalue, const Color<N> &color) 
+IsoLine<double,N,F> IsoLineGenerator<F,N>::generateIsoline(const InterpolatedData<F> &data, double isovalue, const Color<N> &color) 
 {
     const F* density = data.density;
 
-    ColorLineList<double,4u> colorLines;
-    LineList<double> computedLines;
+    MultiLine<double> computedLines;
     
     double width = bbox.xmax - bbox.xmin;
     double height = bbox.ymax - bbox.ymin;
@@ -94,21 +93,27 @@ ColorLineList<double,N> IsoLineGenerator<F,N>::generateIsoline(const Interpolate
         }
     }
    
-    for (auto &line : computedLines) {
-        colorLines.push_back(ColorLine<double,4u>(line, color));
-    }
-    
-    return colorLines;
+    return IsoLine<double,4u,F>(computedLines, color, isovalue);
 }
 
 template <typename F, unsigned int N>
-ColorLineList<double,N> generateIsolines(const InterpolatedData<F> &data, unsigned int nLines, const Colorizer<F,N> &colorizer) {
+IsoLineList<double,N,F> IsoLineGenerator<F,N>::generateIsolines(const InterpolatedData<F> &data, unsigned int nLines, const Colorizer<F,N> &colorizer) {
+
+    IsoLineList<double,N,F> isolines;
+    
+    F deltaIsoval = (data.max - data.min)/(nLines + 2u);
+    for (unsigned int i = 1; i < nLines+1; i++) {
+        F isovalue = data.min + i*deltaIsoval;
+        isolines.push_back(generateIsoline(data, isovalue, colorizer(isovalue)));
+    }
+
+    return isolines;
 }
 
 template <typename F, unsigned int N>
 inline void IsoLineGenerator<F,N>::test() {
 
-    LineList<double> ll;
+    MultiLine<double> ll;
 
     Line<double> segment0;
     Line<double> segment1;
@@ -161,9 +166,9 @@ inline unsigned char IsoLineGenerator<F,N>::computeCase(double d[], double isova
 }
         
 template <typename F, unsigned int N>
-void IsoLineGenerator<F,N>::attachLine(Line<double> &line, LineList<double> &lineList) {
+void IsoLineGenerator<F,N>::attachLine(Line<double> &line, MultiLine<double> &lineList) {
 
-    LineList<double>::iterator it;
+    MultiLine<double>::iterator it;
 
     for (it = lineList.begin(); it != lineList.end(); ++it) {
         if(it->front() == line.back()) {

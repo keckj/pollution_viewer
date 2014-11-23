@@ -11,6 +11,7 @@
 #include "coords.hpp"
 #include "kmlUtils.hpp"
 #include "isolineUtils.hpp"
+#include "lines.hpp"
 
 class KmlFile {
 
@@ -38,12 +39,24 @@ class KmlFile {
                 double longitude, double latitude, double altitude, AltitudeMode altitudeMode);
 
         void putLineString(cstring name, cstring description,
-                const ColorLine<double,4u> &colorLine,
+                const Line<double> &line,
+                cstring styleUrl = std::string(""),
                 AltitudeMode AltitudeMode = CLAMP_TO_GROUND,
                 unsigned int drawOrder=0u, bool extrude=false, bool tesselate=false);
         
         void putLineStrings(cstring name, cstring description,
-                const ColorLineList<double,4u> &colorLines,
+                const MultiLine<double> &lines,
+                cstring styleUrl = std::string(""),
+                AltitudeMode AltitudeMode = CLAMP_TO_GROUND,
+                unsigned int drawOrder=0u, bool extrude=false, bool tesselate=false);
+        
+        void putColorLineString(cstring name, cstring description,
+                const ColorLine<double,4u> &colorLine,
+                AltitudeMode AltitudeMode = CLAMP_TO_GROUND,
+                unsigned int drawOrder=0u, bool extrude=false, bool tesselate=false);
+        
+        void putColorLineStrings(cstring name, cstring description,
+                const ColorMultiLine<double,4u> &colorLines,
                 AltitudeMode AltitudeMode = CLAMP_TO_GROUND,
                 unsigned int drawOrder=0u, bool extrude=false, bool tesselate=false);
 
