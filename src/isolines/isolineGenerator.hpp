@@ -10,20 +10,19 @@ template <typename F, unsigned int N>
 class IsoLineGenerator {
     
     public:
-        IsoLineGenerator(unsigned int dataWidth, unsigned int dataHeight, BoundingBox<double> bbox);
+        IsoLineGenerator(const BoundingBox<double> &bbox);
 
-        ColorLineList<double,N> generateIsoline(F* density, double isovalue, Color<N> color);
+        ColorLineList<double,N> generateIsoline(const InterpolatedData<F> &data, double isovalue, const Color<N> &color);
+        
+        ColorLineList<double,N> generateIsolines(const InterpolatedData<F> &data, unsigned int nLines, const Colorizer<F,N> &colorizer);
 
-        void test();
+        static void test();
 
     private:
-        unsigned char computeCase(double d[], double isovalue);
+        static unsigned char computeCase(double d[], double isovalue);
+        static void attachLine(Line<double> &line, LineList<double> &lineList);
 
-        void attachLine(Line<double> &line, LineList<double> &lineList);
-
-        unsigned int dataWidth, dataHeight;
-        BoundingBox<double> bbox;
-
+        const BoundingBox<double> bbox;
 };
 
 #include "isolineGenerator.tpp"

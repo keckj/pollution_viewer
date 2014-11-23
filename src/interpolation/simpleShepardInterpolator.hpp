@@ -12,7 +12,7 @@ class SimpleShepardInterpolator : public Interpolator<T,F> {
         SimpleShepardInterpolator(double mu); 
         ~SimpleShepardInterpolator();
 
-        F* operator()(unsigned int Nx, unsigned int Ny, unsigned int nData, double *x, double *y, T* data);
+        InterpolatedData<F> operator()(unsigned int Nx, unsigned int Ny, unsigned int nData, double *x, double *y, T* data);
 
     private:
         double mu;

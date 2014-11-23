@@ -1,12 +1,14 @@
 
 template <typename F, unsigned int N>
-IsoLineGenerator<F,N>::IsoLineGenerator(unsigned int dataWidth, unsigned int dataHeight, BoundingBox<double> bbox) :
-    dataWidth(dataWidth), dataHeight(dataHeight), bbox(bbox) {
+IsoLineGenerator<F,N>::IsoLineGenerator(const BoundingBox<double> &bbox) :
+    bbox(bbox) {
 }
 
 template <typename F, unsigned int N>
-ColorLineList<double,N> IsoLineGenerator<F,N>::generateIsoline(F* density, double isovalue, Color<N> color) 
+ColorLineList<double,N> IsoLineGenerator<F,N>::generateIsoline(const InterpolatedData<F> &data, double isovalue, const Color<N> &color) 
 {
+    const F* density = data.density;
+
     ColorLineList<double,4u> colorLines;
     LineList<double> computedLines;
     
@@ -14,8 +16,8 @@ ColorLineList<double,N> IsoLineGenerator<F,N>::generateIsoline(F* density, doubl
     double height = bbox.ymax - bbox.ymin;
     Vec<double> currentPos;
     
-    double squareWidth = width/(dataWidth - 1);
-    double squareHeight = height/(dataHeight - 1);
+    double squareWidth = width/(data.gridWidth - 1);
+    double squareHeight = height/(data.gridHeight - 1);
     Vec<double> squareSize(squareWidth, -squareHeight, 0.0); //minus sign because of coordinate change
 
     double d[4];
@@ -24,14 +26,14 @@ ColorLineList<double,N> IsoLineGenerator<F,N>::generateIsoline(F* density, doubl
     unsigned char msCase, nLines;
     char lineTable[4];
     
-    for (unsigned int y = 0; y < dataHeight-1; y++) {
-        for (unsigned int x = 0; x < dataWidth-1; x++) {
+    for (unsigned int y = 0; y < data.gridHeight-1; y++) {
+        for (unsigned int x = 0; x < data.gridWidth-1; x++) {
 
             //DOUBLE MANDATORY (2h de debug pour de l'arithmetique des flottants...)
-            d[0] =  static_cast<double>(density[(y+1)*dataWidth + x+0]);
-            d[1] =  static_cast<double>(density[(y+1)*dataWidth + x+1]);
-            d[2] =  static_cast<double>(density[(y+0)*dataWidth + x+1]);
-            d[3] =  static_cast<double>(density[(y+0)*dataWidth + x+0]);
+            d[0] =  static_cast<double>(density[(y+1)*data.gridWidth + x+0]);
+            d[1] =  static_cast<double>(density[(y+1)*data.gridWidth + x+1]);
+            d[2] =  static_cast<double>(density[(y+0)*data.gridWidth + x+1]);
+            d[3] =  static_cast<double>(density[(y+0)*data.gridWidth + x+0]);
 
             msCase = computeCase(d,isovalue);
             nLines = MarchingSquare::lineCount[msCase];
@@ -97,6 +99,10 @@ ColorLineList<double,N> IsoLineGenerator<F,N>::generateIsoline(F* density, doubl
     }
     
     return colorLines;
+}
+
+template <typename F, unsigned int N>
+ColorLineList<double,N> generateIsolines(const InterpolatedData<F> &data, unsigned int nLines, const Colorizer<F,N> &colorizer) {
 }
 
 template <typename F, unsigned int N>

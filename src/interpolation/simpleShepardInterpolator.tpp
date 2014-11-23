@@ -14,10 +14,12 @@ SimpleShepardInterpolator<T,F>::~SimpleShepardInterpolator() {
 
 
 template <typename T, typename F>
-F* SimpleShepardInterpolator<T,F>::operator()(unsigned int Nx, unsigned int Ny, unsigned int nData, double *x, double *y, T* data) {
+InterpolatedData<F> SimpleShepardInterpolator<T,F>::operator()(unsigned int Nx, unsigned int Ny, unsigned int nData, double *x, double *y, T* data) {
 
     // valeurs finales évaluées 
     F* density = new F[Nx*Ny];
+    F max = std::numeric_limits<F>::min();
+    F min = std::numeric_limits<F>::max();
 
     // convertir les coordonées [longitude, latitude] => [0,1]^2
     Coords<double> unitCoords = toUnitSquare(Coords<double>(nData, x, y));
@@ -34,11 +36,13 @@ F* SimpleShepardInterpolator<T,F>::operator()(unsigned int Nx, unsigned int Ny, 
                     d += w*F(data[k]);
                 }
             }
+            max = (d > max) ? d : max;
+            min = (d < min) ? d : min;
             density[j*Nx+i] = d;
         }
     }
 
-    return density;
+    return InterpolatedData<F>(density, min, max, Nx, Ny);
 }
 
 template <typename T, typename F>

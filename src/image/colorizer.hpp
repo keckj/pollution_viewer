@@ -22,15 +22,8 @@ class Colorizer {
         void generateColorRange();
 
     protected:
-        explicit Colorizer(F min, F max) : min(min), max(max) {};
-        explicit Colorizer(unsigned int nData, F* data) : 
-            min(data[0]),
-            max(data[0])
-        {
-            for (unsigned int i = 1; i < nData; i++) {
-                    this->min = (data[i] < this->min ? data[i] : this->min);
-                    this->max = (data[i] > this->max ? data[i] : this->max);
-            }
+        explicit Colorizer(const InterpolatedData<F> &data) : 
+            min(data.min), max(data.max) {
         };
 
         F min;

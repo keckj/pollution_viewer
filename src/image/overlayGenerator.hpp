@@ -12,11 +12,14 @@ class OverlayGenerator {
    
     public:
     template <typename F, unsigned int N>
-    static void generateImage(unsigned int imgWidth, unsigned int imgHeight, F* data, 
+    static void generateImage(const InterpolatedData<F> &data, 
             const Colorizer<F,N> &colorizer,
             const std::string &dstFolder, const std::string &fileName, const std::string &fileExt) {
 
         using log4cpp::log_console;
+
+        unsigned int imgWidth = data.gridWidth;
+        unsigned int imgHeight = data.gridHeight;
 
         // Convert interpolated data to colors with the given colorizer
         const unsigned int channels = Color<N>::channels;
@@ -24,7 +27,7 @@ class OverlayGenerator {
 
         for (unsigned int j = 0; j < imgHeight; j++) {
             for (unsigned int i = 0; i < imgWidth; i++) {
-                Color<N> interpolatedColor = colorizer(data[j*imgWidth+i]);
+                Color<N> interpolatedColor = colorizer(data.density[j*imgWidth+i]);
                 for(unsigned int k = 0; k < channels; k++) {
                         img.data[(j*imgWidth+i)*channels+k] = interpolatedColor[k];
                 }
