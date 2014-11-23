@@ -14,6 +14,9 @@ using PointList = std::list<Vec<T>>;
 template <typename T>
 using Line = std::list<Vec<T>>;
 
+template <typename T>
+using LineList = std::list<Line<T>>;
+
 template <typename T, unsigned int N>
 struct ColorLine {
     Line<T> line;

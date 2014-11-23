@@ -12,6 +12,8 @@ indentLevel(0), filePath(filePath) {
         log4cpp::log_console->errorStream() << "Error while opening file" << filePath << " !";
 		exit(EXIT_FAILURE);
 	}
+    
+    kml << std::setprecision(std::numeric_limits<double>::digits10 + 1) << std::fixed;
 }
         
 KmlFile::~KmlFile() {
@@ -432,7 +434,7 @@ void KmlFile::putCoordinates(Line<double> line) {
 
     kml << "<coordinates>"<<newLineAndIndent();
     for (auto &pts : line) {
-        kml<< pts.x << "," << pts.y << "," << pts.z << " ";
+        kml<< pts.x << "," << pts.y << "," << pts.z << newLine();
     }
     kml << newLine();
     removeTab();

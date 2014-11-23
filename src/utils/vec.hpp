@@ -3,7 +3,7 @@
 #define VEC_H
 
 #include <iostream>
-#include <limits>
+#include "utils.hpp"
 
 //3D vector structure
 
@@ -201,9 +201,8 @@ bool operator!= (const Vec<T> &a, const Vec<T> &b) {
 
 template <typename T>
 bool operator== (const Vec<T> &a, const Vec<T> &b) {
-    Vec<T> dv = b - a;
-    T epsilon = std::numeric_limits<T>::epsilon();
-    return (abs(dv.x) < epsilon && abs(dv.y) < epsilon && abs(dv.z) < epsilon);
+    using Utils::areEqual;
+    return areEqual<T>(a.x,b.x) && areEqual<T>(a.y,b.y) && areEqual<T>(a.z,b.z);
 }
 
 template <typename T>
