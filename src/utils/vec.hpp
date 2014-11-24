@@ -5,8 +5,13 @@
 #include <iostream>
 #include "utils.hpp"
 
-//3D vector structure
+enum Axe {
+    AXE_X=0,
+    AXE_Y,
+    AXE_Z
+};
 
+//3D vector structure
 template <typename T>
 struct Vec {
     T x;
@@ -39,6 +44,8 @@ struct Vec {
 
     Vec<T> unit () const;
     Vec<T> orthogonalVec () const;
+
+    int compare(const Vec<T> &other, Axe axe) const;
 };
 
 template <typename T>
@@ -55,7 +62,9 @@ Vec<T>::~Vec() {}
 
 template <typename T>
 Vec<T>& Vec<T>::operator= (const Vec<T> &v) {
-    Vec<T> V(v);
+    this->x = v.x;
+    this->y = v.y;
+    this->z = v.z;
     return *this;
 }
 
@@ -215,6 +224,28 @@ T Vec<T>::normalize () {
 }
 
 template <typename T>
+int Vec<T>::compare(const Vec<T> &other, Axe axe) const {
+    T v1, v2;
+
+    switch(axe) {
+        case(AXE_X):
+            v1 = x;
+            v2 = other.x;
+            break;
+        case(AXE_Y):
+            v1 = y;
+            v2 = other.y;
+            break;
+        case(AXE_Z):
+            v1 = z;
+            v2 = other.z;
+            break;
+    }
+
+    return (v1 == v2 ? 0 : (v1 > v2 ? 1 : -1));
+}
+
+template <typename T>
 Vec<T> Vec<T>::orthogonalVec () const {
     return Vec<T>(z,z,-x-y);
 }
@@ -241,5 +272,6 @@ std::ostream & operator << (std::ostream &os, Vec<T> &v) {
     os << "(" << v.x << "," << v.y << "," << v.z << ")";
     return os;
 }
+    
 
 #endif /* end of include guard: VEC_H */

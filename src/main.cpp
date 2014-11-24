@@ -48,21 +48,21 @@ int main(int argc, char** argv) {
     log_console->infoStream() << "Interpolating with the Simple Shepard Method...";
     const InterpolatedData<float> &interpolatedGrid = ssInterpolator(gridWidth,gridHeight,sensorData.nStations, sensorData.x, sensorData.y, sensorData.data[0]);
 
-    // Create Data Colorizer
+    // Create colorizers
     const ColorRGBA red(255u,0u,0u,255u);
     const ColorRGBA blue(0u,0u,255u,50u);
     LinearColorizer<float,4u> dataColorizer(interpolatedGrid,red,blue);
+    LinearColorizer<float,4u> isolineColorizer(interpolatedGrid,ColorRGBA::blue,ColorRGBA::red);
+    LinearColorizer<float,4u> isocontourColorizer(interpolatedGrid,ColorRGBA::red,ColorRGBA::blue);
     
     // Generate ground overlay
     log_console->infoStream() << "Generating image...";
     OverlayGenerator::generateImage<float,4u>(interpolatedGrid, dataColorizer, "img/","test","png");
 
-    // Create Isoline Colorizer
-    LinearColorizer<float,4u> isolineColorizer(interpolatedGrid,ColorRGBA::blue,ColorRGBA::red);
-    
-    // Generate isolines
+    // Generate isolines (non closed lines) and isocontours (polygons)
     IsoLineGenerator<float,4u> isolineGenerator(sensorData.bbox);
     const IsoLineList<double,4u,float> &isolines = isolineGenerator.generateIsolines(interpolatedGrid, 10, isolineColorizer);
+    const IsoContourList<double,4u,float> &isocontours = isolineGenerator.generateIsoContours(isolines, interpolatedGrid, isocontourColorizer);
 
     // Generate Color Overlay
     dataColorizer.generateColorRange();
@@ -77,7 +77,8 @@ int main(int argc, char** argv) {
                      "kml/groundOverlays/", "ground_", ".png",
                      "kml/icons/station.png",
                      sensorData,
-                     isolines);
+                     isolines, 
+                     isocontours);
     
     return EXIT_SUCCESS;
 }

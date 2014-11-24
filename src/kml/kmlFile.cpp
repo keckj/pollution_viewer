@@ -429,7 +429,7 @@ void KmlFile::putCoordinates(unsigned int count, double *longitude, double *lati
     kml << "</coordinates>"<<newLineAndDedent();
 }
         
-void KmlFile::putCoordinates(Line<double> line) {
+void KmlFile::putCoordinates(const Line<double> &line) {
     if(line.empty())
         return;
 
@@ -451,7 +451,17 @@ void KmlFile::putCoordinates(unsigned int count, double *longitude, double *lati
     kml << "<coordinates>"<<newLineAndDedent();
 }
         
-void KmlFile::putLatLonBox(BoundingBox<double> bbox, double rotation) {
+void KmlFile::putOuterBoundary(const Line<double> &line) {
+    kml << "<outerBoundaryIs>" << newLineAndIndent();
+    kml << "<LinearRing>" << newLineAndIndent();
+    putCoordinates(line);
+    removeTab();
+    kml << "</LinearRing>" << newLineAndDedent();
+    removeTab();
+    kml << "</outerBoundaryIs>" << newLineAndDedent();
+}
+        
+void KmlFile::putLatLonBox(const BoundingBox<double> &bbox, double rotation) {
     kml << "<LatLonBox>" << newLineAndIndent();
     kml << "<north>" << bbox.ymax << "</north>" << newLine();
     kml << "<south>" << bbox.ymin << "</south>" << newLine();
@@ -657,13 +667,14 @@ void KmlFile::putLineString(cstring name, cstring description,
 }
         
 void KmlFile::putColorLineString(cstring name, cstring description,
+        cstring styleUrlPrefix,
         const ColorLine<double,4u> &colorLine,
         AltitudeMode altitudeMode,
         unsigned int drawOrder, bool extrude, bool tesselate) {
     startPlacemark();
     putName(name);
     putDescription(description);
-    putStyleUrl("ColorLine_"+colorLine.color.toHexString());
+    putStyleUrl(styleUrlPrefix+colorLine.color.toHexString());
     startLineString();
     putExtrude(extrude);
     putTesselate(tesselate);
@@ -700,13 +711,14 @@ void KmlFile::putLineStrings(cstring name, cstring description,
 
 
 void KmlFile::putColorLineStrings(cstring name, cstring description,
+        cstring styleUrlPrefix,
         const ColorMultiLine<double,4u> &colorLines,
         AltitudeMode altitudeMode,
         unsigned int drawOrder, bool extrude, bool tesselate) {
     startPlacemark();
     putName(name);
     putDescription(description);
-    putStyleUrl("ColorLine_"+colorLines.color.toHexString());
+    putStyleUrl(styleUrlPrefix+colorLines.color.toHexString());
     startMultiGeometry();
     for(auto &line : colorLines.lines) {
         startLineString();
@@ -722,3 +734,45 @@ void KmlFile::putColorLineStrings(cstring name, cstring description,
 }
 
 
+void KmlFile::putPolygon(cstring name, cstring description, 
+        const Line<double> &outerBoundary, 
+        cstring styleUrl,
+        AltitudeMode altitudeMode,
+        unsigned int drawOrder, bool extrude, bool tesselate) {
+    
+    startPlacemark();
+    putName(name);
+    putDescription(description);
+    putStyleUrl(styleUrl);
+    startPolygon();
+    putExtrude(extrude);
+    putTesselate(tesselate);
+    putDrawOrder(drawOrder);
+    putAltitudeMode(altitudeMode);
+    putOuterBoundary(outerBoundary);
+    endPolygon();
+    endPlacemark();
+}
+
+void KmlFile::putColorPolygons(cstring name, cstring description, 
+        cstring styleUrlPrefix,
+        const ColorMultiLine<double,4u> &outerBoundaries, 
+        AltitudeMode altitudeMode,
+        unsigned int drawOrder, bool extrude, bool tesselate){
+    startPlacemark();
+    putName(name);
+    putDescription(description);
+    putStyleUrl(styleUrlPrefix+outerBoundaries.color.toHexString());
+    startMultiGeometry();
+    for(auto &outerBoundary : outerBoundaries.lines) {
+        startPolygon();
+        putExtrude(extrude);
+        putTesselate(tesselate);
+        putDrawOrder(drawOrder);
+        putAltitudeMode(altitudeMode);
+        putOuterBoundary(outerBoundary);
+        endPolygon();
+    }
+    endMultiGeometry();
+    endPlacemark();
+}

@@ -51,14 +51,28 @@ class KmlFile {
                 unsigned int drawOrder=0u, bool extrude=false, bool tesselate=false);
         
         void putColorLineString(cstring name, cstring description,
+                cstring styleUrlPrefix,
                 const ColorLine<double,4u> &colorLine,
                 AltitudeMode AltitudeMode = CLAMP_TO_GROUND,
                 unsigned int drawOrder=0u, bool extrude=false, bool tesselate=false);
         
         void putColorLineStrings(cstring name, cstring description,
+                cstring styleUrlPrefix,
                 const ColorMultiLine<double,4u> &colorLines,
                 AltitudeMode AltitudeMode = CLAMP_TO_GROUND,
                 unsigned int drawOrder=0u, bool extrude=false, bool tesselate=false);
+
+        void putPolygon(cstring name, cstring description, 
+                const Line<double> &outerBoundary, 
+                cstring styleUrl = std::string(""),
+                AltitudeMode altitudeMode = CLAMP_TO_GROUND,
+                unsigned int drawOrder = 0u, bool extrude=false, bool tesselate=false);
+
+        void putColorPolygons(cstring name, cstring description, 
+                cstring styleUrlPrefix,
+                const ColorMultiLine<double,4u> &outerBoundaries, 
+                AltitudeMode altitudeMode = CLAMP_TO_GROUND,
+                unsigned int drawOrder = 0u, bool extrude=false, bool tesselate=false);
 
         void putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
                 BoundingBox<double> bbox, double rotation, const Color<4u> &color);
@@ -128,7 +142,8 @@ class KmlFile {
         void putCoordinate(double longitude, double latitude, double height);
         void putCoordinates(unsigned int count, double *longitude, double *latitude);
         void putCoordinates(unsigned int count, double *longitude, double *latitude, double *height);
-        void putCoordinates(Line<double> line);
+        void putCoordinates(const Line<double> &line);
+        void putOuterBoundary(const Line<double> &line);
         void putColor(const Color<4u> &color);
         void putColorMode(ColorMode colorMode);
         void putAltitudeMode(AltitudeMode altitudeMode);
@@ -141,7 +156,7 @@ class KmlFile {
         void putDate(const std::tm &date, DateFormat dateFormat);
         void putTimeStamp(const std::tm &date, DateFormat dateFormat, cstring timeStampId = std::string(""));
         void putTimeSpan(const std::tm &beginDate, const std::tm &endDate, DateFormat dateFormat, cstring timeSpanId = std::string(""));
-        void putLatLonBox(BoundingBox<double> bbox, double rotation = 0.0);
+        void putLatLonBox(const BoundingBox<double> &bbox, double rotation = 0.0);
 
         void endPolygon();
         void endLinearRing();

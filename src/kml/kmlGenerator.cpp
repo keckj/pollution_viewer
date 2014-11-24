@@ -10,7 +10,8 @@ KmlGenerator::KmlGenerator(const std::string &filePath,
         const std::string &groundOverlaySuffix,
         const std::string &stationIconPath,
         const SensorDataArray<int> &sensorData,
-        const IsoLineList<double,4u,float> &isolines) :
+        const IsoLineList<double,4u,float> &isolines, 
+        const IsoContourList<double,4u,float> &isocontours) :
     KmlFile(filePath),
     screenOverlayFolder(screenOverlayFolder),
     screenOverlayPrefix(screenOverlayPrefix),
@@ -20,7 +21,8 @@ KmlGenerator::KmlGenerator(const std::string &filePath,
     groundOverlaySuffix(groundOverlaySuffix),
     stationIconPath(stationIconPath),
     sensorData(sensorData),
-    isolines(isolines)
+    isolines(isolines),
+    isocontours(isocontours)
 {
 
     generateKmlFile();
@@ -35,7 +37,8 @@ void KmlGenerator::generateKmlFile() {
 
     // Styles definition
     putStationStyle();
-    putIsolineStyles();
+    putIsoLineStyles();
+    putIsoContourStyles();
 
     // Ground overlays
     putScreenOverlays();
@@ -46,8 +49,9 @@ void KmlGenerator::generateKmlFile() {
     // Station placemarks
     putStations();
 
-    // Isolines
+    // Isolines and contours
     putIsoLines();
+    putIsoContours();
 
     // Ground overlays folder
     putInterpolatedDataOverlays();
@@ -91,10 +95,20 @@ void KmlGenerator::putStationStyle() {
     skipLine();
 }
 
-void KmlGenerator::putIsolineStyles() {
+void KmlGenerator::putIsoLineStyles() {
     for (auto &isoline : isolines) {
-        startStyle("ColorLine_" + isoline.lines.color.toHexString());
+        startStyle("IsoLine_" + isoline.lines.color.toHexString());
         putLineStyle(isoline.lines.color, NORMAL, 2u);
+        endStyle();
+    }
+    skipLine();
+}
+
+void KmlGenerator::putIsoContourStyles() {
+    for (auto &isocontour : isocontours) {
+        startStyle("IsoContour_" + isocontour.color.toHexString());
+        putPolyStyle(isocontour.color, NORMAL, true, true);
+        putLineStyle(ColorRGBA::black, NORMAL, 1u);
         endStyle();
     }
     skipLine();
@@ -106,17 +120,19 @@ void KmlGenerator::putInitialView() {
 }
 
 void KmlGenerator::putScreenOverlays() {
+    putFolder("GUI", "Screen overlays", false, true);
     putScreenOverlay("Color scale", "",
             Offset(0.0f, 0.0f),
             Offset(0.1f, 0.15f),
             Offset(0.0f, 400, PIXELS),
             Offset(),
             0.0f, 3, "img/overlay.png");
+    endFolder();
     skipLine();
 }
 
 void KmlGenerator::putInterpolatedDataOverlays() {
-    putFolder("Sensor data overlays", "Interpolation results", false, true);
+    putFolder("Sensor data", "Interpolation results", false, true);
     putGroundOverlay("First hour data", 0u, CLAMP_TO_GROUND, sensorData.bbox, 0.0, "img/test.png");
     endFolder();
     skipLine();
@@ -136,7 +152,23 @@ void KmlGenerator::putIsoLines() {
     putFolder("Isolines", "Data isolines.", false, true);
     unsigned int i = 1;
     for(auto &isoline : isolines) {
-        putColorLineStrings("Isolines level " + std::to_string(i++), "Isovalue: " + std::to_string(isoline.value), isoline.lines);
+        putColorLineStrings("Isolines level " + std::to_string(i++), 
+                "Isovalue: " + std::to_string(isoline.value), 
+                "IsoLine_", 
+                isoline.lines);
+    }
+    endFolder();
+    skipLine();
+}
+
+void KmlGenerator::putIsoContours() {
+    putFolder("Isocontours", "Data isocontours.", false, true);
+    unsigned int i = 1;
+    for(const auto &isocontour : isocontours) {
+        putColorPolygons("Isocontour level " + std::to_string(i++), 
+                "Isovalue: " + std::to_string(isocontour.value), 
+                "IsoContour_", 
+                ColorMultiLine<double,4u>(isocontour.lines, isocontour.color));
     }
     endFolder();
     skipLine();

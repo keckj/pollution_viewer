@@ -2,6 +2,7 @@
 #define COORDS_H
 
 #include <limits>
+#include "vec.hpp"
 
 template <typename T>
 struct Coords {
@@ -21,6 +22,20 @@ struct BoundingBox {
         ymin = std::numeric_limits<T>::max();
         xmax = std::numeric_limits<T>::min();
         ymax = std::numeric_limits<T>::min();
+    }
+
+    BoundingBox(T xmin, T ymin, T xmax, T ymax) :
+        xmin(xmin), ymin(ymin), xmax(xmax), ymax(ymax) {
+    }
+
+    Vec<T> topLeft()     const { return Vec<T>(xmin,ymax,0); }
+    Vec<T> topRight()    const { return Vec<T>(xmax,ymax,0); }
+    Vec<T> bottomRight() const { return Vec<T>(xmax,ymin,0); }
+    Vec<T> bottomLeft()  const { return Vec<T>(xmin,ymin,0); }
+    
+    bool isBorder(const Vec<T> &v) const {
+        using Utils::areEqual;
+        return(areEqual<T>(v.x, xmin) || areEqual<T>(v.x, xmax) || areEqual<T>(v.y, ymin) || areEqual<T>(v.y, ymax));
     }
 };
 

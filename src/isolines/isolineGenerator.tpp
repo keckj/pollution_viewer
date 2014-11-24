@@ -1,4 +1,7 @@
 
+
+#include <iterator>
+
 template <typename F, unsigned int N>
 IsoLineGenerator<F,N>::IsoLineGenerator(const BoundingBox<double> &bbox) :
     bbox(bbox) {
@@ -111,6 +114,28 @@ IsoLineList<double,N,F> IsoLineGenerator<F,N>::generateIsolines(const Interpolat
 }
 
 template <typename F, unsigned int N>
+IsoContour<double,N,F> IsoLineGenerator<F,N>::generateIsoContour(const IsoLine<double,N,F> &isolineLowVal, 
+        const IsoLine<double,N,F> &isolineHighVal, 
+        const InterpolatedData<F> &data,
+        const Colorizer<F,N> &colorizer) {
+    IsoContour<double,N,F> isocontour(isolineHighVal, isolineLowVal,data,bbox);
+    isocontour.color = colorizer(isocontour.value);
+    return isocontour;
+}
+
+template <typename F, unsigned int N>
+IsoContourList<double,N,F> IsoLineGenerator<F,N>::generateIsoContours(const IsoLineList<double,N,F> &isolines, 
+        const InterpolatedData<F> &data,
+        const Colorizer<F,N> &colorizer) {
+    IsoContourList<double,N,F> isoContourList;
+
+    for(auto it = isolines.begin(); std::next(it) != isolines.end(); ++it)
+        isoContourList.push_back(generateIsoContour(*it,*(std::next(it)),data,colorizer));
+
+    return isoContourList;
+}
+
+template <typename F, unsigned int N>
 inline void IsoLineGenerator<F,N>::test() {
 
     MultiLine<double> ll;
@@ -202,3 +227,4 @@ void IsoLineGenerator<F,N>::attachLine(Line<double> &line, MultiLine<double> &li
         lineList.push_back(line);
     }
 }
+        
