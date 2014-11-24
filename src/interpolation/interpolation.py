@@ -27,12 +27,12 @@ ax = fig.add_subplot(111)
 # pysical parameters
 Lx = 1.0   #Domain size x
 Ly = 1.0   #Domain size y
-n = 4 # data length
+n = 5 # data length
 
 
 # generating mesh
-NX = 200        #Number of grid points in x
-NY = 200        #Number of grid points in y
+NX = 100        #Number of grid points in x
+NY = 100        #Number of grid points in y
 dx = Lx/(NX-1) #Grid step in x (space)
 dy = Ly/(NY-1) #Grid step in y (space)
 

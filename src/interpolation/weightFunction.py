@@ -1,4 +1,4 @@
-# linear algebra package
+	# linear algebra package
 import numpy as np
 # graphical display package
 import pyqtgraph as pg
@@ -40,14 +40,19 @@ def shepardSimpleWeights(i,x,knownPos):
 # singedIdentiy(s) = 0 if s<0
 # 			   = s if s>0
 def singedIdentiy(s):
-	return np.sign(s) * s
+	if (s < 0) :
+		return s
+	else : 
+		return 0
+
+	return 0
 
 # compute shepard quadratic's weights in x
 # x : np array (typically [x,y,z])
 # knownPos : list of known points [x_known,y_known] and x_know : np array of size n
 # i : index
 def shepardQuadraticWeights(i,x,knownPos):
-	Rw = 0.1
+	Rw = 32
 
 	x_i = knownPos[i]
 
@@ -58,16 +63,16 @@ def shepardQuadraticWeights(i,x,knownPos):
 
 	return w
 
-# i index
+# k index
 # pos : numpy array [x,y]
 # knownPos list of two arrays (x_known and y_known)
-def phi(i,pos,knownPos):
-	Rq = 0.1
+def phi(k,pos,knownPos):
+	Rq = 17
 
-	x_i = knownPos[i] 
+	x_k = knownPos[k] 
 
-	phi_top = singedIdentiy(Rq-dist(pos,x_i))
-	phi_bottom = Rq*dist(pos,x_i)
+	phi_top = singedIdentiy(Rq-dist(pos,x_k))
+	phi_bottom = Rq*dist(pos,x_k)
 
 	phi_value = (phi_top/phi_bottom)**2
 

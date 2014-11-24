@@ -16,9 +16,10 @@ import scipy.linalg as solver
 import weightFunction
 
 # Q_i(pos) = f_i + a_i0*(x-x_i) + a_i1*(y-y_i)
-#			+ a_i2*(x-x_i)**2 + ai3*(y-y_i)**2
+#			+ a_i2*(x-x_i)**2 + ai3*(x-x_i)*(y-y_i) 
+#			+ ai4*(y-y_i)**2 
 # compute the coeficient corresonping to a_i,k
-def qTerm(k,i,pos,pos_i):
+def qTerm(k,pos,pos_i):
 	if (k==0):
 		return pos[0] - pos_i[0]
 	elif (k==1):
@@ -26,6 +27,8 @@ def qTerm(k,i,pos,pos_i):
 	elif (k==2):
 		return (pos[0] - pos_i[0])**2
 	elif (k==3):
+		return (pos[0] - pos_i[0])*(pos[1] - pos_i[1])
+	elif (k==4):
 		return (pos[1] - pos_i[1])**2
 
 	return 0
@@ -38,20 +41,20 @@ def computeMatrixTerm(k,l,i,n,knownPos):
 	for j in range(n):
 		if j != i:
 			pos_j = knownPos[j] 
-			s += weightFunction.phi(i,pos_j,knownPos)*qTerm(k,i,pos_j,pos_i)*qTerm(l,i,pos_j,pos_i)
+			s += weightFunction.phi(i,pos_j,knownPos)*qTerm(k,pos_j,pos_i)*qTerm(l,pos_j,pos_i)
 	return s
 
 def Q(i,pos,knownPos,f):
 	pos_i = knownPos[i] 
 	n = len(f)
 
-	M = np.zeros((4,4))
+	M = np.zeros((5,5))
 
-	for l in range(4):
-		for k in range(4):
+	for l in range(5):
+		for k in range(5):
 			M[l,k] = computeMatrixTerm(k,l,i,n,knownPos)
 
-	b = np.zeros(4)
+	b = np.zeros(5)
 	s = 0
 	f_i = f[i]
 	for j in range(n):
@@ -65,7 +68,7 @@ def Q(i,pos,knownPos,f):
 	x = solver.solve(M,b)
 
 	q = f_i
-	for k in range(4):
+	for k in range(5):
 		q += x[k]*qTerm(k,i,pos,pos_i)
 
 	return q
