@@ -1,5 +1,10 @@
 
+#ifndef DEFINES_H
+#define DEFINES_H
+
 //tout passe en DEBUG avec make debug
+//tout passe en WARN avec make release
+//par defaut la console est en INFO et le fichier en DEBUG
 #ifndef _CONSOLE_LOG_LEVEL
 #define _CONSOLE_LOG_LEVEL INFO
 #endif
@@ -18,3 +23,4 @@
   #error "Please provide a definition for ALIGN macro for your host compiler (in utils/defines.hpp) !"
 #endif
 
+#endif /* end of include guard: DEFINES_H */

@@ -1,5 +1,4 @@
 
-#TODO Use cotire for eigen3
 cmake_minimum_required(VERSION 2.8)
 
 project(Visualization CXX)
@@ -16,6 +15,7 @@ find_package(Boost COMPONENTS regex REQUIRED)
 find_package(Log4cpp REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(DevIL REQUIRED)
+find_package(Freetype REQUIRED)
 find_package(OpenMP)
 
 #Compiler options
@@ -28,8 +28,8 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     message("-- Compiling for ${CMAKE_SYSTEM_NAME} with GCC...")
     set(CXX_FLAGS "-std=c++11 -m64")
-    set(CXX_WERR "-Wall -Wextra -Wmissing-format-attribute -Wmissing-noreturn -Wredundant-decls -Wsequence-point -Wdeprecated -Wunreachable-code -Wold-style-cast -Wfloat-equal -Wsuggest-attribute=const -Wsuggest-attribute=pure -Wsign-conversion -Wdouble-promotion")
-    set(CXX_WNOERR "-Wno-unused-parameter -Wno-conversion -Wno-shadow -Wno-padded -Wno-effc++")
+    set(CXX_WERR "-Wall -Wextra -Wmissing-format-attribute -Wmissing-noreturn -Wredundant-decls -Wsequence-point -Wdeprecated -Wunreachable-code -Wold-style-cast -Wfloat-equal -Wno-suggest-attribute=const -Wno-suggest-attribute=pure -Wsign-conversion -Wdouble-promotion")
+    set(CXX_WNOERR "-Wno-unused-parameter -Wno-unused-variable -Wno-conversion -Wno-shadow -Wno-padded -Wno-effc++")
 
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     message("-- Compiling for ${CMAKE_SYSTEM_NAME} with Intel C++...")
@@ -44,7 +44,7 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_FLAGS} ${CXX_WERR} ${CXX_WNOERR} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} ")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ")
 
 #Compiler defines
 set(COMPILER_DEFINES "-D_REENTRANT")
@@ -84,6 +84,7 @@ include_directories(
     ${LOG4CPP_INCLUDE_DIRS}  #Log4cpp
     ${EIGEN3_INCLUDE_DIR}    #Eigen3 (template lib)
     ${IL_INCLUDE_DIR}        #DevIL
+    ${FREETYPE_INCLUDE_DIRS} #FreeType
 )
 
 #Library directories
@@ -98,9 +99,10 @@ add_executable(main ${header_files} ${source_files} ${template_files})
 #Link executable
 target_link_libraries(
     main 
-    ${Boost_LIBRARIES}   #Boost Regex
+    ${Boost_LIBRARIES}       #Boost Regex
     ${LOG4CPP_LIBRARIES}     #Log4cpp
     ${IL_LIBRARIES}          #DevIL core library
-    #$[ILU_LIBRARIES}        #DevIL filters and effects
-    #$[ILUT_LIBRARIES}       #DevIL interface with openGL
+    ${ILU_LIBRARIES}         #DevIL filters and effects
+    #${ILUT_LIBRARIES}       #DevIL interface with openGL
+    ${FREETYPE_LIBRARIES}    #FreeType
 )

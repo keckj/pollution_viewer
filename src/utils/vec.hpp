@@ -3,10 +3,15 @@
 #define VEC_H
 
 #include <iostream>
-#include <limits>
+#include "utils.hpp"
+
+enum Axe {
+    AXE_X=0,
+    AXE_Y,
+    AXE_Z
+};
 
 //3D vector structure
-
 template <typename T>
 struct Vec {
     T x;
@@ -39,6 +44,8 @@ struct Vec {
 
     Vec<T> unit () const;
     Vec<T> orthogonalVec () const;
+
+    int compare(const Vec<T> &other, Axe axe) const;
 };
 
 template <typename T>
@@ -55,7 +62,9 @@ Vec<T>::~Vec() {}
 
 template <typename T>
 Vec<T>& Vec<T>::operator= (const Vec<T> &v) {
-    Vec<T> V(v);
+    this->x = v.x;
+    this->y = v.y;
+    this->z = v.z;
     return *this;
 }
 
@@ -201,9 +210,8 @@ bool operator!= (const Vec<T> &a, const Vec<T> &b) {
 
 template <typename T>
 bool operator== (const Vec<T> &a, const Vec<T> &b) {
-    Vec<T> dv = b - a;
-    T epsilon = std::numeric_limits<T>::epsilon();
-    return (abs(dv.x) < epsilon && abs(dv.y) < epsilon && abs(dv.z) < epsilon);
+    using Utils::areEqual;
+    return areEqual<T>(a.x,b.x) && areEqual<T>(a.y,b.y) && areEqual<T>(a.z,b.z);
 }
 
 template <typename T>
@@ -213,6 +221,28 @@ T Vec<T>::normalize () {
     y /= norm;
     z /= norm;
     return norm;
+}
+
+template <typename T>
+int Vec<T>::compare(const Vec<T> &other, Axe axe) const {
+    T v1, v2;
+
+    switch(axe) {
+        case(AXE_X):
+            v1 = x;
+            v2 = other.x;
+            break;
+        case(AXE_Y):
+            v1 = y;
+            v2 = other.y;
+            break;
+        case(AXE_Z):
+            v1 = z;
+            v2 = other.z;
+            break;
+    }
+
+    return (v1 == v2 ? 0 : (v1 > v2 ? 1 : -1));
 }
 
 template <typename T>
@@ -242,5 +272,6 @@ std::ostream & operator << (std::ostream &os, Vec<T> &v) {
     os << "(" << v.x << "," << v.y << "," << v.z << ")";
     return os;
 }
+    
 
 #endif /* end of include guard: VEC_H */

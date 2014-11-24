@@ -152,7 +152,7 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
                         << "\n\t\t\t\tParsed " << nData << " sensor values but exactly " << nExpectedValues << " were expected !";
                 }
             
-                SensorData<int> sensorData(sensorName, sensorUnit, startDate, endDate, interval, sensorValues);
+                SensorData<int> sensorData(sensorName, sensorUnit, startDate, endDate, interval, nData, sensorValues);
                 targetStations.at(stationKey)->addSensorData(sensorData);
 
                 nMatchedStations++;
@@ -178,4 +178,78 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
     log_console->infoStream() << "[DataParser] "
         << "Successfully parsed " << nMatchedStations << " station sensor data !";
     
+}
+
+SensorDataArray<int> buildSensorDataArray(std::map<std::string, Station*> stations, const std::string &targetSensorName) {
+    
+    std::string unitName;
+    std::tm startTime, endTime, deltaT;
+    unsigned int nMeasures = 0u;
+
+    memset(&startTime, 0, sizeof(std::tm));
+    memset(&endTime, 0, sizeof(std::tm));
+    memset(&deltaT, 0, sizeof(std::tm));
+
+    const std::string **stationNames;
+    StationType *stationTypes;
+    double *x;
+    double *y;
+    double *z;
+    int **data;
+
+    //check the number of stations that have this sensor and get basic sensor data
+    unsigned int nStations = 0;
+    for(auto &station : stations) {
+        if (station.second->hasSensorData(targetSensorName)) {
+
+            SensorData<int> sensorData = station.second->getSensorData(targetSensorName);
+
+            if(nStations == 0) {
+                unitName = sensorData.unitName;
+                startTime = sensorData.startTime;
+                endTime = sensorData.endTime;
+                deltaT = sensorData.deltaT;
+                nMeasures = sensorData.nData;
+            }
+            else { //check if data is coherant
+                assert(nMeasures == sensorData.nData);
+            }
+
+            nStations++;
+        }
+    }
+    
+    //allocate arrays
+    stationNames = new const std::string*[nStations];
+    stationTypes = new StationType[nStations];
+    x = new double[nStations];
+    y = new double[nStations];
+    z = new double[nStations];
+    
+    data = new int*[nMeasures];
+    for (unsigned int i = 0; i < nMeasures; i++) {
+        data[i] = new int[nStations];
+    }
+
+    //fill arrays
+    unsigned int count = 0;
+    for(auto &station : stations) {
+        if (station.second->hasSensorData(targetSensorName)) {
+             SensorData<int> sensorData = station.second->getSensorData(targetSensorName);
+             stationNames[count] = &(station.second->name);
+             stationTypes[count] = station.second->type;
+             x[count] = station.second->location.x;
+             y[count] = station.second->location.y;
+             z[count] = station.second->location.z;
+             for (unsigned int i = 0; i < nMeasures; i++) {
+                 data[i][count] = sensorData.data[i];
+             }
+             count++;
+        }
+    }
+    
+    //build structure and return 
+    return SensorDataArray<int>(targetSensorName, unitName, startTime, endTime, deltaT, nMeasures, nStations,
+            stationNames, stationTypes, x, y, z, data);
+
 }

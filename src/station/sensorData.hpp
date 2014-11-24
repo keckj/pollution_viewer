@@ -20,17 +20,17 @@ struct SensorData {
 
     SensorData(std::string sensorName, std::string unitName, 
             std::tm startTime, std::tm endTime, std::tm deltaT, 
-            T* data);
+            unsigned nData, T* data);
 };
 
 
 template <typename T>
 SensorData<T>::SensorData(std::string sensorName, std::string unitName, 
             std::tm startTime, std::tm endTime, std::tm deltaT, 
-            T* data) :
+            unsigned int nData ,T* data) :
     sensorName(sensorName), unitName(unitName), 
     startTime(startTime), endTime(endTime), deltaT(deltaT), 
-    data(data) 
+    nData(nData), data(data) 
 {
 }
 
