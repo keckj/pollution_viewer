@@ -18,7 +18,6 @@ struct SensorDataArray {
     std::tm startTime;
     std::tm endTime;
     std::tm deltaT;
-    
 
     unsigned int nMeasures;
     unsigned int nStations;
@@ -38,6 +37,8 @@ struct SensorDataArray {
     //00:02:00 s1 s2 s3 s4 ... s_nStations
     //.. nMeasures times
     //xx:xx:xx s1 s2 s3 s4 ... s_nStations <= last measure
+    
+    SensorDataArray();
 
     SensorDataArray(std::string sensorName, std::string unitName, 
             std::tm startTime, std::tm endTime, std::tm deltaT, 
@@ -77,7 +78,6 @@ struct SensorDataArray {
         return description.str();
     }
 };
-
 
 template <typename T>
 SensorDataArray<T>::SensorDataArray(std::string sensorName, std::string unitName, 

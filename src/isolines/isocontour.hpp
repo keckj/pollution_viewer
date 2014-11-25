@@ -58,7 +58,7 @@ IsoContour<T,N,F>::IsoContour(const IsoLine<T,N,F> &isolineLowVal, const IsoLine
                 Line<T> segment;
                 segment.push_back(buffer.back());
 
-                std::cout << sb;
+                //std::cout << sb;
 
                 for (unsigned int i = 0; i < 4; i++) {
                     sb.match(&segment);
@@ -67,21 +67,21 @@ IsoContour<T,N,F>::IsoContour(const IsoLine<T,N,F> &isolineLowVal, const IsoLine
                     }
                     if(sb.matchedLines.empty()) {
                         sb++;
-                        std::cout << "continue search" << std::endl << sb;
+                        //std::cout << "continue search" << std::endl << sb;
                         buffer.push_front(sb.v);
                     }
                     else {
-                        std::cout << "break i=" << i << " !";
+                        //std::cout << "break i=" << i << " !";
                         break;
                     }
                 }
 
                 if(sb.matchedLines.empty()) {
-                    std::cout << "Failed!!" << std::endl;
+                    //std::cout << "Failed!!" << std::endl;
                     continue;
                 }
                 else {
-                    std::cout << "Success!!" << std::endl;
+                    //std::cout << "Success!!" << std::endl;
                     MatchedLine<T> bestMatch = sb.extractBestMatch();
                     assert(bestMatch.line != 0);
 

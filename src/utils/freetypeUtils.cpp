@@ -60,10 +60,10 @@ static const char* errorStrings[] =
             size << bsize.size << ", ";
         }
 
-        log->infoStream() << "[FreeType] Face " << face->family_name << "." << face->style_name << " infomations";
-        log->infoStream() << "[FreeType] \tNum Glyphs: " << face->num_glyphs;
-        log->infoStream() << "[FreeType] \tUnit per EM: " << face->units_per_EM;
-        log->infoStream() << "[FreeType] \tEmbedded Bitmap Strikes: " << face->num_fixed_sizes;
+        log->debugStream() << "[FreeType] Face " << face->family_name << "." << face->style_name << " debugmations";
+        log->debugStream() << "[FreeType] \tNum Glyphs: " << face->num_glyphs;
+        log->debugStream() << "[FreeType] \tUnit per EM: " << face->units_per_EM;
+        log->debugStream() << "[FreeType] \tEmbedded Bitmap Strikes: " << face->num_fixed_sizes;
         if(face->num_fixed_sizes > 0)
             log->infoStream() << "\t[FreeType] Bitmap Strikes Sizes: " << size.str();
         log->infoStream() << "[FreeType] \tFlags: " << flags.str();

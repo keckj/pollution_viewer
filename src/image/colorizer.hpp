@@ -7,23 +7,27 @@
 #include <algorithm>
 #include <iomanip>   
 
-#include "stringBlitter.hpp"
+#include "interpolator.hpp"
 #include "colors.hpp"
 #include "image.hpp"
+#include "stringBlitter.hpp"
 
 template <typename F, unsigned int N>
 class Colorizer {
-    static_assert(std::is_floating_point<F>(), "");
+    static_assert(std::is_floating_point<F>(), "F must be floating point !");
 
     public:
         virtual ~Colorizer() {}
         virtual Color<N> operator()(const F) const = 0;
-    
-        void generateColorRange();
+   
+        void resetMinMax(F min, F max);
+        void resetMinMax(const InterpolatedData<F> &data);
+
+        void generateColorRange(const std::string &folder, const std::string &fileName, const std::string &imgExt, const std::string &fontPath) const;
 
     protected:
-        explicit Colorizer(const InterpolatedData<F> &data) : 
-            min(data.min), max(data.max) {
+        explicit Colorizer() : 
+            min(0), max(0) {
         };
 
         F min;
@@ -31,15 +35,24 @@ class Colorizer {
 };
 
 template <typename F, unsigned int N>
-void Colorizer<F,N>::generateColorRange() {
+void Colorizer<F,N>::resetMinMax(F min, F max) {
+    this->min = min;
+    this->max = max;
+}
+        
+template <typename F, unsigned int N>
+void Colorizer<F,N>::resetMinMax(const InterpolatedData<F> &data) {
+    this->min = data.min;
+    this->max = data.max;
+}
+
+template <typename F, unsigned int N>
+void Colorizer<F,N>::generateColorRange(const std::string &folder, const std::string &fileName, const std::string &imgExt, const std::string &fontPath) const {
     
     using log4cpp::log_console;
-    log_console->infoStream() << "[Colorizer] Generating color overlay...";
     
-    const std::string fontPath = "fonts/FreeMonoBold.ttf";
     StringBlitter blitter;
     blitter.loadFontFromFile(fontPath);
-
        
     RGBAImageInitializer overlayInit = [&] (unsigned int i, unsigned int j, unsigned int width, unsigned int height) -> Color<N> {
         const unsigned int borderSize = 6u;
@@ -90,7 +103,11 @@ void Colorizer<F,N>::generateColorRange() {
         text.freeData();
     }
 
-    overlay.save("img/", "overlay", "png");
+    overlay.save(folder, fileName, imgExt);
+    std::cout << folder << fileName << "." << imgExt << std::endl;
+
+    overlay.freeData();
+    colorRange.freeData();
 }
 
 #endif /* end of include guard: COLORIZER_H */

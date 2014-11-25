@@ -2,6 +2,7 @@
 #ifndef LINEARCOLORIZER_H
 #define LINEARCOLORIZER_H
 
+#include <cassert>
 #include "colors.hpp"
 #include "colorizer.hpp"
 
@@ -11,16 +12,16 @@ class LinearColorizer final : public Colorizer<F,N> {
 
     public:
 
-    explicit LinearColorizer(InterpolatedData<F> data, Color<N> c1, Color<N> c2) : Colorizer<F,N>(data), c1(c1), c2(c2) {}
-    ~LinearColorizer() {}
+        explicit LinearColorizer(Color<N> c1, Color<N> c2) : Colorizer<F,N>(), c1(c1), c2(c2) {}
+        ~LinearColorizer() {}
 
-    virtual Color<N> operator()(const F val) const final {
-        F alpha = (val - this->min)/(this->max - this->min);
-        return Color<N>::linearInterp(alpha, c1, c2);
-    }
+        virtual Color<N> operator()(const F val) const final {
+            F alpha = (val - this->min)/(this->max - this->min);
+            return Color<N>::linearInterp(alpha, c1, c2);
+        }
 
     private:
-    Color<N> c1, c2;
+        Color<N> c1, c2;
 
 
 };

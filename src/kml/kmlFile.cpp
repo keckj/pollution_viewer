@@ -435,7 +435,7 @@ void KmlFile::putCoordinates(const Line<double> &line) {
 
     kml << "<coordinates>"<<newLineAndIndent();
     for (auto &pts : line) {
-        kml<< pts.x << "," << pts.y << "," << pts.z << newLine();
+        kml<< pts.x << "," << pts.y << "," << pts.z << " ";
     }
     kml << newLine();
     removeTab();

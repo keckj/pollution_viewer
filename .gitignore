@@ -14,6 +14,7 @@ lib/libCudaKernels.a
 *.png
 *.jpg
 *.raw
+*.kml
 test.kml
 :
 :w
