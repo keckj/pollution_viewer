@@ -4,6 +4,7 @@
 int main(int argc, char** argv) {
 
     using namespace mainFuncs;
+    std::cout << "MAIN" <<  ColorRGBA::blue << std::endl;
     
     // Initialize everything
     init();
@@ -23,7 +24,7 @@ int main(int argc, char** argv) {
     generateGroundOverlays(sensorData, interpolatedDataGrid);
 
     // Generate the Kml File
-    //generateKmlFile(sensorData, isolines, isocontours);
+    generateKmlFile(sensorData, interpolatedDataGrid, isolines, isocontours);
 
     // Clean Up
     //clean(sensorData, interpolatedDataGrid);

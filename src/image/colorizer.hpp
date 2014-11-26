@@ -29,7 +29,7 @@ class Colorizer {
         explicit Colorizer() : 
             min(0), max(0) {
         };
-
+        
         F min;
         F max;
 };
@@ -104,7 +104,6 @@ void Colorizer<F,N>::generateColorRange(const std::string &folder, const std::st
     }
 
     overlay.save(folder, fileName, imgExt);
-    std::cout << folder << fileName << "." << imgExt << std::endl;
 
     overlay.freeData();
     colorRange.freeData();

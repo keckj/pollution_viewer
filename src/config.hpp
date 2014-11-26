@@ -14,7 +14,7 @@ namespace Globals {
     static const std::string sensorName("Particules PM10");
 
     // Interpolation
-    static const unsigned int maxDataProcessed = 100u;
+    static const unsigned int maxDataProcessed = 1u;
     static const unsigned int gridWidth = 64u;
     static const unsigned int gridHeight = 64u;
 
@@ -27,9 +27,15 @@ namespace Globals {
     static const std::string interpolatorNames[nInterpolators] = { "shepard1", "shepard2" };
    
     // Data generation parameters
-    static LinearColorizer<float,4u> dataColorizer(ColorRGBA(255,0,0,255),ColorRGBA(0,0,255,50));
-    static LinearColorizer<float,4u> isolineColorizer(ColorRGBA::blue,ColorRGBA::red);
-    static LinearColorizer<float,4u> isocontourColorizer(ColorRGBA::red,ColorRGBA::blue);
+    static Colorizer<float,4u> *dataColorizer;
+    static Colorizer<float,4u> *isolineColorizer;
+    static Colorizer<float,4u> *isocontourColorizer;
+    static void initColorizers() { // those variables are static initialization order dependent
+        dataColorizer = new LinearColorizer<float,4u>(ColorRGBA(255,0,0,255),ColorRGBA(0,0,255,50));
+        isolineColorizer = new LinearColorizer<float,4u>(ColorRGBA::blue,ColorRGBA::red);
+        isocontourColorizer = new LinearColorizer<float,4u>(ColorRGBA::red,ColorRGBA::blue);
+    }
+
     static const unsigned int nIsoLevels = 10u;
     static const std::string fontPath =  "fonts/FreeMonoBold.ttf";
 
@@ -38,11 +44,11 @@ namespace Globals {
     static const std::string kmlFileName = "root.kml";
     static const std::string stationIconHref = "kml/icons/station.png";
 
-    static const std::string screenOverlayFolder = "kml/screenOverlays/";
+    static const std::string screenOverlayFolder = "screenOverlays/";
     static const std::string screenOverlayPrefix = "screen_overlay_";
     static const std::string screenOverlayImgExt = "png";
 
-    static const std::string groundOverlayFolder = "kml/groundOverlays/";
+    static const std::string groundOverlayFolder = "groundOverlays/";
     static const std::string groundOverlayPrefix = "ground_overlay_";
     static const std::string groundOverlayImgExt = "png";
 }

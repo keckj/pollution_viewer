@@ -2,7 +2,12 @@
 #include "mainFuncs.hpp"
 
 namespace mainFuncs {
+
     void init() {
+
+        // Initialize static global vars
+        initColorizers();
+
         // Initialize Logs
         using log4cpp::log_console;
         log4cpp::initLogs();
@@ -54,9 +59,9 @@ namespace mainFuncs {
         for (unsigned int k = 0; k < nInterpolators; k++) {
             const std::string interpolatorName = interpolatorNames[k];
             for (unsigned int i = 0; i < nData; i++) {
-                dataColorizer.resetMinMax(interpolatedDataGrid.at(interpolatorName)[i]);
-                dataColorizer.generateColorRange(
-                        screenOverlayFolder,
+                dataColorizer->resetMinMax(interpolatedDataGrid.at(interpolatorName)[i]);
+                dataColorizer->generateColorRange(
+                        kmlFolder+screenOverlayFolder,
                         screenOverlayPrefix+interpolatorName+"_"+std::to_string(i),
                         screenOverlayImgExt,
                         fontPath);
@@ -71,9 +76,9 @@ namespace mainFuncs {
             const std::string interpolatorName = interpolatorNames[k];
             for (unsigned int i = 0; i < nData; i++) {
                 const InterpolatedData<float> &data = interpolatedDataGrid.at(interpolatorName)[i];
-                dataColorizer.resetMinMax(data);
-                OverlayGenerator::generateImage<float,4u>(data, dataColorizer, 
-                        groundOverlayFolder,groundOverlayPrefix+interpolatorName+"_"+std::to_string(i),groundOverlayImgExt);
+                dataColorizer->resetMinMax(data);
+                OverlayGenerator::generateImage<float,4u>(data, *dataColorizer, 
+                        kmlFolder+groundOverlayFolder,groundOverlayPrefix+interpolatorName+"_"+std::to_string(i),groundOverlayImgExt);
             }
         }
     }
@@ -90,8 +95,8 @@ namespace mainFuncs {
             std::vector<IsoLineList<double,4u,float>> interpolatorIsolines(nData);
             for (unsigned int i = 0; i < nData; i++) {
                 const InterpolatedData<float> &data = interpolatedDataGrid.at(interpolatorName)[i];
-                isolineColorizer.resetMinMax(data);
-                interpolatorIsolines[i] = isolineGenerator.generateIsolines(data, nIsoLevels, isolineColorizer);
+                isolineColorizer->resetMinMax(data);
+                interpolatorIsolines[i] = isolineGenerator.generateIsolines(data, nIsoLevels, *isolineColorizer);
             }
             interpolatorIsolineMap.emplace(interpolatorName, interpolatorIsolines); 
         }
@@ -111,8 +116,8 @@ namespace mainFuncs {
             std::vector<IsoContourList<double,4u,float>> interpolatorIsolines(nData);
             for (unsigned int i = 0; i < nData; i++) {
                 const InterpolatedData<float> &data = interpolatedDataGrid.at(interpolatorName)[i];
-                isolineColorizer.resetMinMax(data);
-                interpolatorIsolines[i] = isolineGenerator.generateIsoContours(isolines.at(interpolatorName)[i], data, isolineColorizer);
+                isolineColorizer->resetMinMax(data);
+                interpolatorIsolines[i] = isolineGenerator.generateIsoContours(isolines.at(interpolatorName)[i], data, *isolineColorizer);
             }
             interpolatorIsocontourMap.emplace(interpolatorName, interpolatorIsolines); 
         }
@@ -120,19 +125,18 @@ namespace mainFuncs {
         return interpolatorIsocontourMap;
     }
 
-    //void generateKmlFile(const SensorDataArr &sensorData, 
-            //const IsoLines &isolines,
-            //const IsoContours &isocontours) {
+    void generateKmlFile(const SensorDataArr &sensorData, 
+            const InterpData &interpolatedDataGrid,
+            const IsoLines &isolines,
+            const IsoContours &isocontours) {
 
-        //log4cpp::log_console->infoStream() << "Generating the KML file...";
-        //KmlGenerator kml(kmlFolder+kmlFileName,
-                //screenOverlayFolder, screenOverlayPrefix, screenOverlayImgExt,
-                //groundOverlayFolder, groundOverlayPrefix, groundOverlayImgExt,
-                //stationIconHref, 
-                //sensorData,
-                //isolines, 
-                //isocontours);
-    //}
+        log4cpp::log_console->infoStream() << "Generating the KML file...";
+
+        KmlGenerator::KmlGenerator kml(sensorData,
+                interpolatedDataGrid,
+                isolines, 
+                isocontours);
+    }
 
     //void clean(SensorDataArr &sensorData, InterpData &interpolatedDataGrid) {
         //log4cpp::log_console->infoStream() << "Done ! Cleaning Up...";

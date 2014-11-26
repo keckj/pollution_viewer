@@ -29,7 +29,7 @@ namespace mainFuncs {
     void init();
     void generateScreenOverlays(const SensorDataArr &, const InterpData &);
     void generateGroundOverlays(const SensorDataArr &, const InterpData &);
-    //void generateKmlFile(const SensorDataArr &, const IsoLines &, const IsoContours &);
+    void generateKmlFile(const SensorDataArr &, const InterpData &, const IsoLines &, const IsoContours &);
     //void clean(SensorDataArr &, InterpData &);
 
     SensorDataArr parseSensorData();

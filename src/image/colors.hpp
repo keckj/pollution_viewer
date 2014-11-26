@@ -1,7 +1,7 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-#include <ostream>
+#include <iostream>
 #include <sstream>
 #include <cstring>
 #include <string>
@@ -12,6 +12,11 @@ struct Color {
     
     unsigned char operator[](unsigned int k) const;
     unsigned char & operator[](unsigned int k);
+
+    Color& operator = (const Color &other) {
+        memcpy(intensities, other.intensities, N*sizeof(unsigned char));
+        return *this;
+    }
 
     std::string toHexString() const;
     

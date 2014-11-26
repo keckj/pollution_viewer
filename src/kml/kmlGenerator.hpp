@@ -14,15 +14,16 @@ namespace KmlGenerator {
     using namespace Globals;
     
     using SensorDataArr = SensorDataArray<int>;
-    using InterpData    = InterpolatedData<float>;
-    using IsoLines      = IsoLineList     <double,4u,float>;
-    using IsoContours   = IsoContourList  <double,4u,float>;
+    using InterpData    = std::map<std::string, std::vector< InterpolatedData<float>>>;
+    using IsoLines      = std::map<std::string, std::vector< IsoLineList     <double,4u,float>>>;
+    using IsoContours   = std::map<std::string, std::vector< IsoContourList  <double,4u,float>>>;
 
     class KmlGenerator final : public KmlFile {
 
 
         public:
             KmlGenerator(const SensorDataArr &sensorData,
+                    const InterpData &interpData,
                     const IsoLines &isolines,
                     const IsoContours &isocontours);
 
@@ -35,15 +36,17 @@ namespace KmlGenerator {
             void putStationStyle();
             void putIsoLineStyles();
             void putIsoContourStyles();
-            void putScreenOverlays();
-            void putInitialView();
             void putStations();
-            void putIsoLines();
-            void putIsoContours();
-            void putInterpolatedDataOverlays();
+            void putInitialView();
             void putKmlFooter();
 
+            void putScreenOverlays(const std::string &interpolatorName, unsigned int nData);
+            void putInterpolatedDataOverlays(const std::string &interpolatorName, unsigned int nData);
+            void putIsoLines(const std::string &interpolatorName, unsigned int nData);
+            void putIsoContours(const std::string &interpolatorName, unsigned int nData);
+
             const SensorDataArr &sensorData;
+            const InterpData &interpData;
             const IsoLines &isolines;
             const IsoContours &isocontours;
     };

@@ -103,7 +103,7 @@ template <typename F, unsigned int N>
 IsoLineList<double,N,F> IsoLineGenerator<F,N>::generateIsolines(const InterpolatedData<F> &data, unsigned int nLines, const Colorizer<F,N> &colorizer) {
 
     IsoLineList<double,N,F> isolines;
-    
+
     F deltaIsoval = (data.max - data.min)/(nLines + 2u);
     for (unsigned int i = 1; i < nLines+1; i++) {
         F isovalue = data.min + i*deltaIsoval;
