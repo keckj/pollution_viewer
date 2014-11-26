@@ -4,7 +4,6 @@
 int main(int argc, char** argv) {
 
     using namespace mainFuncs;
-    std::cout << "MAIN" <<  ColorRGBA::blue << std::endl;
     
     // Initialize everything
     init();

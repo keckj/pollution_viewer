@@ -40,10 +40,10 @@ namespace KmlGenerator {
             void putInitialView();
             void putKmlFooter();
 
-            void putScreenOverlays(const std::string &interpolatorName, unsigned int nData);
-            void putInterpolatedDataOverlays(const std::string &interpolatorName, unsigned int nData);
-            void putIsoLines(const std::string &interpolatorName, unsigned int nData);
-            void putIsoContours(const std::string &interpolatorName, unsigned int nData);
+            void putScreenOverlays(const std::string &interpolatorName);
+            void putInterpolatedDataOverlays(const std::string &interpolatorName);
+            void putIsoLines(const std::string &interpolatorName);
+            void putIsoContours(const std::string &interpolatorName);
 
             const SensorDataArr &sensorData;
             const InterpData &interpData;

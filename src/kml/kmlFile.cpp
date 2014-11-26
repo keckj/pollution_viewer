@@ -538,9 +538,11 @@ void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode
 }
         
 void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
-        BoundingBox<double> bbox, double rotation, cstring iconPath) {
+        BoundingBox<double> bbox, double rotation, cstring iconPath, bool visibility, const std::tm &time) {
     startGroundOverlay();
     putName(name);
+    putVisibility(visibility);
+    putTimeStamp(time);
     putAltitude(altitude);
     putAltitudeMode(altitudeMode);
     putLatLonBox(bbox);
@@ -552,10 +554,13 @@ void KmlFile::putScreenOverlay(cstring name, cstring description,
         const Offset &overlayXY, const Offset &screenXY, 
         const Offset &size, const Offset &rotationXY, 
         float rotation, unsigned int drawOrder,
-        cstring iconPath) {
+        cstring iconPath,
+        bool visibility, const std::tm &time) {
     startScreenOverlay();
     putName(name);
     putDescription(description);
+    putVisibility(visibility);
+    putTimeStamp(time);
     putDrawOrder(drawOrder);
     putOverlayXY(overlayXY);
     putScreenXY(screenXY);
@@ -639,8 +644,8 @@ void KmlFile::putFolder(cstring name, cstring description, bool open, bool visib
     startFolder();
     putName(name); 
     putDescription(description);
-    putOpen(open);
     putVisibility(visibility);
+    putOpen(open);
 }
 
 void KmlFile::putComment(cstring comment) {
@@ -713,11 +718,14 @@ void KmlFile::putLineStrings(cstring name, cstring description,
 void KmlFile::putColorLineStrings(cstring name, cstring description,
         cstring styleUrlPrefix,
         const ColorMultiLine<double,4u> &colorLines,
+        bool visibility, const std::tm &time,
         AltitudeMode altitudeMode,
         unsigned int drawOrder, bool extrude, bool tesselate) {
     startPlacemark();
     putName(name);
     putDescription(description);
+    putVisibility(visibility);
+    putTimeStamp(time);
     putStyleUrl(styleUrlPrefix+colorLines.color.toHexString());
     startMultiGeometry();
     for(auto &line : colorLines.lines) {
@@ -757,11 +765,14 @@ void KmlFile::putPolygon(cstring name, cstring description,
 void KmlFile::putColorPolygons(cstring name, cstring description, 
         cstring styleUrlPrefix,
         const ColorMultiLine<double,4u> &outerBoundaries, 
+        bool visibility, const std::tm &time,
         AltitudeMode altitudeMode,
         unsigned int drawOrder, bool extrude, bool tesselate){
     startPlacemark();
     putName(name);
     putDescription(description);
+    putVisibility(visibility);
+    putTimeStamp(time);
     putStyleUrl(styleUrlPrefix+outerBoundaries.color.toHexString());
     startMultiGeometry();
     for(auto &outerBoundary : outerBoundaries.lines) {

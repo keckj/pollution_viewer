@@ -29,7 +29,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     message("-- Compiling for ${CMAKE_SYSTEM_NAME} with GCC...")
     set(CXX_FLAGS "-std=c++11 -m64")
     set(CXX_WERR "-Wall -Wextra -Wmissing-format-attribute -Wmissing-noreturn -Wredundant-decls -Wsequence-point -Wdeprecated -Wunreachable-code -Wold-style-cast -Wfloat-equal -Wno-suggest-attribute=const -Wno-suggest-attribute=pure -Wsign-conversion -Wdouble-promotion")
-    set(CXX_WNOERR "-Wno-unused-parameter -Wno-unused-variable -Wno-conversion -Wno-shadow -Wno-padded -Wno-effc++")
+    set(CXX_WNOERR "-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-conversion -Wno-shadow -Wno-padded -Wno-effc++")
 
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     message("-- Compiling for ${CMAKE_SYSTEM_NAME} with Intel C++...")

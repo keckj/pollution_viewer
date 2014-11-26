@@ -6,21 +6,22 @@
 #include <ctime>
 #include <cassert>
 #include <string>
+#include <cstring>
 
 #include "coords.hpp"
 #include "station.hpp"
 
 template <typename T>
 struct SensorDataArray {
-    std::string sensorName;
-    std::string unitName;
+    const std::string sensorName;
+    const std::string unitName;
 
-    std::tm startTime;
-    std::tm endTime;
-    std::tm deltaT;
+    const std::tm startTime;
+    const std::tm endTime;
+    const std::tm deltaT;
 
-    unsigned int nMeasures;
-    unsigned int nStations;
+    const unsigned int nMeasures;
+    const unsigned int nStations;
 
     const std::string **stationNames;
     StationType *stationTypes;
@@ -46,6 +47,33 @@ struct SensorDataArray {
             const std::string **stationNames, StationType *stationTypes,
             double *x, double *y, double *z,
             T** data);
+
+    std::tm getTime(unsigned int k) const {
+
+        int kk = static_cast<int>(k);
+        int sec  = startTime.tm_sec  + kk *deltaT.tm_sec;
+        int min  = startTime.tm_min  + kk *deltaT.tm_min  + sec  / 60;
+        int hour = startTime.tm_hour + kk *deltaT.tm_hour + min  / 60;
+        int mday = startTime.tm_mday + kk *deltaT.tm_mday + hour / 24;
+        int mon  = startTime.tm_mon  + kk *deltaT.tm_mon  + mday / 31;
+        int year = startTime.tm_year + kk *deltaT.tm_year + mon  / 12;
+    
+        char* date = new char[100];
+        strftime(date, 100, "%d/%m/%Y %H:%M:%S", &startTime);
+        std::cout << date << std::endl;
+        std::cout << mday << "/" << mon+1 << "/" << 1900+year << "  " << hour << ":" << min << ":" << sec << std::endl;
+
+        std::tm TIME;
+        memset(&TIME, 0, sizeof(std::tm));
+        TIME.tm_sec = sec%60;
+        TIME.tm_min = min%60;
+        TIME.tm_hour = hour%24;
+        TIME.tm_mday = mday%31;
+        TIME.tm_mon = mon%12;
+        TIME.tm_year = year;
+        
+        return TIME;
+    }
 
     std::string stationDescription(unsigned int i, unsigned int indentLevel) const {
    

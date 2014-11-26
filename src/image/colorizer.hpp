@@ -83,7 +83,7 @@ void Colorizer<F,N>::generateColorRange(const std::string &folder, const std::st
     blitter.setPixelSize(40u);
     std::stringstream ss;
     StringImageInfo info = blitter.evaluateTextImageSize(ss.str());
-    text = blitter.generateTextImageRGBA("Particules PM10 (µg/m³)", ColorRGBA::blue);
+    text = blitter.generateTextImageRGBA("Particules PM10 (mg/m³)", ColorRGBA::blue);
     overlay.blit(text, 30, 30 - info.imgHeight/3);         
     text.freeData();
   

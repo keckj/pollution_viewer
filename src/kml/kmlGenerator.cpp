@@ -35,7 +35,6 @@ namespace KmlGenerator {
         // Station placemarks
         putStations();
 
-        const unsigned int nData = std::min(maxDataProcessed, sensorData.nMeasures);
 
         unsigned int k = 0;
         for(const auto &interpolator : interpData) {
@@ -45,14 +44,14 @@ namespace KmlGenerator {
             putFolder(interpolatorName, "Interpolator "+std::to_string(k)+": "+interpolatorName, false, false);
        
             // Ground overlays folder
-            putInterpolatedDataOverlays(interpolatorName, nData);
+            putInterpolatedDataOverlays(interpolatorName);
         
             // Ground overlays
-            putScreenOverlays(interpolatorName, nData);
+            putScreenOverlays(interpolatorName);
 
             // Isolines and contours
-            putIsoLines(interpolatorName, nData);
-            putIsoContours(interpolatorName, nData);
+            putIsoLines(interpolatorName);
+            putIsoContours(interpolatorName);
 
             endFolder();
         }
@@ -131,7 +130,9 @@ namespace KmlGenerator {
         skipLine();
     }
 
-    void KmlGenerator::putScreenOverlays(const std::string &interpolatorName, unsigned int nData) {
+    void KmlGenerator::putScreenOverlays(const std::string &interpolatorName) {
+        
+        const unsigned int nData = std::min(maxDataProcessed, sensorData.nMeasures);
         putFolder("GUI", "Screen Overlays (" + interpolatorName + ")", false, true);
     
         for (unsigned int i = 0; i < nData; i++) {
@@ -141,20 +142,27 @@ namespace KmlGenerator {
                     Offset(0.0f, 400, PIXELS),
                     Offset(),
                     0.0f, 3, 
-                    screenOverlayFolder+screenOverlayPrefix+interpolatorName+"_"+std::to_string(i)+"."+screenOverlayImgExt);
+                    screenOverlayFolder+screenOverlayPrefix+interpolatorName+"_"+std::to_string(i)+"."+screenOverlayImgExt,
+                    defaultVisibleInterpolatorId.compare(interpolatorName) == 0,
+                    sensorData.getTime(i)
+                    );
         }
         endFolder();
         skipLine();
     }
 
-    void KmlGenerator::putInterpolatedDataOverlays(const std::string &interpolatorName, unsigned int nData) {
+    void KmlGenerator::putInterpolatedDataOverlays(const std::string &interpolatorName) {
+        const unsigned int nData = std::min(maxDataProcessed, sensorData.nMeasures);
         putFolder("Interpolation results", "Data Overlays ("+interpolatorName+")", false, true);
         for (unsigned int i = 0; i < nData; i++) {
             putGroundOverlay("Data"+std::to_string(i), 
                     0u, CLAMP_TO_GROUND, 
                     sensorData.bbox, 
                     0.0, 
-                    groundOverlayFolder+groundOverlayPrefix+interpolatorName+"_"+std::to_string(i)+"."+groundOverlayImgExt);
+                    groundOverlayFolder+groundOverlayPrefix+interpolatorName+"_"+std::to_string(i)+"."+groundOverlayImgExt,
+                    defaultVisibleInterpolatorId.compare(interpolatorName) == 0,
+                    sensorData.getTime(i)
+                    );
         }
         endFolder();
         skipLine();
@@ -170,8 +178,9 @@ namespace KmlGenerator {
         skipLine();
     }
 
-    void KmlGenerator::putIsoLines(const std::string &interpolatorName, unsigned int nData) {
+    void KmlGenerator::putIsoLines(const std::string &interpolatorName) {
         
+        const unsigned int nData = std::min(maxDataProcessed, sensorData.nMeasures);
         const std::vector<IsoLineList<double,4u,float>> &interpIsolines = isolines.at(interpolatorName);
 
         putFolder("Isolines", "Data isolines (" + interpolatorName + ")", false, true);
@@ -179,10 +188,14 @@ namespace KmlGenerator {
         for(const auto &temporalIsolines : interpIsolines) {
             unsigned int i = 1;
             for(const auto &isoline : temporalIsolines) {
+                unsigned int j = 0;
                 putColorLineStrings("Isolines level " + std::to_string(i++), 
                         "Isovalue: " + std::to_string(isoline.value), 
                         "IsoLine_", 
-                        isoline.lines);
+                        isoline.lines,
+                        defaultVisibleInterpolatorId.compare(interpolatorName) == 0,
+                        sensorData.getTime(j++)
+                    );
             }
         }
 
@@ -190,8 +203,9 @@ namespace KmlGenerator {
         skipLine();
     }
 
-    void KmlGenerator::putIsoContours(const std::string &interpolatorName, unsigned int nData) {
+    void KmlGenerator::putIsoContours(const std::string &interpolatorName) {
         
+        const unsigned int nData = std::min(maxDataProcessed, sensorData.nMeasures);
         const std::vector<IsoContourList<double,4u,float>> &interpIsocontours = isocontours.at(interpolatorName);
 
         putFolder("Isocontours", "Data isocontours (" + interpolatorName + ")", false, false);
@@ -199,10 +213,14 @@ namespace KmlGenerator {
         for(const auto &temporalIsocontours : interpIsocontours) {
             unsigned int i = 1;
             for(const auto &isocontour : temporalIsocontours) {
+                unsigned int j = 0;
                 putColorPolygons("Isocontour level " + std::to_string(i++), 
                         "Isovalue: " + std::to_string(isocontour.value), 
                         "IsoContour_", 
-                        ColorMultiLine<double,4u>(isocontour.lines, isocontour.color));
+                        ColorMultiLine<double,4u>(isocontour.lines, isocontour.color),
+                        false,
+                        sensorData.getTime(j++)
+                    );
             }
         }
 

@@ -65,8 +65,8 @@ static const char* errorStrings[] =
         log->debugStream() << "[FreeType] \tUnit per EM: " << face->units_per_EM;
         log->debugStream() << "[FreeType] \tEmbedded Bitmap Strikes: " << face->num_fixed_sizes;
         if(face->num_fixed_sizes > 0)
-            log->infoStream() << "\t[FreeType] Bitmap Strikes Sizes: " << size.str();
-        log->infoStream() << "[FreeType] \tFlags: " << flags.str();
+            log->debugStream() << "\t[FreeType] Bitmap Strikes Sizes: " << size.str();
+        log->debugStream() << "[FreeType] \tFlags: " << flags.str();
     }
 
 }

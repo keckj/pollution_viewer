@@ -46,9 +46,9 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
 
     std::string sensorName;
     std::string sensorUnit;
-    std::tm startDate = {0,0,0,1,0,0,0,0,0,0,0};
-    std::tm endDate   = {0,0,0,1,0,0,0,0,0,0,0};
-    std::tm interval  = {0,0,0,1,0,0,0,0,0,0,0};
+    std::tm startDate = {0,0,0,0,0,0,0,0,0,0,0};
+    std::tm endDate   = {0,0,0,0,0,0,0,0,0,0,0};
+    std::tm interval  = {0,0,0,0,0,0,0,0,0,0,0};
     unsigned int nExpectedValues = 0;
     unsigned int nMatchedStations = 0;
 
@@ -90,7 +90,7 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
             endDate.tm_hour  = std::stoi(match[5]);
             endDate.tm_min   = std::stoi(match[6]);
             endDate.tm_sec   = std::stoi(match[7]);
-
+            
             char* date = new char[100];
             strftime(date, 100, "%d/%m/%Y %H:%M:%S", &endDate);
             log_console->infoStream() << "[DataParser] "
@@ -102,7 +102,7 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
             interval.tm_hour  = std::stoi(match[2]);
             interval.tm_min   = std::stoi(match[3]);
             interval.tm_sec   = std::stoi(match[4]);
-
+            
             char* date = new char[100];
             strftime(date, 100, "%H:%M:%S", &interval);
             log_console->infoStream() << "[DataParser] "

@@ -59,6 +59,7 @@ class KmlFile {
         void putColorLineStrings(cstring name, cstring description,
                 cstring styleUrlPrefix,
                 const ColorMultiLine<double,4u> &colorLines,
+                bool visibility, const std::tm &date,
                 AltitudeMode AltitudeMode = CLAMP_TO_GROUND,
                 unsigned int drawOrder=0u, bool extrude=false, bool tesselate=false);
 
@@ -71,19 +72,22 @@ class KmlFile {
         void putColorPolygons(cstring name, cstring description, 
                 cstring styleUrlPrefix,
                 const ColorMultiLine<double,4u> &outerBoundaries, 
+                bool visibility, const std::tm &date,
                 AltitudeMode altitudeMode = CLAMP_TO_GROUND,
                 unsigned int drawOrder = 0u, bool extrude=false, bool tesselate=false);
 
         void putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
                 BoundingBox<double> bbox, double rotation, const Color<4u> &color);
         void putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
-                BoundingBox<double> bbox, double rotation, cstring iconPath);
+                BoundingBox<double> bbox, double rotation, cstring iconPath, bool visibility, const std::tm &date);
         
         void putScreenOverlay(cstring name, cstring description,
                 const Offset &overlayXY, const Offset &screenXY, 
                 const Offset &size, const Offset &rotationXY,
                 float rotation, unsigned int drawOrder,
-                cstring iconPath);
+                cstring iconPath,
+                bool visibility,
+                const std::tm &date);
 
         // HIGH LEVEL STYLE PRIMITIVES //
         void startStyle(cstring styleId = std::string(""));
@@ -154,8 +158,8 @@ class KmlFile {
         void putRotationXY(const Offset &rotationXY);
         void putSize(const Offset &size);
         void putDate(const std::tm &date, DateFormat dateFormat);
-        void putTimeStamp(const std::tm &date, DateFormat dateFormat, cstring timeStampId = std::string(""));
-        void putTimeSpan(const std::tm &beginDate, const std::tm &endDate, DateFormat dateFormat, cstring timeSpanId = std::string(""));
+        void putTimeStamp(const std::tm &date, DateFormat dateFormat=YYYY_MM_DD_hh_mm_ss, cstring timeStampId = std::string(""));
+        void putTimeSpan(const std::tm &beginDate, const std::tm &endDate, DateFormat dateFormat=YYYY_MM_DD_hh_mm_ss, cstring timeSpanId = std::string(""));
         void putLatLonBox(const BoundingBox<double> &bbox, double rotation = 0.0);
 
         void endPolygon();

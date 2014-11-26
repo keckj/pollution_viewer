@@ -22,9 +22,9 @@ namespace Globals {
     static const SimpleShepardInterpolator<int,float> I2(2.0);
 
     static const unsigned int nInterpolators = 2u;
-    static const unsigned int defaultVisibleInterpolatorId = 0u;
     static const Interpolator<int,float>* interpolators[nInterpolators] = { &I1, &I2 };
     static const std::string interpolatorNames[nInterpolators] = { "shepard1", "shepard2" };
+    static const std::string defaultVisibleInterpolatorId = "shepard1";
    
     // Data generation parameters
     static Colorizer<float,4u> *dataColorizer;
