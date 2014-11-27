@@ -14,12 +14,12 @@ namespace Globals {
     static const std::string sensorName("Particules PM10");
 
     // Interpolation
-    static const unsigned int maxDataProcessed = 1u;
+    static const unsigned int maxDataProcessed = 30u;
     static const unsigned int gridWidth = 64u;
     static const unsigned int gridHeight = 64u;
 
     static const SimpleShepardInterpolator<int,float> I1(2.0);
-    static const SimpleShepardInterpolator<int,float> I2(2.0);
+    static const SimpleShepardInterpolator<int,float> I2(5.0);
 
     static const unsigned int nInterpolators = 2u;
     static const Interpolator<int,float>* interpolators[nInterpolators] = { &I1, &I2 };
@@ -42,7 +42,7 @@ namespace Globals {
     // Kml generation parameters
     static const std::string kmlFolder = "kml/";
     static const std::string kmlFileName = "root.kml";
-    static const std::string stationIconHref = "kml/icons/station.png";
+    static const std::string stationIconHref = "icons/antenna.png";
 
     static const std::string screenOverlayFolder = "screenOverlays/";
     static const std::string screenOverlayPrefix = "screen_overlay_";

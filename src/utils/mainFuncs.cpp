@@ -116,8 +116,8 @@ namespace mainFuncs {
             std::vector<IsoContourList<double,4u,float>> interpolatorIsolines(nData);
             for (unsigned int i = 0; i < nData; i++) {
                 const InterpolatedData<float> &data = interpolatedDataGrid.at(interpolatorName)[i];
-                isolineColorizer->resetMinMax(data);
-                interpolatorIsolines[i] = isolineGenerator.generateIsoContours(isolines.at(interpolatorName)[i], data, *isolineColorizer);
+                isocontourColorizer->resetMinMax(data);
+                interpolatorIsolines[i] = isolineGenerator.generateIsoContours(isolines.at(interpolatorName)[i], data, *isocontourColorizer);
             }
             interpolatorIsocontourMap.emplace(interpolatorName, interpolatorIsolines); 
         }

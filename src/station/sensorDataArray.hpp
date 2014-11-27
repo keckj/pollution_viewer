@@ -48,20 +48,22 @@ struct SensorDataArray {
             double *x, double *y, double *z,
             T** data);
 
-    std::tm getTime(unsigned int k) const {
+    std::tm getTime(unsigned int k, bool minusOneSec = false) const {
 
         int kk = static_cast<int>(k);
-        int sec  = startTime.tm_sec  + kk *deltaT.tm_sec;
-        int min  = startTime.tm_min  + kk *deltaT.tm_min  + sec  / 60;
-        int hour = startTime.tm_hour + kk *deltaT.tm_hour + min  / 60;
-        int mday = startTime.tm_mday + kk *deltaT.tm_mday + hour / 24;
-        int mon  = startTime.tm_mon  + kk *deltaT.tm_mon  + mday / 31;
-        int year = startTime.tm_year + kk *deltaT.tm_year + mon  / 12;
-    
-        char* date = new char[100];
-        strftime(date, 100, "%d/%m/%Y %H:%M:%S", &startTime);
-        std::cout << date << std::endl;
-        std::cout << mday << "/" << mon+1 << "/" << 1900+year << "  " << hour << ":" << min << ":" << sec << std::endl;
+        int sec  = startTime.tm_sec  + kk *deltaT.tm_sec + (minusOneSec ? -1 : 0);
+        int min  = startTime.tm_min  + kk *deltaT.tm_min  + (sec  == -1  ? -1 : sec  / 60);
+        int hour = startTime.tm_hour + kk *deltaT.tm_hour + (min  == -1  ? -1 : min  / 60);
+        int mday = startTime.tm_mday + kk *deltaT.tm_mday + (hour == -1  ? -1 : hour / 24);
+        int mon  = startTime.tm_mon  + kk *deltaT.tm_mon  + (mday == -1  ? -1 : mday / 31);
+        int year = startTime.tm_year + kk *deltaT.tm_year + (mon  == -1  ? -1 : mon  / 12);
+        assert(year != -1);
+
+        if (sec   == -1) { sec  = 59; };
+        if (min   == -1) { min  = 59; };
+        if (hour  == -1) { hour = 24; };
+        if (mday  == -1) { mday = 31; };
+        if (mon   == -1) { mon =  12; };
 
         std::tm TIME;
         memset(&TIME, 0, sizeof(std::tm));
@@ -71,7 +73,7 @@ struct SensorDataArray {
         TIME.tm_mday = mday%31;
         TIME.tm_mon = mon%12;
         TIME.tm_year = year;
-        
+
         return TIME;
     }
 
@@ -95,10 +97,10 @@ struct SensorDataArray {
         description << tabs << "<b>Type de la station:</b> " << stationTypes[i] << std::endl;
         description << tabs << "<br/><b>Longitude:</b> <i>" << x[i] << "</i>" << std::endl;
         description << tabs << "<br/><b>Latitude:</b>  <i>" << y[i] << "</i>" << std::endl;
-        if(data[0][i] >= T(0))
-            description << tabs << "<br/><b>" << sensorName << ":</b>  <i>" << data[0][i] << " " << unitName <<"</i>" << std::endl;
-        else
-            description << tabs << "<br/><b>" << sensorName << ":</b>  <i>no data</i>" << std::endl;
+        //if(data[0][i] >= T(0))
+            //description << tabs << "<br/><b>" << sensorName << ":</b>  <i>" << data[0][i] << " " << unitName <<"</i>" << std::endl;
+        //else
+            //description << tabs << "<br/><b>" << sensorName << ":</b>  <i>no data</i>" << std::endl;
         description << tabs << "]]>";
         description << std::endl;
         description << tabsMinusOne;

@@ -59,7 +59,7 @@ class KmlFile {
         void putColorLineStrings(cstring name, cstring description,
                 cstring styleUrlPrefix,
                 const ColorMultiLine<double,4u> &colorLines,
-                bool visibility, const std::tm &date,
+                bool visibility, const std::tm &beginDate, const std::tm &endDate,
                 AltitudeMode AltitudeMode = CLAMP_TO_GROUND,
                 unsigned int drawOrder=0u, bool extrude=false, bool tesselate=false);
 
@@ -72,14 +72,14 @@ class KmlFile {
         void putColorPolygons(cstring name, cstring description, 
                 cstring styleUrlPrefix,
                 const ColorMultiLine<double,4u> &outerBoundaries, 
-                bool visibility, const std::tm &date,
+                bool visibility, const std::tm &beginDate, const std::tm &endDate,
                 AltitudeMode altitudeMode = CLAMP_TO_GROUND,
                 unsigned int drawOrder = 0u, bool extrude=false, bool tesselate=false);
 
         void putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
                 BoundingBox<double> bbox, double rotation, const Color<4u> &color);
         void putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
-                BoundingBox<double> bbox, double rotation, cstring iconPath, bool visibility, const std::tm &date);
+                BoundingBox<double> bbox, double rotation, cstring iconPath, bool visibility, const std::tm &beginDate, const std::tm &endDate);
         
         void putScreenOverlay(cstring name, cstring description,
                 const Offset &overlayXY, const Offset &screenXY, 
@@ -87,7 +87,7 @@ class KmlFile {
                 float rotation, unsigned int drawOrder,
                 cstring iconPath,
                 bool visibility,
-                const std::tm &date);
+                const std::tm &beginDate, const std::tm &endDate);
 
         // HIGH LEVEL STYLE PRIMITIVES //
         void startStyle(cstring styleId = std::string(""));

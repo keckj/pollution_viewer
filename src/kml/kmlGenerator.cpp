@@ -35,10 +35,8 @@ namespace KmlGenerator {
         // Station placemarks
         putStations();
 
-
         unsigned int k = 0;
         for(const auto &interpolator : interpData) {
-            
             const std::string &interpolatorName = interpolator.first;
 
             putFolder(interpolatorName, "Interpolator "+std::to_string(k)+": "+interpolatorName, false, false);
@@ -54,6 +52,7 @@ namespace KmlGenerator {
             putIsoContours(interpolatorName);
 
             endFolder();
+            k++;
         }
         
         
@@ -90,20 +89,25 @@ namespace KmlGenerator {
     void KmlGenerator::putStationStyle() {
         startStyle("StationStyle");
         putLabelStyle(ColorRGBA(0x00,0x00,0x00,0x00), NORMAL, 0.0f); //invisible labels
-        putIconStyle("http://ukmobilereview.com/wp-content/uploads/2013/07/antenna-strength.png",
-                Offset(), 0.25f, 0.0f); //custom icon
+        putIconStyle(stationIconHref, Offset(), 0.25f, 0.0f);        //custom icon
         endStyle();
         skipLine();
     }
 
     void KmlGenerator::putIsoLineStyles() {
 
+        std::map<std::string, bool> styles;
+
         for (const auto &interpIsolines : isolines) {
             for(const auto &temporalIsolines : interpIsolines.second) {
                 for(const auto &isoline : temporalIsolines) {
-                    startStyle("IsoLine_" + isoline.lines.color.toHexString());
-                    putLineStyle(isoline.lines.color, NORMAL, 2u);
-                    endStyle();
+                    std::string styleName = "IsoLine_" + isoline.lines.color.toHexString();
+                    if(styles.find(styleName) == styles.end()) {
+                        startStyle(styleName);
+                        putLineStyle(isoline.lines.color, NORMAL, 2u);
+                        endStyle();
+                        styles.emplace(styleName, true);
+                    }
                 }
             }
         }
@@ -111,13 +115,20 @@ namespace KmlGenerator {
     }
 
     void KmlGenerator::putIsoContourStyles() {
+
+        std::map<std::string, bool> styles;
+
         for (const auto &interpIsocontours : isocontours) {
             for(const auto &temporalIsocontours : interpIsocontours.second) {
                 for(const auto &isocontour : temporalIsocontours) {
-                    startStyle("IsoContour_" + isocontour.color.toHexString());
-                    putPolyStyle(isocontour.color, NORMAL, true, true);
-                    putLineStyle(ColorRGBA::black, NORMAL, 1u);
-                    endStyle();
+                    std::string styleName = "IsoContour_" + isocontour.color.toHexString();
+                    if(styles.find(styleName) == styles.end()) {
+                        startStyle(styleName);
+                        putPolyStyle(isocontour.color, NORMAL, true, true);
+                        putLineStyle(ColorRGBA::black, NORMAL, 1u);
+                        endStyle();
+                        styles.emplace(styleName, true);
+                    }
                 }
             }
         }
@@ -144,8 +155,10 @@ namespace KmlGenerator {
                     0.0f, 3, 
                     screenOverlayFolder+screenOverlayPrefix+interpolatorName+"_"+std::to_string(i)+"."+screenOverlayImgExt,
                     defaultVisibleInterpolatorId.compare(interpolatorName) == 0,
-                    sensorData.getTime(i)
+                    sensorData.getTime(i),
+                    sensorData.getTime(i+1, true)
                     );
+
         }
         endFolder();
         skipLine();
@@ -161,7 +174,8 @@ namespace KmlGenerator {
                     0.0, 
                     groundOverlayFolder+groundOverlayPrefix+interpolatorName+"_"+std::to_string(i)+"."+groundOverlayImgExt,
                     defaultVisibleInterpolatorId.compare(interpolatorName) == 0,
-                    sensorData.getTime(i)
+                    sensorData.getTime(i), 
+                    sensorData.getTime(i+1, true)
                     );
         }
         endFolder();
@@ -185,18 +199,20 @@ namespace KmlGenerator {
 
         putFolder("Isolines", "Data isolines (" + interpolatorName + ")", false, true);
         
+        unsigned int j = 0;
         for(const auto &temporalIsolines : interpIsolines) {
             unsigned int i = 1;
             for(const auto &isoline : temporalIsolines) {
-                unsigned int j = 0;
                 putColorLineStrings("Isolines level " + std::to_string(i++), 
                         "Isovalue: " + std::to_string(isoline.value), 
                         "IsoLine_", 
                         isoline.lines,
                         defaultVisibleInterpolatorId.compare(interpolatorName) == 0,
-                        sensorData.getTime(j++)
+                        sensorData.getTime(j), 
+                        sensorData.getTime(j+1, true)
                     );
             }
+            j++;
         }
 
         endFolder();
@@ -210,18 +226,20 @@ namespace KmlGenerator {
 
         putFolder("Isocontours", "Data isocontours (" + interpolatorName + ")", false, false);
         
+        unsigned int j = 0;
         for(const auto &temporalIsocontours : interpIsocontours) {
             unsigned int i = 1;
             for(const auto &isocontour : temporalIsocontours) {
-                unsigned int j = 0;
                 putColorPolygons("Isocontour level " + std::to_string(i++), 
                         "Isovalue: " + std::to_string(isocontour.value), 
                         "IsoContour_", 
                         ColorMultiLine<double,4u>(isocontour.lines, isocontour.color),
                         false,
-                        sensorData.getTime(j++)
+                        sensorData.getTime(j), 
+                        sensorData.getTime(j+1, true)
                     );
             }
+            j++;
         }
 
         endFolder();
