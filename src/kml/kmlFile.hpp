@@ -72,6 +72,7 @@ class KmlFile {
         void putColorPolygons(cstring name, cstring description, 
                 cstring styleUrlPrefix,
                 const ColorMultiLine<double,4u> &outerBoundaries, 
+                const ColorMultiLine<double,4u> &innerBoundaries, 
                 bool visibility, const std::tm &beginDate, const std::tm &endDate,
                 AltitudeMode altitudeMode = CLAMP_TO_GROUND,
                 unsigned int drawOrder = 0u, bool extrude=false, bool tesselate=false);
@@ -148,6 +149,7 @@ class KmlFile {
         void putCoordinates(unsigned int count, double *longitude, double *latitude, double *height);
         void putCoordinates(const Line<double> &line);
         void putOuterBoundary(const Line<double> &line);
+        void putInnerBoundary(const Line<double> &line);
         void putColor(const Color<4u> &color);
         void putColorMode(ColorMode colorMode);
         void putAltitudeMode(AltitudeMode altitudeMode);

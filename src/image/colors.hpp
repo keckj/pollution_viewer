@@ -25,7 +25,6 @@ struct Color {
     template <typename F>
     static Color<N> linearInterp(F alpha, const Color<N> &c1, const Color<N> &c2);
 
-protected:
     Color();
 private:
     unsigned char intensities[N];

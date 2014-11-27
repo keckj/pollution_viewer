@@ -450,7 +450,7 @@ void KmlFile::putCoordinates(const Line<double> &line) {
 
     kml << "<coordinates>"<<newLineAndIndent();
     for (auto &pts : line) {
-        kml<< pts.x << "," << pts.y << "," << pts.z << " ";
+        kml<< pts.x << "," << pts.y << "," << 20000+pts.z << " ";
     }
     kml << newLine();
     removeTab();
@@ -474,6 +474,16 @@ void KmlFile::putOuterBoundary(const Line<double> &line) {
     kml << "</LinearRing>" << newLineAndDedent();
     removeTab();
     kml << "</outerBoundaryIs>" << newLineAndDedent();
+}
+
+void KmlFile::putInnerBoundary(const Line<double> &line) {
+    kml << "<innerBoundaryIs>" << newLineAndIndent();
+    kml << "<LinearRing>" << newLineAndIndent();
+    putCoordinates(line);
+    removeTab();
+    kml << "</LinearRing>" << newLineAndDedent();
+    removeTab();
+    kml << "</innerBoundaryIs>" << newLineAndDedent();
 }
         
 void KmlFile::putLatLonBox(const BoundingBox<double> &bbox, double rotation) {
@@ -780,6 +790,7 @@ void KmlFile::putPolygon(cstring name, cstring description,
 void KmlFile::putColorPolygons(cstring name, cstring description, 
         cstring styleUrlPrefix,
         const ColorMultiLine<double,4u> &outerBoundaries, 
+        const ColorMultiLine<double,4u> &innerBoundaries, 
         bool visibility, const std::tm &beginDate, const std::tm &endDate,
         AltitudeMode altitudeMode,
         unsigned int drawOrder, bool extrude, bool tesselate){
@@ -790,13 +801,16 @@ void KmlFile::putColorPolygons(cstring name, cstring description,
     putTimeSpan(beginDate, endDate);
     putStyleUrl(styleUrlPrefix+outerBoundaries.color.toHexString());
     startMultiGeometry();
-    for(auto &outerBoundary : outerBoundaries.lines) {
+    for(const auto &outerBoundary : outerBoundaries.lines) {
         startPolygon();
         putExtrude(extrude);
         putTesselate(tesselate);
         putDrawOrder(drawOrder);
         putAltitudeMode(altitudeMode);
         putOuterBoundary(outerBoundary);
+        for(const auto &innerBoundary : innerBoundaries.lines) {
+            putInnerBoundary(innerBoundary);
+        }
         endPolygon();
     }
     endMultiGeometry();

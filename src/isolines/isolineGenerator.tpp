@@ -118,8 +118,8 @@ IsoContour<double,N,F> IsoLineGenerator<F,N>::generateIsoContour(const IsoLine<d
         const IsoLine<double,N,F> &isolineHighVal, 
         const InterpolatedData<F> &data,
         const Colorizer<F,N> &colorizer) {
-    IsoContour<double,N,F> isocontour(isolineHighVal, isolineLowVal,data,bbox);
-    isocontour.color = colorizer(isocontour.value);
+    IsoContour<double,N,F> isocontour(isolineLowVal, isolineHighVal,data,bbox);
+    isocontour.color = colorizer(isocontour.lowerValue);
     return isocontour;
 }
 

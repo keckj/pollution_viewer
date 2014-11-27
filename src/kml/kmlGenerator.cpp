@@ -1,4 +1,6 @@
 
+
+#include "kmlUtils.hpp"
 #include "kmlGenerator.hpp"
 
 namespace KmlGenerator {
@@ -204,7 +206,7 @@ namespace KmlGenerator {
             unsigned int i = 1;
             for(const auto &isoline : temporalIsolines) {
                 putColorLineStrings("Isolines level " + std::to_string(i++), 
-                        "Isovalue: " + std::to_string(isoline.value), 
+                        "Isovalue: " + std::to_string(isoline.value) + " mg/m³",
                         "IsoLine_", 
                         isoline.lines,
                         defaultVisibleInterpolatorId.compare(interpolatorName) == 0,
@@ -229,14 +231,18 @@ namespace KmlGenerator {
         unsigned int j = 0;
         for(const auto &temporalIsocontours : interpIsocontours) {
             unsigned int i = 1;
-            for(const auto &isocontour : temporalIsocontours) {
+            for(auto isocontour = std::next(temporalIsocontours.begin()); isocontour != temporalIsocontours.end(); ++isocontour) {
+                auto prev = std::prev(isocontour);
                 putColorPolygons("Isocontour level " + std::to_string(i++), 
-                        "Isovalue: " + std::to_string(isocontour.value), 
+                        "Min value: " + std::to_string(isocontour->lowerValue) + " mg/m³\n"
+                        "Max value: " + std::to_string(isocontour->upperValue) + " mg/m³", 
                         "IsoContour_", 
-                        ColorMultiLine<double,4u>(isocontour.lines, isocontour.color),
+                        ColorMultiLine<double,4u>(isocontour->lines, isocontour->color),
+                        ColorMultiLine<double,4u>(prev->lines, prev->color),
                         false,
                         sensorData.getTime(j), 
-                        sensorData.getTime(j+1, true)
+                        sensorData.getTime(j+1, true),
+                        ABSOLUTE
                     );
             }
             j++;

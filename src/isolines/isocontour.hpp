@@ -8,7 +8,9 @@ template <typename T, unsigned int N, typename F>
 struct IsoContour {
     MultiLine<T> lines;
     Color<N> color;
-    F value;
+    
+    F lowerValue;
+    F upperValue;
 
     IsoContour(const IsoLine<T,N,F> &isolineLowVal, const IsoLine<T,N,F> &isolineHighVal, 
         const InterpolatedData<F> &data, const BoundingBox<double> &bbox);
@@ -21,7 +23,8 @@ using IsoContourList = std::list<IsoContour<T,N,F>>;
 template <typename T, unsigned int N, typename F>
 IsoContour<T,N,F>::IsoContour(const IsoLine<T,N,F> &isolineLowVal, const IsoLine<T,N,F> &isolineHighVal, 
         const InterpolatedData<F> &data, const BoundingBox<double> &bbox) :
-    lines(), color(isolineLowVal.lines.color), value(isolineLowVal.value) {
+    lines(), color(isolineLowVal.lines.color), 
+    lowerValue(isolineLowVal.value), upperValue(isolineHighVal.value) {
 
         using Utils::areEqual;
 
