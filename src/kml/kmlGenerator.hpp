@@ -7,48 +7,49 @@
 #include "isolineUtils.hpp"
 #include "isoline.hpp"
 #include "isocontour.hpp"
+#include "config.hpp"
+#include "mainFuncs.hpp"
 
-class KmlGenerator final : public KmlFile {
-    public:
-        KmlGenerator(const std::string &filePath, 
-                     const std::string &screenOverlayFolder,
-                     const std::string &screenOverlayPrefix,
-                     const std::string &screenOverlaySuffix,
-                     const std::string &groundOverlayFolder,
-                     const std::string &groundOverlayPrefix,
-                     const std::string &groundOverlaySuffix,
-                     const std::string &stationIconPath,
-                     const SensorDataArray<int> &sensorData,
-                     const IsoLineList<double,4u,float> &isolines,
-                     const IsoContourList<double,4u,float> &isocontours);
+namespace KmlGenerator {
+    using namespace Globals;
+    
+    using SensorDataArr = SensorDataArray<int>;
+    using InterpData    = std::map<std::string, std::vector< InterpolatedData<float>>>;
+    using IsoLines      = std::map<std::string, std::vector< IsoLineList     <double,4u,float>>>;
+    using IsoContours   = std::map<std::string, std::vector< IsoContourList  <double,4u,float>>>;
 
-        ~KmlGenerator();
+    class KmlGenerator final : public KmlFile {
 
-    private:
-        void generateKmlFile();
 
-        void putKmlHeader();
-        void putStationStyle();
-        void putIsoLineStyles();
-        void putIsoContourStyles();
-        void putScreenOverlays();
-        void putInitialView();
-        void putStations();
-        void putIsoLines();
-        void putIsoContours();
-        void putInterpolatedDataOverlays();
-        void putKmlFooter();
-        
-        const std::string &screenOverlayFolder;
-        const std::string &screenOverlayPrefix;
-        const std::string &screenOverlaySuffix;
-        const std::string &groundOverlayFolder;
-        const std::string &groundOverlayPrefix;
-        const std::string &groundOverlaySuffix;
-        const std::string &stationIconPath;
-        const SensorDataArray<int> &sensorData;
-        const IsoLineList<double,4u,float> &isolines;
-        const IsoContourList<double,4u,float> &isocontours;
-};
+        public:
+            KmlGenerator(const SensorDataArr &sensorData,
+                    const InterpData &interpData,
+                    const IsoLines &isolines,
+                    const IsoContours &isocontours);
+
+            ~KmlGenerator();
+
+        private:
+            void generateKmlFile();
+
+            void putKmlHeader();
+            void putStationStyle();
+            void putIsoLineStyles();
+            void putIsoContourStyles();
+            void putStations();
+            void putInitialView();
+            void putKmlFooter();
+
+            void putScreenOverlays(const std::string &interpolatorName);
+            void putInterpolatedDataOverlays(const std::string &interpolatorName);
+            void putIsoLines(const std::string &interpolatorName);
+            void putIsoContours(const std::string &interpolatorName);
+
+            const SensorDataArr &sensorData;
+            const InterpData &interpData;
+            const IsoLines &isolines;
+            const IsoContours &isocontours;
+    };
+}
 
 #endif /* end of include guard: KMLGENERATOR_H */

@@ -19,7 +19,7 @@ StringBlitter::~StringBlitter() {
 void StringBlitter::loadFontFromFile(const std::string &fontPath, bool logInfo) {
    
     using log4cpp::log_console;
-    log4cpp::log_console->infoStream() << "[StringBlitter] Loading font " << fontPath <<"...";
+    log4cpp::log_console->debugStream() << "[StringBlitter] Loading font " << fontPath <<"...";
 
     // release old font if any
     if(face) 
@@ -124,9 +124,6 @@ StringImageInfo StringBlitter::evaluateTextImageSize(const std::string &str) {
         buffer = 0L;
     }
     
-    log4cpp::log_console->debugStream() << "[FreeType] Image Size (in pixels): " << imgWidth << "x" << imgHeight;
-    log4cpp::log_console->debugStream() << "[FreeType] Max Y-axis bearing (in pixels): " << maxBearingY;
-
     return StringImageInfo(imgWidth, imgHeight, maxBearingY);
 }
 

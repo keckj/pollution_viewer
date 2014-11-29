@@ -250,19 +250,23 @@ void KmlFile::putIcon(cstring href) {
 }
 
 void  KmlFile::putVisibility(bool visible) {
-    kml << "<visibility>"+(visible ? std::string("1") : std::string("0"))+"</visibility>"<<newLine();
+    if(!visible)
+        kml << "<visibility>"+(visible ? std::string("1") : std::string("0"))+"</visibility>"<<newLine();
 }
         
 void KmlFile::putExtrude(bool extrude) {
-    kml << "<extrude>"+(extrude ? std::string("1") : std::string("0"))+"</extrude>"<<newLine();
+    if(extrude)
+        kml << "<extrude>"+(extrude ? std::string("1") : std::string("0"))+"</extrude>"<<newLine();
 }
 
 void KmlFile::putTesselate(bool tesselate) {
-    kml << "<tesselate>"+(tesselate ? std::string("1") : std::string("0"))+"</tesselate>"<<newLine();
+    if(tesselate)
+        kml << "<tesselate>"+(tesselate ? std::string("1") : std::string("0"))+"</tesselate>"<<newLine();
 }
         
 void KmlFile::putOpen(bool open) {
-    kml << "<open>"+(open ? std::string("1") : std::string("0"))+"</open>"<<newLine();
+    if(open)
+        kml << "<open>"+(open ? std::string("1") : std::string("0"))+"</open>"<<newLine();
 }
 
 void KmlFile::putFill(bool fill) {
@@ -274,7 +278,8 @@ void KmlFile::putOutline(bool outline) {
 }
 
 void KmlFile::putDrawOrder(unsigned int drawOrder) {
-    kml << "<drawOrder>" << drawOrder << "</drawOrder>"<<newLine();
+    if(drawOrder > 0)
+        kml << "<drawOrder>" << drawOrder << "</drawOrder>"<<newLine();
 }
 
 void KmlFile::putWidth(float width) {
@@ -414,6 +419,16 @@ void KmlFile::putTimeStamp(const std::tm &date, DateFormat dateFormat, cstring t
     kml << "</TimeStamp>" << newLineAndDedent();
 }
 void KmlFile::putTimeSpan(const std::tm &beginDate, const std::tm &endDate, DateFormat dateFormat, cstring timeSpanId) {
+    if(stringIsEmpty(timeSpanId))
+        kml << "<TimeSpan>" << newLineAndIndent();
+    else
+        kml << "<TimeSpan id=\"" << timeSpanId << "\">" << newLineAndIndent();
+    
+    kml << "<begin>" << dateToString(beginDate, dateFormat) << "</begin>" << newLine();
+    kml << "<end>" << dateToString(endDate, dateFormat) << "</end>" << newLine();
+    
+    removeTab();
+    kml << "</TimeSpan>" << newLineAndDedent();
 }
         
 void KmlFile::putCoordinate(double longitude, double latitude, double altitude) {
@@ -435,7 +450,7 @@ void KmlFile::putCoordinates(const Line<double> &line) {
 
     kml << "<coordinates>"<<newLineAndIndent();
     for (auto &pts : line) {
-        kml<< pts.x << "," << pts.y << "," << pts.z << newLine();
+        kml<< pts.x << "," << pts.y << "," << 20000+pts.z << " ";
     }
     kml << newLine();
     removeTab();
@@ -459,6 +474,16 @@ void KmlFile::putOuterBoundary(const Line<double> &line) {
     kml << "</LinearRing>" << newLineAndDedent();
     removeTab();
     kml << "</outerBoundaryIs>" << newLineAndDedent();
+}
+
+void KmlFile::putInnerBoundary(const Line<double> &line) {
+    kml << "<innerBoundaryIs>" << newLineAndIndent();
+    kml << "<LinearRing>" << newLineAndIndent();
+    putCoordinates(line);
+    removeTab();
+    kml << "</LinearRing>" << newLineAndDedent();
+    removeTab();
+    kml << "</innerBoundaryIs>" << newLineAndDedent();
 }
         
 void KmlFile::putLatLonBox(const BoundingBox<double> &bbox, double rotation) {
@@ -515,10 +540,10 @@ std::string KmlFile::dateToString(const std::tm &date, DateFormat format) {
             strftime(buffer,80,"%Y-%m-%d",&date);
             break;
         case YYYY_MM_DD_hh_mm_ss:
-            strftime(buffer,80,"%Y-%m-%dT%I:%M:%SZ",&date);
+            strftime(buffer,80,"%Y-%m-%dT%H:%M:%SZ",&date);
             break;
         case YYYY_MM_DD_hh_mm_ss_zzzzzz:
-            strftime(buffer,80,"%Y-%m-%dT%I:%M:%S+00:00",&date);
+            strftime(buffer,80,"%Y-%m-%dT%H:%M:%S+00:00",&date);
             break;
     }
 
@@ -538,9 +563,11 @@ void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode
 }
         
 void KmlFile::putGroundOverlay(cstring name, unsigned int altitude, AltitudeMode altitudeMode, 
-        BoundingBox<double> bbox, double rotation, cstring iconPath) {
+        BoundingBox<double> bbox, double rotation, cstring iconPath, bool visibility, const std::tm &beginDate, const std::tm &endDate) {
     startGroundOverlay();
     putName(name);
+    putVisibility(visibility);
+    putTimeSpan(beginDate, endDate);
     putAltitude(altitude);
     putAltitudeMode(altitudeMode);
     putLatLonBox(bbox);
@@ -552,10 +579,13 @@ void KmlFile::putScreenOverlay(cstring name, cstring description,
         const Offset &overlayXY, const Offset &screenXY, 
         const Offset &size, const Offset &rotationXY, 
         float rotation, unsigned int drawOrder,
-        cstring iconPath) {
+        cstring iconPath,
+        bool visibility, const std::tm &beginDate, const std::tm &endDate) {
     startScreenOverlay();
     putName(name);
     putDescription(description);
+    putVisibility(visibility);
+    putTimeSpan(beginDate, endDate);
     putDrawOrder(drawOrder);
     putOverlayXY(overlayXY);
     putScreenXY(screenXY);
@@ -639,8 +669,8 @@ void KmlFile::putFolder(cstring name, cstring description, bool open, bool visib
     startFolder();
     putName(name); 
     putDescription(description);
-    putOpen(open);
     putVisibility(visibility);
+    putOpen(open);
 }
 
 void KmlFile::putComment(cstring comment) {
@@ -713,11 +743,14 @@ void KmlFile::putLineStrings(cstring name, cstring description,
 void KmlFile::putColorLineStrings(cstring name, cstring description,
         cstring styleUrlPrefix,
         const ColorMultiLine<double,4u> &colorLines,
+        bool visibility, const std::tm &beginDate, const std::tm &endDate,
         AltitudeMode altitudeMode,
         unsigned int drawOrder, bool extrude, bool tesselate) {
     startPlacemark();
     putName(name);
     putDescription(description);
+    putVisibility(visibility);
+    putTimeSpan(beginDate, endDate);
     putStyleUrl(styleUrlPrefix+colorLines.color.toHexString());
     startMultiGeometry();
     for(auto &line : colorLines.lines) {
@@ -757,20 +790,27 @@ void KmlFile::putPolygon(cstring name, cstring description,
 void KmlFile::putColorPolygons(cstring name, cstring description, 
         cstring styleUrlPrefix,
         const ColorMultiLine<double,4u> &outerBoundaries, 
+        const ColorMultiLine<double,4u> &innerBoundaries, 
+        bool visibility, const std::tm &beginDate, const std::tm &endDate,
         AltitudeMode altitudeMode,
         unsigned int drawOrder, bool extrude, bool tesselate){
     startPlacemark();
     putName(name);
     putDescription(description);
+    putVisibility(visibility);
+    putTimeSpan(beginDate, endDate);
     putStyleUrl(styleUrlPrefix+outerBoundaries.color.toHexString());
     startMultiGeometry();
-    for(auto &outerBoundary : outerBoundaries.lines) {
+    for(const auto &outerBoundary : outerBoundaries.lines) {
         startPolygon();
         putExtrude(extrude);
         putTesselate(tesselate);
         putDrawOrder(drawOrder);
         putAltitudeMode(altitudeMode);
         putOuterBoundary(outerBoundary);
+        for(const auto &innerBoundary : innerBoundaries.lines) {
+            putInnerBoundary(innerBoundary);
+        }
         endPolygon();
     }
     endMultiGeometry();

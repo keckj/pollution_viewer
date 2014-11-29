@@ -6,22 +6,22 @@
 #include <ctime>
 #include <cassert>
 #include <string>
+#include <cstring>
 
 #include "coords.hpp"
 #include "station.hpp"
 
 template <typename T>
 struct SensorDataArray {
-    std::string sensorName;
-    std::string unitName;
+    const std::string sensorName;
+    const std::string unitName;
 
-    std::tm startTime;
-    std::tm endTime;
-    std::tm deltaT;
-    
+    const std::tm startTime;
+    const std::tm endTime;
+    const std::tm deltaT;
 
-    unsigned int nMeasures;
-    unsigned int nStations;
+    const unsigned int nMeasures;
+    const unsigned int nStations;
 
     const std::string **stationNames;
     StationType *stationTypes;
@@ -38,6 +38,8 @@ struct SensorDataArray {
     //00:02:00 s1 s2 s3 s4 ... s_nStations
     //.. nMeasures times
     //xx:xx:xx s1 s2 s3 s4 ... s_nStations <= last measure
+    
+    SensorDataArray();
 
     SensorDataArray(std::string sensorName, std::string unitName, 
             std::tm startTime, std::tm endTime, std::tm deltaT, 
@@ -45,6 +47,35 @@ struct SensorDataArray {
             const std::string **stationNames, StationType *stationTypes,
             double *x, double *y, double *z,
             T** data);
+
+    std::tm getTime(unsigned int k, bool minusOneSec = false) const {
+
+        int kk = static_cast<int>(k);
+        int sec  = startTime.tm_sec  + kk *deltaT.tm_sec + (minusOneSec ? -1 : 0);
+        int min  = startTime.tm_min  + kk *deltaT.tm_min  + (sec  == -1  ? -1 : sec  / 60);
+        int hour = startTime.tm_hour + kk *deltaT.tm_hour + (min  == -1  ? -1 : min  / 60);
+        int mday = startTime.tm_mday + kk *deltaT.tm_mday + (hour == -1  ? -1 : hour / 24);
+        int mon  = startTime.tm_mon  + kk *deltaT.tm_mon  + (mday == -1  ? -1 : mday / 31);
+        int year = startTime.tm_year + kk *deltaT.tm_year + (mon  == -1  ? -1 : mon  / 12);
+        assert(year != -1);
+
+        if (sec   == -1) { sec  = 59; };
+        if (min   == -1) { min  = 59; };
+        if (hour  == -1) { hour = 24; };
+        if (mday  == -1) { mday = 31; };
+        if (mon   == -1) { mon =  12; };
+
+        std::tm TIME;
+        memset(&TIME, 0, sizeof(std::tm));
+        TIME.tm_sec = sec%60;
+        TIME.tm_min = min%60;
+        TIME.tm_hour = hour%24;
+        TIME.tm_mday = mday%31;
+        TIME.tm_mon = mon%12;
+        TIME.tm_year = year;
+
+        return TIME;
+    }
 
     std::string stationDescription(unsigned int i, unsigned int indentLevel) const {
    
@@ -66,10 +97,10 @@ struct SensorDataArray {
         description << tabs << "<b>Type de la station:</b> " << stationTypes[i] << std::endl;
         description << tabs << "<br/><b>Longitude:</b> <i>" << x[i] << "</i>" << std::endl;
         description << tabs << "<br/><b>Latitude:</b>  <i>" << y[i] << "</i>" << std::endl;
-        if(data[0][i] >= T(0))
-            description << tabs << "<br/><b>" << sensorName << ":</b>  <i>" << data[0][i] << " " << unitName <<"</i>" << std::endl;
-        else
-            description << tabs << "<br/><b>" << sensorName << ":</b>  <i>no data</i>" << std::endl;
+        //if(data[0][i] >= T(0))
+            //description << tabs << "<br/><b>" << sensorName << ":</b>  <i>" << data[0][i] << " " << unitName <<"</i>" << std::endl;
+        //else
+            //description << tabs << "<br/><b>" << sensorName << ":</b>  <i>no data</i>" << std::endl;
         description << tabs << "]]>";
         description << std::endl;
         description << tabsMinusOne;
@@ -77,7 +108,6 @@ struct SensorDataArray {
         return description.str();
     }
 };
-
 
 template <typename T>
 SensorDataArray<T>::SensorDataArray(std::string sensorName, std::string unitName, 

@@ -14,7 +14,7 @@ SimpleShepardInterpolator<T,F>::~SimpleShepardInterpolator() {
 
 
 template <typename T, typename F>
-InterpolatedData<F> SimpleShepardInterpolator<T,F>::operator()(unsigned int Nx, unsigned int Ny, unsigned int nData, double *x, double *y, T* data) {
+InterpolatedData<F> SimpleShepardInterpolator<T,F>::operator()(unsigned int Nx, unsigned int Ny, unsigned int nData, double *x, double *y, T* data) const {
 
     // valeurs finales évaluées 
     F* density = new F[Nx*Ny];
@@ -46,7 +46,7 @@ InterpolatedData<F> SimpleShepardInterpolator<T,F>::operator()(unsigned int Nx, 
 }
 
 template <typename T, typename F>
-F SimpleShepardInterpolator<T,F>::shepardWeight(unsigned int k, F d_x, F d_y, Coords<double> unitCoords, T* data) {
+F SimpleShepardInterpolator<T,F>::shepardWeight(unsigned int k, F d_x, F d_y, Coords<double> unitCoords, T* data) const{
     F sum = F(0); 
     for (unsigned int j = 0; j < unitCoords.nCoords; j++) {
         if(data[j] >= T(0)) { //if sampled data exists
@@ -63,6 +63,6 @@ F SimpleShepardInterpolator<T,F>::shepardWeight(unsigned int k, F d_x, F d_y, Co
 }
 
 template <typename T, typename F>
-F SimpleShepardInterpolator<T,F>::norm(F x1, F y1, F x2, F y2) {
+F SimpleShepardInterpolator<T,F>::norm(F x1, F y1, F x2, F y2) const{
     return sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
 }

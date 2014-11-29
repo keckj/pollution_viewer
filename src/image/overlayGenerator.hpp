@@ -7,6 +7,8 @@
 
 #include "log.hpp"
 #include "image.hpp"
+#include "interpolator.hpp"
+#include "colorizer.hpp"
 
 class OverlayGenerator {
    

@@ -3,6 +3,7 @@
 
 
 #include <ostream>
+#include <iostream>
 #include <sstream>
 #include <cstring>
 #include <string>
@@ -15,6 +16,11 @@ struct Color {
     unsigned char operator[](unsigned int k) const;
     unsigned char & operator[](unsigned int k);
 
+    Color& operator = (const Color &other) {
+        memcpy(intensities, other.intensities, N*sizeof(unsigned char));
+        return *this;
+    }
+
     std::string toHexString() const;
     
     static unsigned int channels; //duplicate of N but more clear for Muggles
@@ -24,6 +30,8 @@ struct Color {
 
     static Color<4u> RGBtoCIE(const Color<4u> &RGB);
     static Color<4u> CIEtoRGB(const Color<4u> &LcH);
+    static Color<4u> RGBtoHSV(const Color<4u> &RGB);
+    static Color<4u> HSVtoRGB(const Color<4u> &HSV);
 
 
 protected:
@@ -263,6 +271,151 @@ Color<4u> Color<N>::CIEtoRGB(const Color<4u> &LcH) {
 
     return RGB;
 }
+
+
+template <unsigned int N>
+Color<4u> Color<N>::RGBtoHSV(const Color<4u> &RGB)
+{ 
+  Color<4u> HSV;
+
+  double r,g,b;
+  r = static_cast<double>(RGB[0]) / 255;
+  g = static_cast<double>(RGB[1]) / 255;
+  b = static_cast<double>(RGB[2]) / 255;
+  const unsigned char alpha = RGB[3];
+
+  double h,s,v;
+
+  double min_c, max_c, delta;
+  double eps = 0.0001;
+
+
+  min_c = std::min( std::min(r, g), b );
+  max_c = std::max( std::max(r, g), b );
+  v = max_c;       // v
+
+  delta = max_c - min_c;
+
+  if( abs(max_c) > eps )
+    s = delta / max_c;   // s
+  else {
+    // r = g = b = 0    // s = 0, v is undefined
+    s = 0;
+    h = -1;
+    HSV[0] = static_cast<unsigned char>(h * 255);
+    HSV[1] = static_cast<unsigned char>(s * 255);
+    HSV[2] = static_cast<unsigned char>(v * 255);
+    HSV[3] = alpha;
+
+    return HSV;
+  }
+
+  if( abs(r - max_c) < eps )
+    h = ( g - b ) / delta;   // between yellow & magenta
+  else if( abs(g - max_c) < eps )
+    h = 2 + ( b - r ) / delta; // between cyan & yellow
+  else
+    h = 4 + ( r - g ) / delta; // between magenta & cyan
+
+  h *= 60;       // degrees
+  if( h < 0 )
+    h += 360;
+
+    HSV[0] = static_cast<unsigned char>(h * 255);
+    HSV[1] = static_cast<unsigned char>(s * 255);
+    HSV[2] = static_cast<unsigned char>(v * 255);
+    HSV[3] = alpha;
+
+    return HSV;
+
+}
+
+
+
+template <unsigned int N>
+Color<4u> Color<N>::HSVtoRGB(const Color<4u> &HSV)
+{ 
+  Color<4u> RGB;
+
+  double h,s,v;
+  h = static_cast<double>(HSV[0]) / 255;
+  s = static_cast<double>(HSV[1]) / 255;
+  v = static_cast<double>(HSV[2]) / 255;
+  const unsigned char alpha = HSV[3];
+
+
+  double r,g,b;
+
+  int i;
+  double f, p, q, t;
+
+  double eps = 0.0001;
+
+  if( abs(s) < eps ) {
+    // achromatic (grey)
+    r = g = b = v;
+    RGB[0] = static_cast<unsigned char>(r * 255);
+    RGB[1] = static_cast<unsigned char>(g * 255);
+    RGB[2] = static_cast<unsigned char>(b * 255);
+    RGB[3] = alpha;
+
+    return RGB;
+  }
+
+  h /= 60;      // sector 0 to 5
+  i = int(floor( h ));
+  f = h - double(i);      // factorial part of h
+  p = v * ( 1 - s );
+  q = v * ( 1 - s * f );
+  t = v * ( 1 - s * ( 1 - f ) );
+
+  switch( i ) {
+    case 0:
+      r = v;
+      g = t;
+      b = p;
+      break;
+    case 1:
+      r = q;
+      g = v;
+      b = p;
+      break;
+    case 2:
+      r = p;
+      g = v;
+      b = t;
+      break;
+    case 3:
+      r = p;
+      g = q;
+      b = v;
+      break;
+    case 4:
+      r = t;
+      g = p;
+      b = v;
+      break;
+    default:    // case 5:
+      r = v;
+      g = p;
+      b = q;
+      break;
+  }
+
+  RGB[0] = static_cast<unsigned char>(r * 255);
+  RGB[1] = static_cast<unsigned char>(g * 255);
+  RGB[2] = static_cast<unsigned char>(b * 255);
+  RGB[3] = alpha;
+
+  return RGB;
+
+}
+
+
+
+
+
+
 
 std::ostream & operator << (std::ostream &os, const Color<1u> &c);
 

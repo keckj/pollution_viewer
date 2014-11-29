@@ -1,6 +1,9 @@
 #ifndef KMLUTILS_H
 #define KMLUTILS_H
 
+#include <string>
+#include <sstream>
+
 enum AltitudeMode {
     CLAMP_TO_GROUND=0,
     CLAMP_TO_SEA_FLOOR,

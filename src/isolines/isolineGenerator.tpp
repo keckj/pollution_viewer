@@ -103,7 +103,7 @@ template <typename F, unsigned int N>
 IsoLineList<double,N,F> IsoLineGenerator<F,N>::generateIsolines(const InterpolatedData<F> &data, unsigned int nLines, const Colorizer<F,N> &colorizer) {
 
     IsoLineList<double,N,F> isolines;
-    
+
     F deltaIsoval = (data.max - data.min)/(nLines + 2u);
     for (unsigned int i = 1; i < nLines+1; i++) {
         F isovalue = data.min + i*deltaIsoval;
@@ -118,8 +118,8 @@ IsoContour<double,N,F> IsoLineGenerator<F,N>::generateIsoContour(const IsoLine<d
         const IsoLine<double,N,F> &isolineHighVal, 
         const InterpolatedData<F> &data,
         const Colorizer<F,N> &colorizer) {
-    IsoContour<double,N,F> isocontour(isolineHighVal, isolineLowVal,data,bbox);
-    isocontour.color = colorizer(isocontour.value);
+    IsoContour<double,N,F> isocontour(isolineLowVal, isolineHighVal,data,bbox);
+    isocontour.color = colorizer(isocontour.lowerValue);
     return isocontour;
 }
 

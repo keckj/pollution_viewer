@@ -46,9 +46,9 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
 
     std::string sensorName;
     std::string sensorUnit;
-    std::tm startDate = {0,0,0,1,0,0,0,0,0,0,0};
-    std::tm endDate   = {0,0,0,1,0,0,0,0,0,0,0};
-    std::tm interval  = {0,0,0,1,0,0,0,0,0,0,0};
+    std::tm startDate = {0,0,0,0,0,0,0,0,0,0,0};
+    std::tm endDate   = {0,0,0,0,0,0,0,0,0,0,0};
+    std::tm interval  = {0,0,0,0,0,0,0,0,0,0,0};
     unsigned int nExpectedValues = 0;
     unsigned int nMatchedStations = 0;
 
@@ -90,7 +90,7 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
             endDate.tm_hour  = std::stoi(match[5]);
             endDate.tm_min   = std::stoi(match[6]);
             endDate.tm_sec   = std::stoi(match[7]);
-
+            
             char* date = new char[100];
             strftime(date, 100, "%d/%m/%Y %H:%M:%S", &endDate);
             log_console->infoStream() << "[DataParser] "
@@ -102,7 +102,7 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
             interval.tm_hour  = std::stoi(match[2]);
             interval.tm_min   = std::stoi(match[3]);
             interval.tm_sec   = std::stoi(match[4]);
-
+            
             char* date = new char[100];
             strftime(date, 100, "%H:%M:%S", &interval);
             log_console->infoStream() << "[DataParser] "
@@ -151,7 +151,7 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
                     log_console->warnStream() << "[DataParser] At station " << stationName << " - " << stationType
                         << "\n\t\t\t\tParsed " << nData << " sensor values but exactly " << nExpectedValues << " were expected !";
                 }
-            
+           
                 SensorData<int> sensorData(sensorName, sensorUnit, startDate, endDate, interval, nData, sensorValues);
                 targetStations.at(stationKey)->addSensorData(sensorData);
 
@@ -166,9 +166,12 @@ void DataParser::parseSensorData(std::string fileName, std::map<std::string, Sta
         if(!parsedParameters) {
             parsedParameters = parsedSensorType && parsedUnit && parsedStartDate && parsedEndDate && parsedInterval;
             if(parsedParameters) {
+                std::tm startDateCpy(startDate);
+                std::tm endDateCpy(endDate);
+                nExpectedValues = (mktime(&endDateCpy) - mktime(&startDateCpy))/(interval.tm_hour*3600+interval.tm_min*60+interval.tm_sec) + 1;
+
                 log_console->infoStream() << "[DataParser] "
                     << "\tAll parameters have been parsed !";
-                nExpectedValues = (mktime(&endDate) - mktime(&startDate))/(interval.tm_hour*3600+interval.tm_min*60+interval.tm_sec) + 1;
                 log_console->infoStream() << "[DataParser] "
                     << "\tExpected sensor values based on interval: " << nExpectedValues;
             }
@@ -247,7 +250,7 @@ SensorDataArray<int> buildSensorDataArray(std::map<std::string, Station*> statio
              count++;
         }
     }
-    
+            
     //build structure and return 
     return SensorDataArray<int>(targetSensorName, unitName, startTime, endTime, deltaT, nMeasures, nStations,
             stationNames, stationTypes, x, y, z, data);
