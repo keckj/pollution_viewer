@@ -72,11 +72,11 @@ def interpolate(mesh,f,knownPos,density):
 	# Mc = f
 	c = solver.solve(M,f)
 
-	for i in range(n):
-		F_i = 0
-		x_vec = knownPos[i]
-		for k in range(n):
-			F_i += c[k]*hardy(k,x_vec,knownPos)
+	# for i in range(n):
+	# 	F_i = 0
+	# 	x_vec = knownPos[i]
+	# 	for k in range(n):
+	# 		F_i += c[k]*hardy(k,x_vec,knownPos)
 
 	for i in range(NX):
 		for j in range(NY):

@@ -10,6 +10,7 @@
 #include "stationParser.hpp"
 #include "dataParser.hpp"
 #include "simpleShepardInterpolator.hpp"
+#include "multiQuadricInterpolator.hpp"
 #include "linearColorizer.hpp"
 #include "overlayGenerator.hpp"
 #include "isolineGenerator.hpp"
@@ -50,7 +51,7 @@ int main(int argc, char** argv) {
 
     // Create colorizers
     const ColorRGBA red(255u,0u,0u,255u);
-    const ColorRGBA blue(0u,0u,255u,50u);
+    const ColorRGBA blue(0u,0u,255u,255u);
     LinearColorizer<float,4u> dataColorizer(interpolatedGrid,red,blue);
     LinearColorizer<float,4u> isolineColorizer(interpolatedGrid,ColorRGBA::blue,ColorRGBA::red);
     LinearColorizer<float,4u> isocontourColorizer(interpolatedGrid,ColorRGBA::red,ColorRGBA::blue);

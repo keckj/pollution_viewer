@@ -16,6 +16,9 @@ class LinearColorizer final : public Colorizer<F,N> {
 
     virtual Color<N> operator()(const F val) const final {
         F alpha = (val - this->min)/(this->max - this->min);
+
+        Color<N> c1_t = (Color<N>::RGBtoCIE(c1));
+        Color<N> c2_t = (Color<N>::RGBtoCIE(c2));
         return Color<N>::linearInterp(alpha, c1, c2);
     }
 
