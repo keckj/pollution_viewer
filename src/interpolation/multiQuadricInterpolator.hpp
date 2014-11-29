@@ -18,7 +18,7 @@ class MultiQuadricInterpolator : public Interpolator<T,F> {
         double delta_min;
         double delta_max;
                 
-        F hardyQuadric(unsigned int k, F d_x, F d_y, Coords<double> unitCoords,unsigned int nData) const;
+        F hardyQuadric(unsigned int k, F d_x, F d_y, unsigned int kreal, Coords<double> unitCoords,unsigned int nData) const;
         F norm(F x1, F x2) const;
 };
 

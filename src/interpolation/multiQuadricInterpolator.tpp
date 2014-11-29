@@ -1,7 +1,7 @@
 #include <Eigen/Dense>
-#include <Eigen/Sparse>
-#include <Eigen/SparseQR>
-#include <Eigen/Core>
+// #include <Eigen/Sparse>
+// #include <Eigen/SparseQR>
+// #include <Eigen/Core>
 #include <vector>
 
 #include "coords.hpp"
@@ -39,28 +39,28 @@ InterpolatedData<F> MultiQuadricInterpolator<T,F>::operator()(unsigned int Nx, u
     // some sample data do not exists, we first need to check how many
     unsigned int n = nData;
     for (int i = 0; i < nData; ++i)
-    {
+    {   
         if (data[i] < T(0))
-        {
+        {   
+                        cout << i << endl;
+
             n--;
-        }
+        } 
     }
-    SparseMatrix<double> M;
-    M.resize(n,n);
-    std::vector<Triplet<double>> trips(n);
+    // SparseMatrix<double> M;
+    MatrixXd A = MatrixXd::Random(n,n);
 
 
-    VectorXd b;
-    b.resize(n);
+    MatrixXd b = MatrixXd::Random(n,1);
 
     // filling matrix
     unsigned int i_safe = 0;
     unsigned int j_safe = 0;
     for (unsigned int i = 0; i < nData; i++){
         if (data[i] >= T(0)){
-            b(i_safe) = data[i];
+            b(i_safe,0) = double(data[i]);
             i_safe ++;
-        }
+        } 
     }
     i_safe = 0;
     j_safe = 0;
@@ -69,21 +69,25 @@ InterpolatedData<F> MultiQuadricInterpolator<T,F>::operator()(unsigned int Nx, u
             i_safe = 0; 
             for (unsigned int i = 0; i < nData; i++){
                 if (data[i] >= T(0)){
-                    F w = hardyQuadric(i,unitCoords.x[j],unitCoords.y[j],unitCoords,n);
-                    trips.push_back(Triplet<double>(i_safe, j_safe, w));
+                    F w = hardyQuadric(i_safe,unitCoords.x[j],unitCoords.y[j],i,unitCoords,n);
+                    A(i_safe,j_safe) = w;
                     i_safe ++;
                 }
             }
             j_safe ++;
         }
     }
-    M.setFromTriplets(trips.begin(), trips.end());
-    SparseQR<SparseMatrix<double>, COLAMDOrdering<int>> solverM;
-    solverM.compute(M);
+
+
+
 
 
     // solve sysem
-    VectorXd c = solverM.solve(b);
+    MatrixXd xQR = A.colPivHouseholderQr().solve(b);
+    // cout << "Here is the (unique) solution xQR to the equation AxQR=B:\n" << xQR << endl;
+    // cout << "Relative error: " << (A*xQR-b).norm() / b.norm() << endl;
+
+
 
 
     unsigned int k_safe = 0;
@@ -96,8 +100,8 @@ InterpolatedData<F> MultiQuadricInterpolator<T,F>::operator()(unsigned int Nx, u
             k_safe = 0;
             for (unsigned int k = 0; k < nData; k++) {
                 if(data[k] >= T(0)) { //if sampled data exists
-                    F w = hardyQuadric(k,d_x,d_y,unitCoords,n);
-                    d += w*F(c(k_safe));
+                    F w = hardyQuadric(k_safe,d_x,d_y,k,unitCoords,n);
+                    d += xQR(k_safe,0) * w;
                     k_safe ++;
                 }
             }
@@ -106,20 +110,30 @@ InterpolatedData<F> MultiQuadricInterpolator<T,F>::operator()(unsigned int Nx, u
             density[j*Nx+i] = d;
         }
     }
+    cout << min << endl;
+    cout << max << endl;
+
 
     return InterpolatedData<F>(density, min, max, Nx, Ny);
 }
 template <typename T, typename F>
-F MultiQuadricInterpolator<T,F>::hardyQuadric(unsigned int k, F d_x, F d_y, Coords<double> unitCoords, unsigned int n) const{
+F MultiQuadricInterpolator<T,F>::hardyQuadric(unsigned int k, F d_x, F d_y, unsigned int kreal,Coords<double> unitCoords, unsigned int n) const{
 
-    double delta_i = this->delta_min * std::pow((this->delta_max/this->delta_min),static_cast<F>(k-1)/(n-1));
-    F x_k = unitCoords.x[k];
-    F y_k = unitCoords.y[k];
+    double delta_i = this->delta_min * std::pow((this->delta_max/this->delta_min),double(k-1)/double(n-1));
+    if (k==0){
+        delta_i = this->delta_min * std::pow((this->delta_min/this->delta_max),1.0/double(n-1));
+    }
+    if (k == n){
+        delta_i = this->delta_min;
+    }
 
+   
+    F x_k = unitCoords.x[kreal];
+    F y_k = unitCoords.y[kreal];
     F n_x = norm(d_x,x_k);
     F n_y = norm(d_y,y_k);
 
-    return sqrt(n_x*n_x + n_y*n_y + delta_i);
+    return sqrt((x_k-d_x)*(x_k-d_x) + (y_k-d_y)*(y_k-d_y) + delta_i);
 
 
 }

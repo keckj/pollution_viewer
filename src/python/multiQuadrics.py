@@ -32,6 +32,7 @@ def hardy(i,pos,knownPos):
 
 	delta_i = delta_min * (delta_max/delta_min)**((i-1)/(n-1))
 
+
 	return math.sqrt(dist(x,x_i)**2 + dist(y,y_i)**2 + delta_i)
 
 
