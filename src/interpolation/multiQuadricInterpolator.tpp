@@ -42,8 +42,6 @@ InterpolatedData<F> MultiQuadricInterpolator<T,F>::operator()(unsigned int Nx, u
     {   
         if (data[i] < T(0))
         {   
-                        cout << i << endl;
-
             n--;
         } 
     }
@@ -81,9 +79,9 @@ InterpolatedData<F> MultiQuadricInterpolator<T,F>::operator()(unsigned int Nx, u
 
 
 
-
     // solve sysem
     MatrixXd xQR = A.colPivHouseholderQr().solve(b);
+    // cout << b << endl;   
     // cout << "Here is the (unique) solution xQR to the equation AxQR=B:\n" << xQR << endl;
     // cout << "Relative error: " << (A*xQR-b).norm() / b.norm() << endl;
 
@@ -127,11 +125,20 @@ F MultiQuadricInterpolator<T,F>::hardyQuadric(unsigned int k, F d_x, F d_y, unsi
         delta_i = this->delta_min;
     }
 
-   
+
+
     F x_k = unitCoords.x[kreal];
     F y_k = unitCoords.y[kreal];
     F n_x = norm(d_x,x_k);
     F n_y = norm(d_y,y_k);
+
+    // cout << "shepard" << endl;
+    // cout << this->delta_min << "," << this->delta_max << endl;
+    // cout << k << "," << n << endl;
+    // cout << delta_i << endl;
+    // cout << d_x << "," << d_y << endl;
+    // cout << x_k << "," << y_k << endl;
+    // cout << sqrt((x_k-d_x)*(x_k-d_x) + (y_k-d_y)*(y_k-d_y) + delta_i) << endl;
 
     return sqrt((x_k-d_x)*(x_k-d_x) + (y_k-d_y)*(y_k-d_y) + delta_i);
 

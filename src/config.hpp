@@ -20,7 +20,8 @@ namespace Globals {
     static const unsigned int gridHeight = 1024u;
 
     static const SimpleShepardInterpolator<int,float> I1(2.0);
-    static const MultiQuadricInterpolator<int,float> I2(std::pow(10,-10),std::pow(10,-2));
+    // static const MultiQuadricInterpolator<int,float> I1(std::pow(10,-12),std::pow(10,-4));
+    static const MultiQuadricInterpolator<int,float> I2(std::pow(10,-12),std::pow(10,-4));
 
     static const unsigned int nInterpolators = 2u;
     static const Interpolator<int,float>* interpolators[nInterpolators] = { &I1, &I2 };

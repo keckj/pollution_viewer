@@ -41,7 +41,9 @@ InterpolatedData<F> SimpleShepardInterpolator<T,F>::operator()(unsigned int Nx, 
             density[j*Nx+i] = d;
         }
     }
-
+    std::cout << "shepard" << std::endl;
+    std::cout << min << std::endl;
+    std::cout << max << std::endl;
     return InterpolatedData<F>(density, min, max, Nx, Ny);
 }
 

@@ -37,6 +37,7 @@ def hardy(i,pos,knownPos):
 
 
 
+
 # display grid mesh = [mesh_x,mesh_y], mesh_x: np array of size NX, mesh_y: np array of size NY
 # knowValues list of two arrays (x_known and y_known) corresponding to the location where we know our data
 # f = data value at point [knownPos_x[i],knownPos_y[i]]
@@ -72,6 +73,8 @@ def interpolate(mesh,f,knownPos,density):
 
 	# Mc = f
 	c = solver.solve(M,f)
+
+	print c
 
 	# for i in range(n):
 	# 	F_i = 0
