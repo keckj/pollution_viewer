@@ -23,7 +23,7 @@ class LinearColorizer final : public Colorizer<F,N> {
         Color<N> c_hsv = Color<N>::linearInterp(alpha,c1_t,c2_t);
         Color<N> c_rgb = Color<N>::HSVtoRGB(c_hsv);
 
-        return Color<N>::linearInterp(alpha,c1,c2);;
+        return Color<N>::linearInterp(alpha,c1,c2);
     }
 
 
