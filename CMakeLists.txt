@@ -82,10 +82,12 @@ include_directories(
     ${LOCAL_INCLUDE_DIRS}    #Local includes
     ${Boost_INCLUDEDIR}      #Boost
     ${LOG4CPP_INCLUDE_DIRS}  #Log4cpp
-    ${EIGEN3_INCLUDE_DIR}    #Eigen3 (template lib)
     ${IL_INCLUDE_DIR}        #DevIL
     ${FREETYPE_INCLUDE_DIRS} #FreeType
 )
+
+#dirty cheat
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -isystem${EIGEN3_INCLUDE_DIR}" )
 
 #Library directories
 link_directories(

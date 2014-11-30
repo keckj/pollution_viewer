@@ -15,9 +15,9 @@ namespace Globals {
     static const std::string sensorName("Particules PM10");
 
     // Interpolation
-    static const unsigned int maxDataProcessed = 1u;
-    static const unsigned int gridWidth = 1024u;
-    static const unsigned int gridHeight = 1024u;
+    static const unsigned int maxDataProcessed = 16u;
+    static const unsigned int gridWidth = 256u;
+    static const unsigned int gridHeight = 256u;
 
     static const SimpleShepardInterpolator<int,float> I1(2.0);
     // static const MultiQuadricInterpolator<int,float> I1(std::pow(10,-12),std::pow(10,-4));

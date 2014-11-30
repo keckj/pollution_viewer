@@ -47,8 +47,6 @@ InterpolatedData<F> MultiQuadricInterpolator<T,F>::operator()(unsigned int Nx, u
     }
     // SparseMatrix<double> M;
     MatrixXd A = MatrixXd::Random(n,n);
-
-
     MatrixXd b = MatrixXd::Random(n,1);
 
     // filling matrix
@@ -85,9 +83,6 @@ InterpolatedData<F> MultiQuadricInterpolator<T,F>::operator()(unsigned int Nx, u
     // cout << "Here is the (unique) solution xQR to the equation AxQR=B:\n" << xQR << endl;
     // cout << "Relative error: " << (A*xQR-b).norm() / b.norm() << endl;
 
-
-
-
     unsigned int k_safe = 0;
     // remplir le tableau de densité en interpolant les données
     for (unsigned int j = 0; j < Ny; j++) {
@@ -99,7 +94,7 @@ InterpolatedData<F> MultiQuadricInterpolator<T,F>::operator()(unsigned int Nx, u
             for (unsigned int k = 0; k < nData; k++) {
                 if(data[k] >= T(0)) { //if sampled data exists
                     F w = hardyQuadric(k_safe,d_x,d_y,k,unitCoords,n);
-                    d += xQR(k_safe,0) * w;
+                    d += F(xQR(k_safe,0)) * w;
                     k_safe ++;
                 }
             }
