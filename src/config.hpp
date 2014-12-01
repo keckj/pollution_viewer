@@ -15,7 +15,7 @@ namespace Globals {
     static const std::string sensorName("Particules PM10");
 
     // Interpolation
-    static const unsigned int maxDataProcessed = 16u;
+    static const unsigned int maxDataProcessed = 10u;
     static const unsigned int gridWidth = 256u;
     static const unsigned int gridHeight = 256u;
 
@@ -25,8 +25,8 @@ namespace Globals {
 
     static const unsigned int nInterpolators = 2u;
     static const Interpolator<int,float>* interpolators[nInterpolators] = { &I1, &I2 };
-    static const std::string interpolatorNames[nInterpolators] = { "shepard1", "multiquadrics" };
-    static const std::string defaultVisibleInterpolatorId = "shepard1";
+    static const std::string interpolatorNames[nInterpolators] = { "Shepard", "Hardy" };
+    static const std::string defaultVisibleInterpolatorId = "Hardy";
    
     // Data generation parameters
     static Colorizer<float,4u> *dataColorizer;
@@ -38,7 +38,7 @@ namespace Globals {
         isocontourColorizer = new LinearColorizer<float,4u>(ColorRGBA::red,ColorRGBA::blue);
     }
 
-    static const unsigned int nIsoLevels = 10u;
+    static const unsigned int nIsoLevels = 15u;
     static const std::string fontPath =  "fonts/FreeMonoBold.ttf";
 
     // Kml generation parameters

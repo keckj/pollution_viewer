@@ -103,9 +103,6 @@ InterpolatedData<F> MultiQuadricInterpolator<T,F>::operator()(unsigned int Nx, u
             density[j*Nx+i] = d;
         }
     }
-    cout << min << endl;
-    cout << max << endl;
-
 
     return InterpolatedData<F>(density, min, max, Nx, Ny);
 }
