@@ -1,7 +1,7 @@
 Pollution Viewer
 ================
 
-Interpolation of sparse pollution data (PM10 particle concentrations) in the region of Grenoble and embedding into google earth.
+Interpolation of sparse atmospheric pollution data (PM10 particle concentrations) in the region of Grenoble and embedding into google earth.
 The overlay is animated so that we can see daily evolution of particle pollution around Grenoble and Lyon.
 
 ## Screenshots (click to enlarge)
