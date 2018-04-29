@@ -34,8 +34,8 @@ Required libraries: Eigen, DevIL, Log4cpp, Freetype2, Boost (Regex)
 Tested with CMake 2.8, gcc 4.8.2 and clang 3.5.
 You might need to provide specific flags for exotic compilers in the CMakeList.txt present at the root of the project in order to compile C++11.
 
-Running Project
-===========
+Running the project
+===================
 At the root of the project, execute with ./main
 All files that are generated are in the folder kml/
 root.kml is the generated kml file, you can open it directly in google-earth.
