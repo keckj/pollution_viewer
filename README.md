@@ -24,7 +24,7 @@ Change cmake default compiler:
     1. Remove all cmake cache files and folders
     2. CXX=clang++ cmake ..
 
-Dependancies
+Dependencies
 ===========
 CMake 2.8+ to generate the makefile.
 A C++11 capable compiler for compilation.
