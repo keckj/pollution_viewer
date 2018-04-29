@@ -10,12 +10,14 @@ The overlay is animated so that we can see daily evolution of particle pollution
 
 Compilation
 ===========
+```
 mkdir build
 cd build
 cmake ..
+```
 
 Change build type:
-    cmake -DCMAKE_BUILD_TYPE=Release ..
+`cmake -DCMAKE_BUILD_TYPE=Release ..`
 
 Change cmake default compiler:
     1) Remove all cmake cache files and folders
