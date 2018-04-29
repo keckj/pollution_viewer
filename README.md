@@ -20,8 +20,9 @@ Change build type:
 `cmake -DCMAKE_BUILD_TYPE=Release ..`
 
 Change cmake default compiler:
-    1) Remove all cmake cache files and folders
-    2) CXX=clang++ cmake ..
+
+    1. Remove all cmake cache files and folders
+    2. CXX=clang++ cmake ..
 
 Dependancies
 ===========
